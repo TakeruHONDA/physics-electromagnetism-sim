@@ -1,0 +1,2079 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>インタラクティブ物理学習: 電磁気学（ミクロ） - v2025_10 (完成版)</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer
+    src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+    crossorigin="anonymous">
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* _10.html の既存スタイル (変更なし) */
+    :root{ --bg:#f6f7fb; --card:#fff; --accent:#0b84ff; --muted:#6c757d }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui, "Hiraginp Kaku Gothic ProN", Meiryo, sans-serif;background:var(--bg);color:#222;display:flex}
+    nav{width:260px;padding:18px;background:var(--card);border-right:1px solid #e6e9ef;height:100vh;overflow:auto}
+    main{flex:1;padding:22px;overflow:auto}
+    h1{margin:0 0 10px 0;font-size:1.4rem}
+    h2, h3{color:#343a40;border-bottom:2px solid #dee2e6;padding-bottom:8px;margin-top:1.4rem;font-size:1.2rem}
+    .content-section{display:none;max-width:1100px}
+    .content-section.active{display:block}
+    .interactive-area,.note{background:var(--card);padding:14px;border-radius:8px;box-shadow:0 2px 6px rgba(16,24,40,0.05);margin-top:12px}
+    label{font-weight:600;display:block;margin-bottom:6px}
+    input[type=range]{width:100%;max-width:520px}
+    canvas{display:block;margin-top:10px;background:#fff;border:1px solid #e3e6ea;border-radius:6px}
+    .button-group button{margin-right:8px;padding:8px 12px;border-radius:6px;border:1px solid var(--accent);background:#fff;color:var(--accent);cursor:pointer}
+    .button-group button.active{background:var(--accent);color:#fff}
+    .small{font-size:0.9rem;color:var(--muted)}
+    .sidebar-link{display:block;padding:6px 8px;color:var(--accent);text-decoration:none;border-radius:6px}
+    .sidebar-link.active{background:var(--accent);color:#fff;font-weight:700}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{border:1px solid #eee;padding:8px;text-align:left}
+  </style>
+</head>
+<body>
+  <nav>
+    <h2>⚡️ 電磁気学（ミクロ）</h2>
+    <a href="#intro" class="sidebar-link" data-target="intro">はじめに</a>
+    <h3>静電気</h3>
+    <a href="#coulombs-law" class="sidebar-link" data-target="coulombs-law">クーロンの法則</a>
+    <a href="#electric-field" class="sidebar-link" data-target="electric-field">電場 (電界)</a>
+    <a href="#electric-potential" class="sidebar-link" data-target="electric-potential">電位</a>
+    <a href="#static-induction" class="sidebar-link" data-target="static-induction">静電誘導と誘電分極</a>
+    <h3>回路/静電エネルギー</h3>
+    <a href="#ohm-law" class="sidebar-link" data-target="ohm-law">オームの法則と抵抗</a>
+    <a href="#capacitor" class="sidebar-link" data-target="capacitor">コンデンサー</a>
+    <h3>電流と磁場</h3>
+    <a href="#current-magnetic-field" class="sidebar-link" data-target="current-magnetic-field">電流がつくる磁場</a>
+    <a href="#force-comparison" class="sidebar-link" data-target="force-comparison">電場・磁場中の荷電粒子の運動</a>
+  </nav>
+    <a href="#electromagnetic-induction" class="sidebar-link" data-target="electromagnetic-induction">電磁誘導</a>
+  </nav>
+
+  <main>
+    <section id="intro" class="content-section active">
+      <h1>ようこそ！</h1>
+      <p>このコンテンツは、学生が体験しながら学べる電磁気学のインタラクティブ教材です。各スライダーやボタンを動かして、変化を観察してください。</p>
+      <p>
+        先生、こんにちは！ここでは、高校物理の「電磁気学（ミクロ）」の世界を、インタラクティブな体験を通して探求します。
+        数式の意味を考えたり、グラフのパラメータを動かしたりしながら、目に見えない電気と磁気の世界を直感的に理解していきましょう！
+      </p>
+    </section>
+
+    <section id="coulombs-law" class="content-section">
+      <h1>クーロンの法則</h1>
+      <p>
+        2つの点電荷の間に働く静電気力（クーロン力）の大きさを記述する法則です。同符号の電荷は反発し（斥力）、異符号の電荷は引き合います（引力）。
+      </p>
+      <h3>数式とその意味</h3>
+      <p>力の大きさ $F$ は、それぞれの電荷の大きさ $q_1, q_2$ の積に比例し、電荷間の距離 $r$ の2乗に反比例します 。</p>
+      <p>$$F = k\frac{|q_1 q_2|}{r^2}\quad (k\approx 8.99\times10^9~\text{N} \cdot \text{m}^2 \text{/C}^2)$$</p>
+      <ul>
+          <li>$F$: 静電気力の大きさ&nbsp;[N]</li>
+          <li>$k$: クーロン定数 (約 $8.99 \times 10^9$&nbsp;N $\cdot$ m$^2$ / C$^2$)</li>
+          <li>$q_1, q_2$: 電荷の大きさ&nbsp;[C]</li>
+          <li>$r$: 電荷間の距離&nbsp;[m]</li>
+      </ul>
+      <h3>インタラクティブ・グラフ＆アニメーション</h3>
+      <div class="interactive-area">
+        <p>スライダーで電荷の大きさを変えると、下のグラフとアニメーションが連動します。</p>
+        <p style="margin-top: 1.5rem;"><b>アニメーション (固定距離での力の変化)</b></p>
+        <label>電荷 q1: <span id="q1-value">1.0</span> μC</label>
+        <input id="q1-slider" type="range" min="-10" max="10" step="0.1" value="1">
+        <label>電荷 q2: <span id="q2-value">1.0</span> μC</label>
+        <input id="q2-slider" type="range" min="-10" max="10" step="0.1" value="1">
+        <canvas id="coulombAnimationCanvas" width="520" height="120"></canvas>
+        
+        <p style="margin-top: 1.5rem;"><b>グラフ (力 vs 距離)</b></p>
+        <p>力が距離の2乗に反比例して、急激に弱まる様子がわかりますね。</p>
+        <canvas id="coulombChart" width="720" height="260"></canvas>
+      </div>
+    </section>
+
+    <section id="electric-field" class="content-section">
+      <h1>電場 (電界)</h1>
+      <p>電荷が存在すると、その周りの空間に静電気力が及ぶ「場」ができます。これを電場（または電界）といいます 。</p>
+      <h3>電場から受ける力</h3>
+      <p>電場の強さが $E$ の場所に電気量 $q$ の電荷を置くと、その電荷は $F=qE$ の力を受けます 。</p>
+      <h3>点電荷のまわりの電場</h3>
+      <p>電荷 $Q$ が作る電場の強さ $E$ は、クーロンの法則から導かれ、電荷からの距離 $r$ の2乗に反比例します 。</p>
+      <div>$$E = k \frac{|Q|}{r^2}$$</div>
+      <h3>インタラクティブ・シミュレーション</h3>
+      <p>スライダーで中心の電荷の大きさを変えて、まわりの電場（矢印）がどう変化するか見てみましょう。正電荷からは湧き出す向きに、負電荷には吸い込まれる向きになりますね。</p>
+      
+      <div class="interactive-area">
+        <label>電荷 Q: <span id="Q-value">5.0</span> nC</label>
+        <input id="Q-slider" type="range" min="-10" max="10" step="0.5" value="5">
+        <canvas id="electricFieldCanvas" width="420" height="420"></canvas>
+        <label>ガウス面の半径 r (px): <span id="gauss-r-value">40</span></label>
+        <input id="gauss-r-slider" type="range" min="20" max="180" step="1" value="40">
+        <canvas id="gaussLawCanvas" width="320" height="320"></canvas>
+      </div>
+      
+      <div class="note">
+         <h3>大学へのステップアップ 🎓</h3>
+         <p>電場の様子を視覚的に表すのが<b>電気力線</b>です。正電荷から出て、負電荷に入ります 。この電気力線の「密度」が電場の強さを表します 。</p>
+         <p>大学では、ある面を貫く電気力線の本数を<b>「電束 (Electric Flux)」</b> $\Phi_E$ として、積分を用いて計算します。閉じた曲面 $S$ を貫く電束 $\Phi_E$ は、その内部に含まれる全電荷 $Q_{in}$ を真空の誘電率 $\epsilon_0$ で割った値に等しくなります。</p>
+         <div>$$\Phi_E = \oint_S \vec{E} \cdot d\vec{A} = \frac{Q_{in}}{\epsilon_0}$$</div>
+         <p>これが、より一般的な法則である<b>ガウスの法則</b>です。この式を使うと、点電荷が作る電場 $E = kQ/r^2$ (ここで $k = 1/4\pi\epsilon_0$) や、無限に広い平面が作る一様な電場などを簡単に導き出すことができる、とっても強力な法則なんです！</p>
+         <p style="margin-top: 15px;">
+             <b>(ヒント)</b> 上のインタラクティブ・シミュレーションの「ガウス面の半径 r」スライダーを動かしてみてください。中の電荷 $Q$ が変わらない限り、面を貫く電気力線（シミュレーションでは描画されていませんが）の本数は変わらない、というのがガウスの法則のキモです！
+         </p>
+     </div>
+    </section>
+    
+    <section id="electric-potential" class="content-section">
+      <h1>電位</h1>
+      <p>電場における「高さ」のようなもので、+1Cの電荷が持つ静電気力による位置エネルギーを表します 。</p>
+      <h3>一様な電場と電位差</h3>
+      <p>強さ $E$ の一様な電場において、電場の向きに沿って距離 $d$ だけ離れた2点間の電位差（電圧） $V$ は次のように表せます 。</p>
+      <div>$$V = Ed$$</div>
+      <h3>点電荷のまわりの電位</h3>
+      <p>電気量 $Q$ の点電荷から距離 $r$ だけ離れた点の電位 $V$ は、無限遠を基準(0V)として次式で表されます 。</p>
+      <div>$$V = k \frac{Q}{r}$$</div>
+      <h3>インタラクティブ・シミュレーション (等電位線)</h3>
+      
+      <div class="interactive-area">
+        <p><b>1つの点電荷:</b> スライダーで中心の電荷の大きさを変えて、まわりの電位の様子（等電位線）を見てみましょう。$V=kQ/r$ に従って、電荷 $Q$ が大きいほど、また電位 $V$ が小さい（絶対値が大きい）ほど、等電位線 (円) の半径 $r$ は大きくなります。</p>
+        <p>正電荷のまわりは正の電位（実線）、負電荷のまわりは負の電位（破線）になります。</p>
+        <label>電荷 Q (1点): <span id="Q-value-potential">5.0</span> nC</label>
+        <input id="Q-slider-potential" type="range" min="-10" max="10" step="0.5" value="5">
+        <canvas id="potentialCanvas" width="420" height="320"></canvas>
+
+        <h3>2点電荷の電位ヒートマップ</h3>
+        <p><b>2つの点電荷:</b> 2つの電荷 $Q_1$ と $Q_2$ がある場合の電位 $V$ は、それぞれの電荷が作る電位の単純な足し算 $V = V_1 + V_2 = kQ_1/r_1 + kQ_2/r_2$ になります。</p>
+        <p>下のシミュレーションでは、電位の大きさをヒートマップ（赤が正、青が負、黒が0V付近）で表しています。スライダーで電荷を変えて、電位の様子がどう変わるか見てみましょう。</p>
+        <label>Q1 (左): <span id="Q-pot-1-value">5.0</span> nC</label>
+        <input id="Q-slider-pot-1" type="range" min="-10" max="10" step="1" value="5">
+        <label>Q2 (右): <span id="Q-pot-2-value">-5.0</span> nC</label>
+        <input id="Q-slider-pot-2" type="range" min="-10" max="10" step="1" value="-5">
+        <canvas id="potential2Canvas" width="420" height="320"></canvas>
+      </div>
+    </section>
+    
+    <section id="static-induction" class="content-section">
+        <h1>静電誘導と誘電分極</h1>
+        <p>帯電体を導体や不導体（誘電体）に近づけたときに、電荷の分布に偏りが生じる現象です。</p>
+        <h3>静電誘導（導体の場合）</h3>
+        <p>導体に帯電体を近づけると、導体内の自由電子が移動します 。これにより、帯電体に近い側には帯電体と異符号の電荷が、遠い側には同符号の電荷が現れます 。</p>
+        <h3>誘電分極（不導体/誘電体の場合）</h3>
+        <p>不導体では、原子や分子内の電荷の分布がわずかに偏ることで、帯電体に近い側に異符号の電荷が現れます 。</p>
+
+        <h3 style="margin-top: 2rem;">インタラクティブ・シミュレーション (箔検電器)</h3>
+        <p>箔検電器は、静電誘導の原理を利用して物体の帯電を調べる装置です。スライダーで帯電体の電荷を変えたり、アース（接地）したりして、箔の動きを観察しましょう。</p>
+        <div class="note small">
+          <b>操作方法:</b>
+          <ul>
+            <li><b>帯電体の電荷:</b> 近づける棒の電荷を「+」または「-」にします。</li>
+            <li><b>帯電体の距離:</b> 棒を検電器に近づけたり（0）、遠ざけたり（100）します。</li>
+            <li><b>アース (指で触れる):</b> ボタンを「押し続けている間」、検電器がアース（接地）されます。</li>
+          </ul>
+          <b>試してみよう:</b>
+          <ol>
+            <li>「-」の帯電体を「距離 0」まで近づける。（→ 箔が開く）</li>
+            <li>近づけたまま「アース」ボタンを押し続ける。（→ 箔が閉じる）</li>
+            <li>「アース」ボタンを放す。</li>
+            <li>帯電体を「距離 100」まで遠ざける。（→ 箔が「+」に帯電して再び開く）</li>
+          </ol>
+        </div>
+        
+        <div class="interactive-area">
+          <label>帯電体の電荷 (相対値): <span id="rod-charge-value">0</span></label>
+          <input id="rod-charge-slider" type="range" min="-10" max="10" step="1" value="0">
+          
+          <label>帯電体の距離 (0=近い, 100=遠い): <span id="rod-dist-value">100</span></label>
+          <input id="rod-dist-slider" type="range" min="0" max="100" step="1" value="100">
+
+          <div class="button-group" style="margin-top: 10px;">
+            <button id="ground-btn">アース (指で触れる)</button>
+          </div>
+          
+          <canvas id="electroscopeCanvas" width="400" height="350" style="margin-top: 15px; background: #fdfdfd;"></canvas>
+        </div>
+        </section>
+
+    <section id="ohm-law" class="content-section">
+      <h1>オームの法則と抵抗</h1>
+      <p>導体に流れる電流の大きさ $I$ は、導体の両端に加えられた電圧 $V$ に比例します。これをオームの法則といいます 。</p>
+      <h3>数式とその意味</h3>
+      <div>$$V = RI$$</div>
+      <p>抵抗 $R$ は、導体の長さ $l$ に比例し、断面積 $S$ に反比例します 。比例定数 $\rho$ を抵抗率といいます。</p>
+      <div>$$R = \rho \frac{l}{S}$$</div>
+      
+      <h3>インタラクティブ・シミュレーション (抵抗値)</h3>
+      <p>導体の形状や材質（抵抗率）を変えると、電気抵抗がどのように変わるか見てみましょう。</p>
+      
+      <div class="interactive-area">
+        <div style="display:flex; flex-wrap:wrap; gap: 20px;">
+          <div style="flex: 1; min-width: 300px;">
+            <label>抵抗率 ρ: <span id="rho-value">1.7</span> x10⁻⁸ Ωm</label>
+            <input id="rho-slider" type="range" min="0.1" max="100" step="0.1" value="1.7">
+            <label>導体の長さ l: <span id="l-value">10</span> m</label>
+            <input id="l-slider" type="range" min="1" max="100" step="1" value="10">
+            <label>断面積 S: <span id="S-ohm-value">1.0</span> mm²</label>
+            <input id="S-ohm-slider" type="range" min="0.1" max="10" step="0.1" value="1.0">
+          </div>
+          <div style="flex: 1; min-width: 260px; margin-top: 0; background-color: var(--bg); padding: 14px; border-radius: 8px;">
+            <p style="font-weight: 600;">計算結果</p>
+            <p>電気抵抗 R: <b><span id="R-result-ohm">--</span> Ω</b></p>
+          </div>
+        </div>
+
+        <canvas id="resistorVisualCanvas" width="600" height="150" style="margin-top: 20px;"></canvas>
+        
+        <h3 style="margin-top: 2rem;">オームの法則 (V-Iグラフ)</h3>
+        <p>上記の条件で計算された抵抗値を使って、電圧と電流の関係をグラフで見てみましょう。</p>
+        <canvas id="ohmChart" width="600" height="260"></canvas>
+      </div>
+
+      <h3 style="margin-top: 2rem;">ミクロな視点での電流 (電子のドリフト)</h3>
+      <p>導体に電圧がかかると、内部には電場（E）が生じます。自由電子（負電荷）は電場とは逆向きに力を受けて移動（ドリフト）します。これが電流の正体です。</p>
+      <p>
+        下のシミュレーションでは、電子（青い点）は熱によってランダムに動き回っています。スライダーで<b>左向きの電場 (E ←)</b> をかけると、電子が<b>電場と逆向き（右向き →）</b>に流されていく様子がわかります。
+        固定されている赤い丸は、導体内の陽イオン（原子核）を表しており、電子はこれに衝突することで抵抗を受けます。
+      </p>
+      <div class="interactive-area">
+        <label>電場の強さ E (相対値): <span id="drift-E-value">0.0</span></label>
+        <input id="drift-E-slider" type="range" min="0" max="10" step="0.1" value="0.0">
+        
+        <div style="margin-top:10px">
+          <button id="start-drift-btn">▶ 開始</button>
+          <button id="stop-drift-btn">⏸ 停止</button>
+          <button id="reset-drift-btn">🔄 リセット</button>
+        </div>
+
+        <canvas id="electronDriftCanvas" width="600" height="200" style="background: #222; margin-top: 15px;"></canvas>
+      </div>
+      <div class="note">
+         <h3>大学へのステップアップ 🎓 (オームの法則のミクロな導出)</h3>
+         <p>なぜ $V=RI$ や $R = \rho l/S$ が成り立つのでしょうか？これは導体内の自由電子の運動（ドルーデモデル）で説明できます。</p>
+         
+         <p><b>1. 電流 $I$ と電子の速度 $v$（$I = enSv$ の導出）</b></p>
+         <p>導体内の電子は電場から力を受けて一定方向に平均速度 $v$（ドリフト速度）で動きます。この $v$ と電流 $I$ の関係を導出します。（ここでは電子の数密度を $n$、電気素量を $e$、断面積を $S$ とします）</p>
+         <ol>
+            <li>まず、導体の断面積 $S$ に注目します。</li>
+            <li>ごく短い時間 $\Delta t$ の間に、この断面を通過する電子は、どれだけの体積に含まれているでしょうか？</li>
+            <li>それは、断面 $S$ を底面とし、長さが $v \Delta t$ の円柱内の電子すべてです。</li>
+            <li>この円柱の体積 $V_{cyl}$ は $V_{cyl} = S \times (v \Delta t)$ となります。</li>
+            <li>電子の数密度が $n$（単位体積あたりの個数）なので、この体積内に含まれる自由電子の総数 $N_{total}$ は、<br>
+                $N_{total} = (\text{密度 } n) \times (\text{体積 } V_{cyl}) = n \times (S v \Delta t)$ です。</li>
+            <li>電子1個の電荷は $e$ なので、この電子たちが持つ電荷の総量 $\Delta Q$ は、<br>
+                $\Delta Q = (\text{総数 } N_{total}) \times (\text{電荷 } e) = (n S v \Delta t) \times e$ です。</li>
+            <li>電流 $I$ の定義は「単位時間あたりに断面を通過する電荷量」なので、$I = \Delta Q / \Delta t$ です。</li>
+            <li>したがって、$\Delta t$ で割ると、
+                <div>$$I = \frac{\Delta Q}{\Delta t} = \frac{e n S v \Delta t}{\Delta t} = e n S v$$</div>
+            </li>
+         </ol>
+         <p>（ご提示の $I=vSNe$ は、 $v_d \rightarrow v$, $n \rightarrow N$ としたものです）</p>
+         
+         <p><b>2. 電場 $E$ とドリフト速度 $v$</b></p>
+         <p>導体の両端に電圧 $V$ をかけると、長さ $l$ の導体には $E = V/l$ の一様な電場が生じます。電子（質量 $m$）はこの電場から $F = eE$ の力を受けますが、導体内の陽イオンに衝突して妨害（抵抗）を受けます。</p>
+         <p>電子が衝突してから次に衝突するまでの平均時間を $\tau$ とすると、抵抗力は速度 $v$ に比例し $\frac{m}{\tau}v$ とモデル化できます。定常状態では電場からの力と抵抗力が釣り合うため、</p>
+         <div>$$eE = \frac{m}{\tau}v \quad \Rightarrow \quad v = \frac{e\tau}{m}E$$</div>
+         
+         <p><b>3. $V=RI$ と抵抗率 $\rho$ の導出</b></p>
+         <p>$v$ を $I$ の式（$I=enSv$）に代入し、$E=V/l$ も使うと、</p>
+         <div>$$I = e n S \left( \frac{e\tau}{m}E \right) = e n S \left( \frac{e\tau}{m} \frac{V}{l} \right) = \left( \frac{ne^2\tau}{m} \right) \frac{S}{l} V$$</div>
+         <p>この式を $V$ について整理し直すと、</p>
+         <div>$$V = \left( \frac{m}{ne^2\tau} \frac{l}{S} \right) I$$</div>
+         <p>これがオームの法則 $V=RI$ の形になっています！ したがって、電気抵抗 $R$ は、</p>
+         <div>$$R = \left( \frac{m}{ne^2\tau} \right) \frac{l}{S}$$</div>
+         <p>となり、 $R = \rho l/S$ と比較することで、抵抗率 $\rho$ が電子のミクロな物理量（質量 $m$、電気素量 $e$、数密度 $n$、衝突時間 $\tau$）によって決まっていることがわかります。</p>
+         <div>$$\rho = \frac{m}{ne^2\tau}$$</div>
+         <p>抵抗率 $\rho$ が材質によって決まるのは、主に $n$（物質内の自由電子の多さ）と $\tau$（衝突のしやすさ、温度で変化）が材質によって異なるためなんですね。</p>
+     </div>
+    </section>
+
+    <section id="capacitor" class="content-section">
+      <h1>コンデンサー</h1>
+      <p>コンデンサーは、2枚の導体板を向かい合わせにした構造で、電気を蓄えることができる電子部品です。</p>
+      <p>平行板コンデンサー: $$C=\frac{\varepsilon S}{d}=\varepsilon_r\varepsilon_0\frac{S}{d}$$</p>
+      <p>静電エネルギー: $$U=\frac12CV^2$$</p>
+      <div class="interactive-area">
+      
+        <div style="display:flex; flex-wrap:wrap; gap: 20px;">
+        
+          <div style="flex: 1; min-width: 300px;">
+            <label>極板面積 S: <span id="S-value">0.01</span> m²</label>
+            <input id="S-slider" type="range" min="0.001" max="0.05" step="0.001" value="0.01">
+            <label>極板間距離 d: <span id="d-value">1.0</span> mm</label>
+            <input id="d-slider" type="range" min="0.1" max="5" step="0.1" value="1">
+            <label>比誘電率 ε_r: <span id="er-value">1.0</span></label>
+            <input id="er-slider" type="range" min="1" max="50" step="0.1" value="1">
+            <label>印加電圧 V: <span id="Vcap-value">5</span> V</label>
+            <input id="Vcap-slider" type="range" min="0" max="100" step="1" value="5">
+          </div>
+          
+          <div style="flex: 1; min-width: 260px; margin-top: 0; background-color: var(--bg); padding: 14px; border-radius: 8px;">
+            <p style="font-weight: 600;">計算結果</p>
+            <p>電気容量 C: <b><span id="C-result">--</span> F</b></p>
+            <p>電場 E: <b><span id="E-result">--</span> V/m</b></p>
+            <p>静電エネルギー U: <b><span id="U-result">--</span> J</b></p>
+            <p>引力（板間）F: <b><span id="F-result">--</span> N</b></p>
+          </div>
+          
+        </div>
+
+
+        <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+          <canvas id="capacitorVisualCanvas" width="400" height="300" style="flex:1;min-width:320px"></canvas>
+          
+          <canvas id="capacitorChart" width="520" height="300" style="flex:1;min-width:320px"></canvas>
+        </div>
+      </div>
+      <div class="note">
+        <p>このシミュレーションでは比誘電率 (ε_r) を変えて C, E, U, F の応答を可視化できます。授業では ε_r が何を意味するか（材料が電場をどれだけ抑えるか）を説明してください。</p>
+      </div>
+
+      <div class="note">
+         <h3>大学へのステップアップ 🎓 (電気容量 $C = \varepsilon_0 S / d$ の導出)</h3>
+         <p>コンデンサーの電気容量の公式は、ガウスの法則（や、それに基づく電気力線の考え方）から導出できます。クーロン定数を $k = 1/(4\pi\varepsilon_0)$ として導出してみましょう。</p>
+         
+         <p><b>1. 極板間の電場 $E$ を求める</b></p>
+         <p>高校物理では、点電荷 $Q$ からは $N = 4\pi k Q$ 本の電気力線が出ると学びます（$k$ はクーロン定数）。<br>
+         誘電率 $\varepsilon_0$ を使うと、ガウスの法則により $N = Q / \varepsilon_0$ 本の電束（電気力線に相当）が出ます。</p>
+         <p>コンデンサーの極板（面積 $S$、電荷 $Q$）を「無限に広い平面」とみなします。電荷密度は $\sigma = Q/S$ です。</p>
+         <ul>
+            <li>正の極板が作る電場 $E_+$ は、極板から離れる向きに $E_+ = 2\pi k \sigma = \sigma / (2\varepsilon_0)$ です。</li>
+            <li>負の極板が作る電場 $E_-$ は、極板に近づく向きに $E_- = 2\pi k \sigma = \sigma / (2\varepsilon_0)$ です。</li>
+         </ul>
+         <p>極板の間では、 $E_+$ も $E_-$ も同じ向き（正→負）になるため、電場は足し合わされます。</p>
+         <div>$$E = E_+ + E_- = 4\pi k \sigma = \frac{\sigma}{\varepsilon_0}$$</div>
+         <p>$ \sigma = Q/S $ を代入すると、極板間の電場 $E$ は、</p>
+         <div>$$E = 4\pi k \frac{Q}{S} = \frac{Q}{\varepsilon_0 S}$$</div>
+
+         <p><b>2. 電圧 $V$ と電気容量 $C$ の導出</b></p>
+         <p>電場 $E$ が一様なので、極板間の距離を $d$ とすると、電位差（電圧） $V$ は</p>
+         <div>$$V = Ed = \left( \frac{Q}{\varepsilon_0 S} \right) d = \frac{Qd}{\varepsilon_0 S}$$</div>
+         <p>（$k$ を使うと $V = (4\pi k Q / S) d = (4\pi k d / S) Q$ となります）</p>
+         <p>コンデンサーの基本式 $Q = CV$ を $C$ について解くと $C = Q / V$ です。ここに $V$ を代入します。</p>
+         <div>$$C = \frac{Q}{V} = \frac{Q}{(\frac{Qd}{\varepsilon_0 S})} = Q \cdot \left( \frac{\varepsilon_0 S}{Qd} \right) = \frac{\varepsilon_0 S}{d}$$</div>
+         <p>（$k$ を使った式 $V = (4\pi k d / S) Q$ から $C=Q/V$ を求めると $C = S / (4\pi k d)$ となり、 $k = 1/(4\pi\varepsilon_0)$ を代入すれば上と同じ結果になります）</p>
+         <p>これにより、電気容量 $C$ は電荷 $Q$ や電圧 $V$ によらず、コンデンサーの形状（面積 $S$ と距離 $d$）と、極板間が真空であること（ $\varepsilon_0$ ）だけで決まることがわかります。</p>
+         
+         <p><b>3. 誘電体を入れた場合</b></p>
+         <p>もし、真空（誘電率 $\varepsilon_0$）の代わりに比誘電率 $\varepsilon_r$ の誘電体（誘電率 $\varepsilon = \varepsilon_r \varepsilon_0$）で満たすと、上記の導出の $\varepsilon_0$ がすべて $\varepsilon$ に置き換わります。<br>
+         その結果、電気容量は $C = \varepsilon S / d = \varepsilon_r \varepsilon_0 S / d$ となり、真空のときの $\varepsilon_r$ 倍になります。</p>
+      </div>
+      </section>
+
+    <section id="current-magnetic-field" class="content-section">
+        <h1>電流がつくる磁場</h1>
+        <p>電流が流れるとその周りには磁場が発生します。この現象は右ねじの法則で向きを判断できます 。</p>
+        
+        <h3>直線電流がつくる磁場</h3>
+        <p>無限に長い直線電流 $I$ が、距離 $r$ の点につくる磁場の強さ $H$ は次のようになります。</p>
+        <div>$$H = \frac{I}{2\pi r}$$</div>
+        <div class="interactive-area">
+            <p>スライダーで電流 $I$ を変えてみましょう。電流が強くなると磁場も強くなり（矢印が太く）、電流の向き（ ⊗ は奥向き、⊙ は手前向き）を変えると磁場の向き（右ねじの法則）も逆になります。</p>
+            <label>直線電流 I: <span id="I-straight-value">1.0</span> A</label>
+            <input type="range" id="I-slider-straight" min="-5" max="5" step="0.1" value="1.0">
+            <canvas id="currentStraightCanvas" width="300" height="300"></canvas>
+        </div>
+        
+        <h3>円形電流がつくる磁場</h3>
+        <p>半径 $r$ の円形電流 $I$ が、その中心につくる磁場の強さ $H$ は次のようになります 。</p>
+        <div>$$H = \frac{I}{2r}$$</div>
+        <div class="interactive-area">
+            <p>スライダーで電流 $I$ を変えてみましょう。電流が強くなると中心の磁場も強くなり（矢印が太く）、電流の向きを変えると磁場の向きも逆になります。</p>
+            <label>ループ電流 I: <span id="I-loop-value">1.0</span> A</label>
+            <input type="range" id="I-slider-loop" min="-5" max="5" step="0.1" value="1.0">
+            <canvas id="currentLoopCanvas" width="400" height="200"></canvas>
+        </div>
+
+         <div class="note">
+            <h3>大学へのステップアップ 🎓</h3>
+            <p>これらの関係は、大学で学ぶ2つの重要な法則から導かれます。</p>
+            <p><b>アンペールの法則:</b> 任意の閉じた経路 $C$ に沿って磁場 $\vec{H}$ を積分した値が、その経路を貫く全電流 $I_{in}$ に等しいことを示します。</p>
+            <div>$$\oint_C \vec{H} \cdot d\vec{l} = I_{in}$$</div>
+            <p><b>ビオ・サヴァールの法則:</b> 電流の微小部分 $Id\vec{l}$ が、そこから $\vec{r}$ の位置につくる微小な磁場 $d\vec{H}$ を与える、より基本的な法則です。($\mu_0$ は真空の透磁率)</p>
+            <div>$$d\vec{H} = \frac{I(d\vec{l} \times \vec{r})}{4\pi r^3} \quad (または d\vec{B} = \frac{\mu_0 I(d\vec{l} \times \vec{r})}{4\pi r^3})$$</div>
+            <p>直線電流や円形電流の中心磁場は、このビオ・サヴァールの法則を積分することでも計算できるんですよ！</p>
+            
+            <div class="interactive-area" style="border-left-color: var(--secondary-color); margin-top: 15px;">
+                <p><b>アンペールの法則(直線電流):</b> 磁場の強さ $H$ は $1/r$ に比例しますが、積分経路（アンペール閉路）の長さ $L = 2\pi r$ は $r$ に比例します。そのため、積 $H \times L$ は $r$ によらず一定値 $I$ となります！</p>
+                <label>電流 I: <span id="ampere-I-value">1.0</span> A</label>
+                <input type="range" id="ampere-I-slider" min="-5" max="5" step="0.1" value="1.0">
+                <label>閉路の半径 r: <span id="ampere-r-value">50</span> px</label>
+                <input type="range" id="ampere-r-slider" min="20" max="100" step="1" value="50">
+                <canvas id="ampereLawCanvas" width="300" height="300"></canvas>
+            </div>
+        </div>
+    </section>
+    
+    <section id="force-comparison" class="content-section">
+      <h1>電場・磁場中の荷電粒子の運動</h1>
+      <p>電場と磁場は、どちらも電荷に力を及ぼしますが、その性質は異なります。ここでは、それぞれの場の中での荷電粒子の運動を比較し、特に磁場から受ける力（ローレンツ力）について詳しく見ていきましょう。</p>
+      
+      <div class="interactive-area">
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between;">
+          
+          <div style="flex: 1; min-width: 220px;">
+            <label>粒子選択</label>
+            <label><input type="radio" name="particleType" value="electron" checked> 電子 (e⁻)</label>
+            <label><input type="radio" name="particleType" value="proton"> 陽子 (p⁺)</label>
+            <label><input type="radio" name="particleType" value="alpha"> α 粒子 (α)</label>
+          </div>
+
+          <div style="flex: 2; min-width: 300px; display: flex; flex-direction: column; gap: 15px;">
+            <div>
+              <label>粒子速さ v: <span id="v-force-value">1.0</span> x10⁵ m/s</label>
+              <input id="v-force-slider" type="range" min="0.5" max="10" step="0.1" value="1.0">
+            </div>
+            <div>
+              <label>電場の強さ E: <span id="E-field-value">2500</span> V/m</label>
+              <input id="E-field-slider" type="range" min="500" max="10000" step="100" value="2500">
+            </div>
+            <div>
+              <label>磁束密度 B: <span id="B-field-value">0.10</span> T</label>
+              <input id="B-field-slider" type="range" min="0" max="0.5" step="0.01" value="0.10">
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:15px" class="button-group">
+          <button id="show-electric" class="active">⚡️ 電場モード</button>
+          <button id="show-magnetic">🧲 磁場モード</button>
+        </div>
+        
+        <div id="electric-force-content-2" style="display: block; margin-top: 10px;"> 
+            <p><b>電場中の電荷:</b> 電場 ($\vec{E}$) の中に置かれた電荷 ($q$) は、電場の向きに沿って力 ($\vec{F} = q\vec{E}$) を受けます。静止していても力を受け、電場の向きに加速されます。スライダーで電場の強さを変えてみましょう。</p> 
+        </div>
+        <div id="magnetic-force-content-2" style="display: none; margin-top: 10px;"> 
+            <p><b>磁場中の電荷:</b> 磁場 ($\vec{B}$) の中を速度 ($\vec{v}$) で運動する電荷 ($q$) は、ローレンツ力 ($\vec{F} = q(\vec{v} \times \vec{B})$) を受け、円運動をします。力が常に速度と垂直なので、磁場は仕事をせず、粒子の速さは変わりません。円運動の半径は $r = mv/qB$ で与えられます。スライダーで速さや磁場の強さを変えると、半径がどう変わるか観察しましょう。</p> 
+        </div>
+
+        <div style="margin-top:10px">
+          <button id="start-force-btn">▶ 開始</button>
+          <button id="stop-force-btn">⏸ 停止</button>
+          <button id="reset-force-btn">🔄 リセット</button>
+        </div>
+
+        <div style="position: relative; width: 640px; height: 300px; margin-top: 10px;">
+          <canvas id="forceBackgroundCanvas" width="640" height="300" style="position: absolute; top: 0; left: 0; z-index: 0; border: 1px solid #e3e6ea; border-radius: 6px;"></canvas>
+          <canvas id="forceAnimationCanvas" width="640" height="300" style="position: absolute; top: 0; left: 0; z-index: 1;"></canvas>
+        </div>
+        <p class="small" id="radius-info-force" style="display: none;">計算上の軌道半径: <span id="radius-value-force">-</span> m</p>
+      </div>
+
+      <div class="note"> 
+        <h3>力の比較まとめ</h3>
+        <table>
+           <thead> <tr> <th></th> <th>電場から受ける力 (クーロン力)</th> <th>磁場から受ける力 (ローレンツ力)</th> </tr> </thead>
+           <tbody>
+               <tr> <td><b>力の式</b></td> <td>$ \vec{F} = q\vec{E} $</td> <td>$ \vec{F} = q(\vec{v} \times \vec{B}) $ ($F=qvB\sin\theta$)</td> </tr>
+               <tr> <td><b>力の向き</b></td> <td>電場 $\vec{E}$ と平行（$q>0$）または反平行（$q<0$）</td> <td>速度 $\vec{v}$ と磁場 $\vec{B}$ の両方に垂直</td> </tr>
+               <tr> <td><b>条件</b></td> <td>電荷が<b>静止</b>していても力を受ける</td> <td>電荷が<b>運動</b>しているときのみ力を受ける</td> </tr>
+               <tr> <td><b>仕事</b></td> <td>仕事をする（運動エネルギーを変化させる）</td> <td>仕事をしない（運動エネルギーを変化させない）</td> </tr>
+           </tbody>
+       </table> 
+     </div>
+    </section>
+
+    <section id="electromagnetic-induction" class="content-section">
+        <h1>電磁誘導</h1>
+        <p>コイルを貫く磁束（磁力線の本数）が変化すると、コイルに電圧が生じる現象です 。この電圧を<b>誘導起電力</b>、流れる電流を<b>誘導電流</b>といいます 。</p>
+        <h3>レンツの法則</h3>
+        <p>誘導電流は、磁束の変化を妨げる向きに流れます 。例えば、N極を近づけると、コイルは上側がN極になるように電流を流して反発します。</p>
+        <h3>ファラデーの電磁誘導の法則</h3>
+        <p>N回巻きのコイルに生じる誘導起電力の大きさ $V$ は、単位時間あたりの磁束の変化 $|\\Delta\Phi / \\Delta t|$ に比例します。</p>
+        <div>$$|V| = N \left| \frac{\\Delta\Phi}{\\Delta t} \right|$$</div>
+    </section>
+
+  </main>
+
+  <script>
+  // ------------------
+  // 基本データ
+  // ------------------
+  const PARTICLE_DATA = {
+    electron: { m: 9.10938356e-31, q: -1.602176634e-19, label: 'e⁻' },
+    proton:   { m: 1.6726219e-27, q:  1.602176634e-19, label: 'p⁺' },
+    alpha:    { m: 6.644657230e-27, q: 2*1.602176634e-19, label: 'α' }
+  };
+
+  let currentParticle = 'electron';
+  let forceAnimationState = { currentMode: 'electric', status: 'stopped', x:0,y:0,vx:0,vy:0,particleCharge:0,particleMass:1, tPrev:null, initialSpeed: 0, trail: [] };
+  const charts = {};
+  
+  let capacitorVisualCtx;
+  let capAnimationFrameId = null;
+  let currentChargeCount = 0;
+  let targetChargeCount = 0;
+  const epsilon0_const = 8.854187817e-12; // 真空の誘電率
+  
+  // ▼▼▼ 箔検電器の状態 ▼▼▼
+  let electroscopeState = {
+      rodCharge: 0,   // -10 to +10 (スライダーの値)
+      rodDist: 100, // 0 (近い) to 100 (遠い)
+      isGrounded: false,
+      netCharge: 0  // アースによって帯電した正味の電荷
+  };
+  // ▲▲▲ 箔検電器の状態 ▲▲▲
+  
+  // ▼▼▼ 電子ドリフトの状態 ▼▼▼
+  let electronDriftState = {
+      status: 'stopped',
+      tPrev: null,
+      electrons: [],
+      atoms: [],
+      driftSpeed: 0,
+      animationFrameId: null
+  };
+  const NUM_ELECTRONS = 50;
+  const NUM_ATOMS = 15;
+  const THERMAL_SPEED = 50; // px/sec
+  // ▲▲▲ 電子ドリフトの状態 ▲▲▲
+
+
+  // helper
+  function $(id){ return document.getElementById(id); }
+
+  // ------------------
+  // 初期化
+  // ------------------
+  function initDOM(){
+    // menu links
+    document.querySelectorAll('.sidebar-link').forEach(a=>{
+      a.addEventListener('click',e=>{
+          e.preventDefault(); 
+          const t = a.dataset.target; 
+          showContent(t); 
+          document.querySelectorAll('.sidebar-link').forEach(x=>x.classList.remove('active')); 
+          a.classList.add('active'); 
+      });
+    });
+    document.querySelector('.sidebar-link[data-target="intro"]').classList.add('active');
+
+    // sliders binding (simple)
+    bindRange('q1-slider','q1-value', updateCoulomb);
+    bindRange('q2-slider','q2-value', updateCoulomb);
+    bindRange('Q-slider','Q-value', drawElectricField);
+    bindRange('gauss-r-slider','gauss-r-value', drawGaussLaw);
+    bindRange('Q-slider-potential','Q-value-potential', drawPotential);
+    bindRange('Q-slider-pot-1','Q-pot-1-value', drawPotential2);
+    bindRange('Q-slider-pot-2','Q-pot-2-value', drawPotential2);
+    
+    bindRange('rho-slider', 'rho-value', updateOhm);
+    bindRange('l-slider', 'l-value', updateOhm);
+    bindRange('S-ohm-slider', 'S-ohm-value', updateOhm);
+
+    // capacitor bindings
+    bindRange('S-slider','S-value', updateCapacitor);
+    bindRange('d-slider','d-value', updateCapacitor);
+    bindRange('er-slider','er-value', updateCapacitor);
+    bindRange('Vcap-slider','Vcap-value', updateCapacitor);
+
+    // currents
+    bindRange('I-slider-straight','I-straight-value', drawCurrentStraight);
+    bindRange('I-slider-loop','I-loop-value', drawCurrentLoop);
+    bindRange('ampere-I-slider','ampere-I-value', drawAmpereLawFrame);
+    bindRange('ampere-r-slider','ampere-r-value', drawAmpereLawFrame);
+
+    // ▼▼▼ 箔検電器のバインド ▼▼▼
+    bindRange('rod-charge-slider', 'rod-charge-value', updateElectroscope);
+    bindRange('rod-dist-slider', 'rod-dist-value', updateElectroscope);
+    
+    const groundBtn = $('ground-btn');
+    if (groundBtn) {
+        // PC用 (マウス)
+        groundBtn.addEventListener('mousedown', () => {
+            electroscopeState.isGrounded = true;
+            updateElectroscope();
+            groundBtn.classList.add('active'); // 押下状態を視覚化
+        });
+        // スマホ用 (タッチ)
+        groundBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // マウスイベントの重複実行を防ぐ
+            electroscopeState.isGrounded = true;
+            updateElectroscope();
+            groundBtn.classList.add('active');
+        });
+
+        // ボタンから指が離れたらアース解除
+        const releaseGround = (e) => {
+             if (electroscopeState.isGrounded) {
+                electroscopeState.isGrounded = false;
+                updateElectroscope(); // アースを離した瞬間の状態を再計算
+                groundBtn.classList.remove('active');
+            }
+        };
+        window.addEventListener('mouseup', releaseGround);
+        window.addEventListener('touchend', releaseGround);
+    }
+    // ▲▲▲ 箔検電器のバインド ▲▲▲
+    
+    // ▼▼▼ 電子ドリフトのバインド ▼▼▼
+    bindRange('drift-E-slider', 'drift-E-value', (value) => {
+        // スライダーの値(0-10)をドリフト速度(0-50 px/s)にマッピング
+        // ※これは電場の強さ(左向き)に比例し、電子のドリフト速度(右向き)を決める
+        electronDriftState.driftSpeed = parseFloat($('drift-E-slider').value) * 5.0; 
+    });
+    $('start-drift-btn').addEventListener('click', startElectronDrift);
+    $('stop-drift-btn').addEventListener('click', stopElectronDrift);
+    $('reset-drift-btn').addEventListener('click', resetElectronDrift);
+    // ▲▲▲ 電子ドリフトのバインド ▲▲▲
+
+    // force comparison
+    document.querySelectorAll('input[name="particleType"]').forEach(r=> r.addEventListener('change', ()=>{ currentParticle = document.querySelector('input[name="particleType"]:checked').value; initializeForceState(forceAnimationState.currentMode); drawForce(); }));
+    
+    bindRange('E-field-slider', 'E-field-value', () => { 
+      if (forceAnimationState.currentMode === 'electric') {
+        drawElectricBG();
+        initializeForceState('electric'); 
+        drawForce();
+      }
+    });
+    
+    bindRange('B-field-slider', 'B-field-value', () => {
+      if (forceAnimationState.currentMode === 'magnetic') {
+        drawMagneticBG();
+      }
+    }); 
+    
+    bindRange('v-force-slider', 'v-force-value', () => {
+      if (forceAnimationState.currentMode === 'magnetic') {
+        const v_scale = parseFloat($('v-force-slider').value);
+        const new_v_px = v_scale * 40;
+        
+        const currentSpeed = Math.hypot(forceAnimationState.vx, forceAnimationState.vy);
+        if (currentSpeed > 0) {
+            const factor = new_v_px / currentSpeed;
+            forceAnimationState.vx *= factor;
+            forceAnimationState.vy *= factor;
+        }
+        forceAnimationState.initialSpeed = new_v_px;
+      } else {
+        initializeForceState(forceAnimationState.currentMode); 
+        drawForce();
+      }
+    });
+    
+    $('show-electric').addEventListener('click', ()=>{ 
+        forceAnimationState.currentMode='electric'; 
+        
+        drawElectricBG();
+        $('forceAnimationCanvas').getContext('2d').clearRect(0, 0, 640, 300);
+        initializeForceState('electric');
+        drawForce(); 
+        
+        $('electric-force-content-2').style.display = 'block';
+        $('magnetic-force-content-2').style.display = 'none';
+        $('show-electric').classList.add('active'); 
+        $('show-magnetic').classList.remove('active');
+    });
+    $('show-magnetic').addEventListener('click', ()=>{ 
+        forceAnimationState.currentMode='magnetic'; 
+
+        drawMagneticBG();
+        $('forceAnimationCanvas').getContext('2d').clearRect(0, 0, 640, 300);
+        initializeForceState('magnetic');
+        drawForce(); 
+        
+        $('electric-force-content-2').style.display = 'none';
+        $('magnetic-force-content-2').style.display = 'block';
+        $('show-electric').classList.remove('active');
+        $('show-magnetic').classList.add('active');
+    });
+    $('show-electric').classList.add('active');
+
+    $('start-force-btn').addEventListener('click', startForce);
+    $('stop-force-btn').addEventListener('click', stopForce);
+    $('reset-force-btn').addEventListener('click', ()=>{ 
+      stopForce();
+      $('forceAnimationCanvas').getContext('2d').clearRect(0, 0, 640, 300);
+      if (forceAnimationState.currentMode === 'electric') {
+        drawElectricBG();
+      } else {
+        drawMagneticBG();
+      }
+      initializeForceState(forceAnimationState.currentMode); 
+      drawForce(); 
+    });
+
+    capacitorVisualCtx = $('capacitorVisualCanvas').getContext('2d');
+
+    // initial draws
+    updateCoulomb(); drawElectricField(); drawGaussLaw(); drawPotential(); drawPotential2(); 
+    updateElectroscope(); 
+    updateCapacitor(); 
+    drawCurrentStraight(); drawCurrentLoop(); drawAmpereLawFrame(); 
+    
+    initElectronDrift(); 
+    drawElectronDrift(); 
+    
+    drawElectricBG();
+    initializeForceState('electric'); 
+    drawForce(); 
+
+    // KaTeX rendering
+    renderMathInElement(document.body, {
+      delimiters: [
+          {left: '$$', right: '$$', display: true},
+          {left: '$', right: '$', display: false},
+          {left: '\\(', right: '\\)', display: false},
+          {left: '\[', right: '\]', display: true}
+      ],
+      throwOnError: false,
+      strict: 'ignore' 
+    });
+  }
+
+  function bindRange(sliderId, valueId, cb){
+    const s=$(sliderId);
+    const v=$(valueId);
+    if(!s||!v) return;
+    v.textContent = s.step && s.step.includes('.') ? parseFloat(s.value).toFixed(1) : s.value;
+    s.addEventListener('input', ()=>{
+      v.textContent = s.step && s.step.includes('.') ? parseFloat(s.value).toFixed(1) : s.value;
+      try{ cb(); }catch(e){ console.error(e); }
+    });
+  }
+
+  // ------------------
+  // ページ表示
+  // ------------------
+  function showContent(id){
+    stopForce(); 
+    stopCapacitorAnimation(); 
+    stopElectronDrift(); 
+    
+    document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active')); 
+    const el=$(id)||$('intro'); 
+    el.classList.add('active'); 
+    
+    if (id === 'capacitor') {
+        updateCapacitor(); 
+    } else if (id === 'force-comparison') {
+        if (forceAnimationState.currentMode === 'electric') {
+            drawElectricBG();
+        } else {
+            drawMagneticBG();
+        }
+        initializeForceState(forceAnimationState.currentMode);
+        drawForce();
+    } else if (id === 'ohm-law') {
+        updateOhm();
+        resetElectronDrift(); 
+    } else if (id === 'static-induction') {
+        updateElectroscope();
+    }
+  }
+
+  // ------------------
+  // Coulomb
+  // ------------------
+  function updateCoulomb(){
+    const q1=parseFloat($('q1-slider').value);
+    const q2=parseFloat($('q2-slider').value);
+    
+    // draw simple animation
+    const c=$('coulombAnimationCanvas'); 
+    const ctx=c.getContext('2d'); 
+    ctx.clearRect(0,0,c.width,c.height); 
+    const x1=100, x2=420, y=60, r=14;
+    
+    // Draw charges
+    ctx.beginPath(); 
+    ctx.fillStyle=q1>0?'red':(q1<0?'blue':'#888'); 
+    ctx.arc(x1,y,r,0,Math.PI*2);
+    ctx.fill(); 
+    ctx.beginPath(); 
+    ctx.fillStyle=q2>0?'red':(q2<0?'blue':'#888'); 
+    ctx.arc(x2,y,r,0,Math.PI*2);
+    ctx.fill(); 
+    ctx.fillStyle='#fff'; 
+    ctx.textAlign='center'; 
+    ctx.textBaseline='middle'; 
+    ctx.fillText(q1>0?'+':(q1<0?'-':'0'),x1,y);
+    ctx.fillText(q2>0?'+':(q2<0?'-':'0'),x2,y);
+
+    let forceMag = Math.abs(q1 * q2) * 0.5 + 5; 
+    if (forceMag > 80) forceMag = 80; 
+    if (q1 == 0 || q2 == 0) forceMag = 0;
+
+    const isRepulsion = q1 * q2 > 0; 
+    const isAttraction = q1 * q2 < 0; 
+    const arrowColor = 'rgba(255, 0, 0, 0.7)'; 
+
+    if (isRepulsion) {
+        drawArrow(ctx, x1 + r, y, x1 - forceMag, y, {color: arrowColor, lineWidth: 2, head: 8}); 
+        drawArrow(ctx, x2 - r, y, x2 + forceMag, y, {color: arrowColor, lineWidth: 2, head: 8}); 
+    } else if (isAttraction) { 
+        drawArrow(ctx, x1 + r, y, x1 + forceMag, y, {color: arrowColor, lineWidth: 2, head: 8}); 
+        drawArrow(ctx, x2 - r, y, x2 - forceMag, y, {color: arrowColor, lineWidth: 2, head: 8}); 
+    }
+
+    // chart F vs r
+    const k=8.9875517923e9; const labels=[]; const data=[]; 
+    for(let i=1;i<=20;i++){
+        const r_m=i/100;
+        labels.push((r_m).toFixed(2)); 
+        const F=k*Math.abs(q1*1e-6 * q2*1e-6)/(r_m*r_m);
+        data.push(F>1e6?1e6:F);
+    }
+    if(charts.coulomb) charts.coulomb.destroy(); 
+    charts.coulomb = new Chart($('coulombChart').getContext('2d'), {
+        type:'line',
+        data:{
+            labels,
+            datasets:[{
+                label:'F [N]',
+                data,
+                borderColor:'#0b84ff',
+                fill:false,
+                tension:0.3
+            }]
+        }, 
+        options:{
+            plugins:{
+                title:{display:true,text:`力 vs 距離 (q1=${q1}μC,q2=${q2}μC)`}
+            },
+            scales:{y:{beginAtZero:true}}
+        }
+    }); 
+  }
+
+  // ------------------
+  // Electric field & Gauss
+  // ------------------
+  function drawElectricField(){
+    const c=$('electricFieldCanvas');
+    if(!c) return;
+    const ctx=c.getContext('2d');
+    ctx.clearRect(0,0,c.width,c.height);
+    const Q=parseFloat($('Q-slider').value);
+    const cx=c.width/2, cy=c.height/2;
+    ctx.beginPath();
+    ctx.fillStyle=Q>0?'#cc3333':(Q<0?'#3366cc':'#888');
+    ctx.arc(cx,cy,14,0,Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle='#fff';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(Q>0?'+':(Q<0?'-':'0'),cx,cy);
+    const cols=11, rows=11;
+    for(let i=0;i<cols;i++) for(let j=0;j<rows;j++){
+      const x = (i/(cols-1))*(c.width-40)+20;
+      const y=(j/(rows-1))*(c.height-40)+20;
+      const dx=x-cx, dy=y-cy;
+      const r=Math.sqrt(dx*dx+dy*dy);
+      if(r<20) continue;
+      const E=Math.abs(Q)/(r*r)*2000;
+      const len=Math.min(18,Math.log(1+E)*6);
+      const dirX=dx/r, dirY=dy/r;
+      const toX=x+dirX*len*(Q>=0?1:-1);
+      const toY=y+dirY*len*(Q>=0?1:-1);
+      drawArrow(ctx,x,y,toX,toY,{head:5,lineWidth:1});
+    }
+  }
+  function drawGaussLaw(){
+    const c=$('gaussLawCanvas');
+    if(!c) return;
+    const ctx=c.getContext('2d');
+    ctx.clearRect(0,0,c.width,c.height);
+    const cx=c.width/2, cy=c.height/2;
+    const r=parseInt($('gauss-r-slider').value||40);
+    ctx.beginPath();
+    ctx.fillStyle='#cc3333';
+    ctx.arc(cx,cy,8,0,Math.PI*2);
+    ctx.fill();
+    ctx.setLineDash([6,4]);
+    ctx.strokeStyle='#555';
+    ctx.beginPath();
+    ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    for(let a=0;a<12;a++){
+      const ang=a*(2*Math.PI/12);
+      const x1=cx+Math.cos(ang)*cx;
+      const y1=cy+Math.sin(ang)*cy;
+      drawArrow(ctx,cx,cy,x1,y1,{head:6});
+    }
+    ctx.fillStyle='#333';
+    ctx.fillText('ガウス面',cx,cy+r+18);
+  }
+
+  // ------------------
+  // Potential
+  // ------------------
+  function drawPotential(){
+    const c=$('potentialCanvas');
+    if(!c) return;
+    const ctx=c.getContext('2d');
+    ctx.clearRect(0,0,c.width,c.height);
+    
+    const Q_nC = parseFloat($('Q-slider-potential').value);
+    const Q = Q_nC * 1e-9; 
+    
+    const cx=c.width/2, cy=c.height/2;
+    const k = 8.9875517923e9;
+    
+    // Draw charge
+    ctx.fillStyle=Q_nC>0?'#cc3333':(Q_nC<0?'#3366cc':'#888');
+    ctx.beginPath();
+    ctx.arc(cx,cy,10,0,Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle='#fff';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(Q_nC>0?'+':(Q_nC<0?'-':'0'),cx,cy);
+
+    if (Math.abs(Q) < 1e-12) return; 
+
+    // 1m = 40px
+    const r_scale_px_per_m = 40.0;
+    const V_levels_abs = [5, 10, 20, 30, 40, 50, 60, 70, 80]; 
+    const V_sign = Math.sign(Q);
+    const strokeColor = Q > 0 ? 'rgba(204,51,51,0.5)' : 'rgba(51,102,204,0.5)';
+    const isDashed = Q < 0;
+
+    for(let i=0; i < V_levels_abs.length; i++){
+      const V_actual = V_sign * V_levels_abs[i];
+      if (V_actual === 0) continue;
+
+      const r_m = k * Q / V_actual; // r = kQ/V
+      
+      if (r_m > 0) { 
+        const rr = r_m * r_scale_px_per_m; // m -> px
+        
+        ctx.beginPath(); 
+        ctx.strokeStyle = strokeColor;
+        ctx.lineWidth = 2;
+        if (isDashed) {
+          ctx.setLineDash([4,3]); 
+        } else {
+          ctx.setLineDash([]); 
+        }
+        ctx.arc(cx,cy,rr,0,Math.PI*2);
+        ctx.stroke();
+      }
+    }
+    ctx.setLineDash([]);
+  }
+  
+  function drawPotential2(){
+    const c=$('potential2Canvas');
+    if(!c) return;
+    const ctx=c.getContext('2d');
+    ctx.clearRect(0,0,c.width,c.height);
+    const Q1=parseFloat($('Q-slider-pot-1').value)*1e-9;
+    const Q2=parseFloat($('Q-slider-pot-2').value)*1e-9;
+    const k=8.9875517923e9;
+    const leftX=c.width*0.3, rightX=c.width*0.7, yC=c.height/2;
+    const gx=60, gy=45;
+    const cellW=c.width/gx, cellH=c.height/gy;
+    let vals=[], vmax=-Infinity, vmin=Infinity;
+    for(let i=0;i<gx;i++) for(let j=0;j<gy;j++){
+      const x=i*cellW+cellW/2, y=j*cellH+cellH/2;
+      const r1=Math.hypot(x-leftX,y-yC), r2=Math.hypot(x-rightX,y-yC);
+      const v1=k*Q1/Math.max(1,r1), v2=k*Q2/Math.max(1,r2);
+      const V=v1+v2;
+      vals.push(V);
+      vmax=Math.max(vmax,V);
+      vmin=Math.min(vmin,V);
+    }
+    const vAbsMax=Math.max(Math.abs(vmax),Math.abs(vmin),0.1);
+    let idx=0;
+    for(let i=0;i<gx;i++) for(let j=0;j<gy;j++){
+      const V=vals[idx++];
+      const t=V/vAbsMax;
+      let r=0,g=0,b=0;
+      if(t>0){ r=255; g=255*(1-Math.min(t,1)); b=255*(1-Math.min(t,1)); }
+      else { b=255; r=255*(1-Math.min(Math.abs(t),1)); g=255*(1-Math.min(Math.abs(t),1)); }
+      ctx.fillStyle=`rgb(${r},${g},${b})`;
+      ctx.fillRect(i*cellW,j*cellH,cellW+1,cellH+1);
+    }
+    ctx.strokeStyle='#000';
+    ctx.beginPath();
+    ctx.arc(leftX,yC,8,0,Math.PI*2);
+    ctx.fillStyle=Q1>0?'#ff8888':'#8888ff';
+    ctx.fill();
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(rightX,yC,8,0,Math.PI*2);
+    ctx.fillStyle=Q2>0?'#ff8888':'#8888ff';
+    ctx.fill();
+    ctx.stroke();
+  }
+
+  // ------------------
+  // Electroscope (箔検電器)
+  // ------------------
+  function updateElectroscope() {
+      if (!$('electroscopeCanvas') || !$('static-induction').classList.contains('active')) return; 
+      
+      // 1. スライダーから値を取得
+      electroscopeState.rodCharge = parseFloat($('rod-charge-slider').value);
+      electroscopeState.rodDist = parseFloat($('rod-dist-slider').value);
+      const rodCharge = electroscopeState.rodCharge;
+      
+      // 2. 誘導の強さを計算 (距離が近いほど強い)
+      const proximity = Math.exp(-electroscopeState.rodDist / 40.0);
+      
+      let inducedTop = 0;
+      let inducedFoil = 0;
+      
+      // 3. アース処理
+      if (electroscopeState.isGrounded) {
+          // アースされている場合、箔の電荷は地面に逃げる (電位が0になる)
+          inducedFoil = 0;
+          // 検電器の正味の電荷は、円盤に束縛された電荷になる
+          electroscopeState.netCharge = -rodCharge * proximity * proximity * 5.0; // 係数は調整
+          inducedTop = electroscopeState.netCharge;
+      } else {
+          // アースが外れた場合
+          const bias = rodCharge * proximity * proximity * 5.0; // 偏りの強さ (係数は調整)
+          inducedTop = (electroscopeState.netCharge / 2) - bias;
+          inducedFoil = (electroscopeState.netCharge / 2) + bias;
+      }
+
+      // 5. 箔の開き角度を計算
+      const foilAngle = Math.min(Math.abs(inducedFoil) * 4.0, 60); // 最大60度
+      
+      drawElectroscope(rodCharge, proximity, inducedTop, inducedFoil, foilAngle, electroscopeState.isGrounded, electroscopeState.rodDist);
+  }
+
+  function drawElectroscope(rodCharge, proximity, qTop, qFoil, foilAngle, isGrounded, rodDist) {
+      const c = $('electroscopeCanvas');
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const { width, height } = c;
+      ctx.clearRect(0, 0, width, height);
+      
+      const baseX = width / 2;
+      const baseY = height - 80; // 瓶の底より上
+      
+      // --- 1. 帯電体 (Rod) ---
+      if (rodCharge !== 0) {
+          const rodWidth = 20;
+          const rodHeight = 100;
+          const rodX_min = baseX + 70;
+          const rodX_max = baseX + 250;
+          const rodX = rodX_min + (rodDist / 100.0) * (rodX_max - rodX_min);
+          const rodY = 60; 
+
+          ctx.fillStyle = rodCharge > 0 ? 'rgba(239, 68, 68, 0.8)' : 'rgba(59, 130, 246, 0.8)';
+          ctx.fillRect(rodX, rodY, rodWidth, rodHeight);
+          ctx.fillStyle = '#fff';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.font = 'bold 20px Arial';
+          ctx.fillText(rodCharge > 0 ? '+' : '-', rodX + rodWidth / 2, rodY + rodHeight / 2);
+      }
+      
+      // --- 2. 検電器本体 ---
+      const topDiskY = 100;
+      const topDiskRadius = 40;
+      const stemTop = topDiskY;
+      const stemBottom = baseY - 60;
+      
+      ctx.fillStyle = '#8d6e63'; // 茶色
+      ctx.fillRect(baseX - 25, stemTop + 10, 50, 20);
+      
+      ctx.fillStyle = '#d4d4d8'; // zinc-300
+      ctx.beginPath();
+      ctx.arc(baseX, topDiskY, topDiskRadius, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#a1a1aa'; // zinc-400
+      ctx.stroke();
+      
+      ctx.strokeStyle = '#a1a1aa';
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(baseX, stemTop);
+      ctx.lineTo(baseX, stemBottom);
+      ctx.stroke();
+      
+      // --- 3. 箔 (Foils) ---
+      const foilLength = 50;
+      const angleRad = (foilAngle * Math.PI) / 180;
+      
+      ctx.strokeStyle = '#fde047'; // yellow-300
+      ctx.lineWidth = 3;
+      
+      ctx.beginPath();
+      ctx.moveTo(baseX, stemBottom);
+      ctx.lineTo(baseX - foilLength * Math.sin(angleRad), stemBottom + foilLength * Math.cos(angleRad));
+      ctx.stroke();
+      
+      ctx.beginPath();
+      ctx.moveTo(baseX, stemBottom);
+      ctx.lineTo(baseX + foilLength * Math.sin(angleRad), stemBottom + foilLength * Math.cos(angleRad));
+      ctx.stroke();
+
+      // --- 4. 瓶 (Jar) ---
+      ctx.strokeStyle = 'rgba(156, 163, 175, 0.5)'; // gray-400
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(baseX - 60, stemTop + 25);
+      ctx.lineTo(baseX - 70, baseY + 10);
+      ctx.lineTo(baseX + 70, baseY + 10);
+      ctx.lineTo(baseX + 60, stemTop + 25);
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(230, 240, 255, 0.1)';
+      ctx.fill();
+
+      // --- 5. アース (Ground) ---
+      if (isGrounded) {
+          ctx.strokeStyle = '#a1a1aa';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(baseX - topDiskRadius, topDiskY); // 円盤の左端
+          ctx.lineTo(baseX - topDiskRadius - 30, topDiskY - 30); // 指
+          ctx.lineTo(baseX - topDiskRadius - 60, topDiskY - 20); // 指
+          ctx.lineTo(baseX - topDiskRadius - 50, topDiskY + 20); // 指
+          
+          ctx.moveTo(baseX - topDiskRadius - 40, topDiskY);
+          ctx.lineTo(baseX - topDiskRadius - 40, topDiskY + 40);
+          ctx.moveTo(baseX - topDiskRadius - 55, topDiskY + 40);
+          ctx.lineTo(baseX - topDiskRadius - 25, topDiskY + 40);
+          ctx.moveTo(baseX - topDiskRadius - 50, topDiskY + 48);
+          ctx.lineTo(baseX - topDiskRadius - 30, topDiskY + 48);
+          ctx.moveTo(baseX - topDiskRadius - 45, topDiskY + 56);
+          ctx.lineTo(baseX - topDiskRadius - 35, topDiskY + 56);
+          ctx.stroke();
+      }
+
+      // --- 6. 電荷の視覚化 ---
+      ctx.font = 'bold 14px Arial';
+      ctx.textAlign = 'center';
+      
+      const qTopAbs = Math.abs(qTop);
+      if (qTopAbs > 0.5) {
+          ctx.fillStyle = qTop > 0 ? 'red' : 'blue';
+          const qSign = qTop > 0 ? '+' : '-';
+          const count = Math.min(Math.floor(qTopAbs), 8);
+          for (let i = 0; i < count; i++) {
+              const angle = (i / count) * Math.PI * 1.6 - (Math.PI * 0.8); // 上半分に
+              ctx.fillText(qSign, baseX + Math.cos(angle) * (topDiskRadius * 0.7), topDiskY + Math.sin(angle) * (topDiskRadius * 0.3));
+          }
+      }
+      
+      const qFoilAbs = Math.abs(qFoil);
+      if (qFoilAbs > 0.5) {
+          ctx.fillStyle = qFoil > 0 ? 'red' : 'blue';
+          const qSign = qFoil > 0 ? '+' : '-';
+          const count = Math.min(Math.floor(qFoilAbs), 3); // 箔には最大3つ
+
+          for(let i=0; i<count; i++){
+              const ratio = (i + 1) / (count + 1);
+              // 左
+              const fLX = baseX - (foilLength*ratio) * Math.sin(angleRad);
+              const fLY = stemBottom + (foilLength*ratio) * Math.cos(angleRad);
+              ctx.fillText(qSign, fLX, fLY);
+              
+              // 右
+              const fRX = baseX + (foilLength*ratio) * Math.sin(angleRad);
+              const fRY = stemBottom + (foilLength*ratio) * Math.cos(angleRad);
+              ctx.fillText(qSign, fRX, fRY);
+          }
+      }
+  }
+
+
+  // ------------------
+  // Ohm
+  // ------------------
+  function updateOhm() {
+    if (!$('ohmChart')) return; // ページ非表示時は抜ける
+    const rho_base = parseFloat($('rho-slider').value);
+    const rho = rho_base * 1e-8;
+    const l = parseFloat($('l-slider').value);
+    const S_mm2 = parseFloat($('S-ohm-slider').value);
+    const S = S_mm2 * 1e-6;
+
+    const R = (S > 0) ? (rho * l / S) : Infinity;
+    $('R-result-ohm').textContent = R.toFixed(3);
+
+    drawResistorVisual(rho_base, l, S_mm2);
+
+    const R_max = (parseFloat($('rho-slider').max) * 1e-8) * parseFloat($('l-slider').max) / (parseFloat($('S-ohm-slider').min) * 1e-6);
+    const R_norm = Math.min(R / R_max, 1.0);
+    const borderWidth = 1.5 + R_norm * 4;
+
+    const labels = [];
+    const data = [];
+    for (let i = 0; i <= 10; i++) {
+      const I = i * 0.5;
+      labels.push(I.toFixed(2) + ' A');
+      data.push(R * I);
+    }
+    if (charts.ohm) charts.ohm.destroy();
+    charts.ohm = new Chart($('ohmChart').getContext('2d'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'V [V]',
+          data,
+          borderColor: '#0b84ff',
+          borderWidth: borderWidth,
+          fill: false
+        }]
+      },
+      options: {
+        plugins: {
+          title: {
+            display: true,
+            text: `V = RI (計算された抵抗 R = ${R.toFixed(3)} Ω)`
+          }
+        },
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  }
+
+  // ------------------
+  // Capacitor
+  // ------------------
+  function stopCapacitorAnimation() {
+      if (capAnimationFrameId) {
+          cancelAnimationFrame(capAnimationFrameId);
+          capAnimationFrameId = null;
+      }
+  }
+
+  function drawResistorVisual(rho_base, l, S_mm2) {
+    const canvas = $('resistorVisualCanvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const { width, height } = canvas;
+    ctx.clearRect(0, 0, width, height);
+
+    const l_min = parseFloat($('l-slider').min);
+    const l_max = parseFloat($('l-slider').max);
+    const S_min = parseFloat($('S-ohm-slider').min);
+    const S_max = parseFloat($('S-ohm-slider').max);
+    const rho_min = parseFloat($('rho-slider').min);
+    const rho_max = parseFloat($('rho-slider').max);
+
+    const l_norm = (l - l_min) / (l_max - l_min);
+    const S_norm = (S_mm2 - S_min) / (S_max - S_min);
+    const rho_norm = (rho_base - rho_min) / (rho_max - rho_min);
+
+    const conductorHeight = 10 + S_norm * 60;
+    const conductorWidth = 100 + l_norm * (width - 150);
+    const y_pos = (height - conductorHeight) / 2;
+    const x_pos = (width - conductorWidth) / 2;
+
+    ctx.fillStyle = '#d1d5db';
+    ctx.fillRect(x_pos, y_pos, conductorWidth, conductorHeight);
+    ctx.strokeStyle = '#6b7280';
+    ctx.strokeRect(x_pos, y_pos, conductorWidth, conductorHeight);
+
+    const numParticles = Math.floor(50 + rho_norm * 400);
+    ctx.fillStyle = 'rgba(107, 114, 128, 0.7)';
+    for (let i = 0; i < numParticles; i++) {
+      const px = x_pos + 5 + Math.random() * (conductorWidth - 10);
+      const py = y_pos + 5 + Math.random() * (conductorHeight - 10);
+      ctx.beginPath();
+      ctx.arc(px, py, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    ctx.fillStyle = '#000';
+    ctx.textAlign = 'center';
+    ctx.font = '12px sans-serif';
+    
+    ctx.beginPath();
+    ctx.moveTo(x_pos, y_pos + conductorHeight + 10);
+    ctx.lineTo(x_pos + conductorWidth, y_pos + conductorHeight + 10);
+    ctx.moveTo(x_pos, y_pos + conductorHeight + 8);
+    ctx.lineTo(x_pos, y_pos + conductorHeight + 12);
+    ctx.moveTo(x_pos + conductorWidth, y_pos + conductorHeight + 8);
+    ctx.lineTo(x_pos + conductorWidth, y_pos + conductorHeight + 12);
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.fillText(`長さ l = ${l} m`, width / 2, y_pos + conductorHeight + 25);
+
+    ctx.beginPath();
+    ctx.moveTo(x_pos - 10, y_pos);
+    ctx.lineTo(x_pos - 10, y_pos + conductorHeight);
+    ctx.moveTo(x_pos - 12, y_pos);
+    ctx.lineTo(x_pos - 8, y_pos);
+    ctx.moveTo(x_pos - 12, y_pos + conductorHeight);
+    ctx.lineTo(x_pos - 8, y_pos + conductorHeight);
+    ctx.stroke();
+    ctx.save();
+    ctx.translate(x_pos - 25, height / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText(`断面積 S = ${S_mm2} mm²`, 0, 0);
+    ctx.restore();
+  }
+
+  function drawCapacitor(sVal, dVal, erVal, chargeCount) {
+      const canvas = $('capacitorVisualCanvas');
+      if (!canvas) return;
+      const ctx = capacitorVisualCtx; 
+      const { width, height } = canvas;
+      if (!width || !height) {
+          console.warn('Capacitor canvas has no dimensions.');
+          return;
+      }
+      ctx.clearRect(0, 0, width, height);
+
+      const plateThickness = 10;
+      const maxPlateWidth = width * 0.8;
+      const minPlateWidth = width * 0.2;
+      const maxSeparation = height * 0.6;
+      const minSeparation = height * 0.05;
+
+      const sNorm = (sVal - 0.001) / (0.05 - 0.001);
+      const dNorm = (dVal - 0.1) / (5.0 - 0.1);
+      const erNorm = (erVal - 1) / (50 - 1);
+      
+      const plateWidth = minPlateWidth + (maxPlateWidth - minPlateWidth) * sNorm;
+      const separation = minSeparation + (maxSeparation - minSeparation) * dNorm;
+      
+      const plateX = (width - plateWidth) / 2;
+      const topPlateY = (height - separation - plateThickness * 2) / 2;
+      const bottomPlateY = topPlateY + separation + plateThickness;
+
+      // 1. Draw Dielectric
+      const alpha = 0.05 + 0.65 * erNorm;
+      ctx.fillStyle = `rgba(59, 130, 246, ${alpha})`;
+      ctx.fillRect(plateX, topPlateY + plateThickness, plateWidth, separation);
+
+      // 2. Draw Plates
+      ctx.fillStyle = '#4b5563';
+      ctx.fillRect(plateX, topPlateY, plateWidth, plateThickness);
+      ctx.fillRect(plateX, bottomPlateY, plateWidth, plateThickness);
+
+      // 3. Draw Charges
+      const numCharges = Math.round(chargeCount);
+      
+      if (numCharges > 0) {
+          ctx.font = 'bold 16px Arial';
+          ctx.textAlign = 'center'; 
+          const numChargesPerRow = Math.max(1, Math.floor(plateWidth / 20));
+          const chargeSpacing = (numChargesPerRow > 1) ? (plateWidth - 20) / (numChargesPerRow - 1) : 0;
+          
+          for (let i = 0; i < numCharges; i++) {
+              if(i >= numChargesPerRow) break; 
+              
+              const x = plateX + 10 + i * chargeSpacing;
+              const effectiveX = (numChargesPerRow <= 1) ? plateX + plateWidth / 2 : x;
+
+              ctx.fillStyle = '#ef4444'; // red-500 for +
+              ctx.fillText('+', effectiveX, topPlateY + plateThickness + separation * 0.4); 
+              ctx.fillStyle = '#3b82f6'; // blue-500 for -
+              ctx.fillText('-', effectiveX, bottomPlateY - separation * 0.4); 
+          }
+      }
+
+      // 4. Draw Connecting Wires
+      ctx.strokeStyle = '#4b5563';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(width / 2, topPlateY);
+      ctx.lineTo(width / 2, topPlateY - (height * 0.1));
+      ctx.moveTo(width / 2, bottomPlateY + plateThickness);
+      ctx.lineTo(width / 2, bottomPlateY + plateThickness + (height * 0.1));
+      ctx.stroke();
+  }
+
+  function animateCharges() {
+      if (!$('capacitor').classList.contains('active')) {
+          stopCapacitorAnimation(); 
+          return;
+      }
+      
+      const shouldStop = Math.abs(targetChargeCount - currentChargeCount) < 0.01;
+
+      if (shouldStop) {
+          currentChargeCount = targetChargeCount;
+          capAnimationFrameId = null; // アニメーション終了
+      } else {
+          currentChargeCount += (targetChargeCount - currentChargeCount) * 0.1; 
+          capAnimationFrameId = requestAnimationFrame(animateCharges); // 次のフレームを予約
+      }
+
+      // 描画
+      const s = parseFloat($('S-slider').value);
+      const d = parseFloat($('d-slider').value);
+      const er = parseFloat($('er-slider').value);
+      drawCapacitor(s, d, er, currentChargeCount);
+  }
+
+  function updateCapacitor(){
+    if (!$('capacitorChart')) return; // ページ非表示時は抜ける
+    
+    const S=parseFloat($('S-slider').value);
+    const d_mm=parseFloat($('d-slider').value);
+    const d=d_mm/1000;
+    const er=parseFloat($('er-slider').value);
+    const V=parseFloat($('Vcap-slider').value);
+    const eps0=epsilon0_const;
+    const eps=er*eps0;
+    const C=eps*S/d;
+    const E=V/d;
+    const U=0.5*C*V*V;
+    const Q = C * V;
+    const F_attraction = 0.5 * eps0 * S * (E*E);
+    
+    $('C-result').textContent=C.toExponential(3);
+    $('E-result').textContent=E.toExponential(3);
+    $('U-result').textContent=U.toExponential(3);
+    $('F-result').textContent=F_attraction.toExponential(3);
+    
+    // chart: U vs V for current C
+    const labels=[]; const data=[]; 
+    const v_max_for_graph = (V > 1) ? V : 100.0; 
+    for(let i=0;i<=10;i++){
+        const Vi = i*(v_max_for_graph/10);
+        labels.push(Vi.toFixed(1)+' V');
+        data.push(0.5*C*Vi*Vi);
+    }
+    if(charts.cap) charts.cap.destroy(); 
+      charts.cap=new Chart($('capacitorChart').getContext('2d'),{
+        type:'line',
+        data:{
+          labels,
+          datasets:[{
+            label:'U [J]',
+            data,
+            borderColor:'#ff7f0e',
+            fill:false
+          }]
+        },
+        options:{
+          plugins:{
+            title:{
+              display:true,
+              text:`静電エネルギー (C=${(C).toExponential(3)} F, ε_r=${er})`
+            }
+          },
+          scales:{
+            y:{
+              beginAtZero:true
+            },
+            x:{
+              title:{
+                display:true,
+                text:'電圧 V [V]'
+              }
+            }
+          }
+        }
+      });
+    
+    // --- アニメーションロジック ---
+    const maxCharges = 20; 
+    const qReference = 1e-9; 
+    const normalizedQ = Math.min(Math.abs(Q / qReference), 1.0);
+    targetChargeCount = normalizedQ * maxCharges;
+
+    if (capAnimationFrameId === null && $('capacitor').classList.contains('active')) {
+        capAnimationFrameId = requestAnimationFrame(animateCharges); // 実行IDをセットして開始
+    }
+  }
+
+  // ------------------
+  // Currents
+  // ------------------
+  function drawCurrentStraight(){
+      const c=$('currentStraightCanvas');
+      if(!c) return;
+      const ctx=c.getContext('2d');
+      ctx.clearRect(0,0,c.width,c.height);
+      const I=parseFloat($('I-slider-straight').value);
+      const cx=c.width/2, cy=c.height/2;
+      
+      // Draw wire
+      ctx.fillStyle='#333';
+      ctx.beginPath();
+      ctx.arc(cx,cy,8,0,Math.PI*2);
+      ctx.fill();
+      ctx.fillStyle='#fff';
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      ctx.font = 'bold 12px Arial';
+      ctx.fillText(I>0?'⊙':'⊗',cx,cy);
+      
+      ctx.strokeStyle='green'; 
+      
+      if (Math.abs(I) < 0.1) return;
+
+      const numCircles = 4;
+      const numArrowsOnCircle = 8;
+      
+      for(let r=30;r<Math.min(c.width,c.height)/2-20;r+=35){
+          ctx.beginPath();
+          ctx.arc(cx,cy,r,0,Math.PI*2);
+          ctx.lineWidth = 1;
+          ctx.setLineDash([4, 4]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          
+          const r_scaled = r / 100.0; 
+          const H_mag = Math.abs(I) / (2 * Math.PI * r_scaled); 
+          
+          let arrowWidth = 1 + H_mag * 0.3; 
+          if (arrowWidth > 4) arrowWidth = 4;
+          let arrowLen = 10 + H_mag * 1.5; 
+          if (arrowLen > 20) arrowLen = 20;
+
+          for(let j=0; j < numArrowsOnCircle; j++) {
+              const angle = (2 * Math.PI * j) / numArrowsOnCircle;
+              const x = cx + r * Math.cos(angle);
+              const y = cy + r * Math.sin(angle);
+              
+              let angle_H = (I > 0) ? angle + Math.PI / 2 : angle - Math.PI / 2;
+              
+              const startX = x - arrowLen * Math.cos(angle_H) / 2;
+              const startY = y - arrowLen * Math.sin(angle_H) / 2;
+              const endX = x + arrowLen * Math.cos(angle_H) / 2;
+              const endY = y + arrowLen * Math.sin(angle_H) / 2;
+              
+              drawArrow(ctx, startX, startY, endX, endY, {color: 'green', lineWidth: arrowWidth, head: 6}); 
+          }
+      } 
+  }
+
+  function drawCurrentLoop(){
+      const c=$('currentLoopCanvas');
+      if(!c) return;
+      const ctx=c.getContext('2d');
+      ctx.clearRect(0,0,c.width,c.height);
+      const I=parseFloat($('I-slider-loop').value);
+      const cx=c.width/2, cy=c.height/2;
+      const loopWidth = 150; const loopHeight = 100;
+
+      // Draw loop
+      ctx.strokeStyle='#333';
+      ctx.lineWidth=3;
+      ctx.beginPath();
+      ctx.ellipse(cx,cy,loopWidth/2, loopHeight/2, 0, 0, Math.PI*2);
+      ctx.stroke();
+      
+      if (Math.abs(I) < 0.1) return;
+
+      // 1. Draw CURRENT direction arrows on the loop
+      const numCurrentArrows = 4;
+      const currentArrowColor = 'blue';
+      for(let i = 0; i < numCurrentArrows; i++) {
+          let angle;
+          if (i===0) angle = 0; // Right
+          if (i===1) angle = Math.PI/2; // Bottom
+          if (i===2) angle = Math.PI; // Left
+          if (i===3) angle = -Math.PI/2; // Top
+
+          const x = cx + (loopWidth/2) * Math.cos(angle); 
+          const y = cy + (loopHeight/2) * Math.sin(angle);
+          
+          let tangentAngle = Math.atan2( (loopHeight/2)*Math.cos(angle), -(loopWidth/2)*Math.sin(angle) );
+          if (I < 0) { tangentAngle += Math.PI; } 
+          
+          const arrowLen = 12; 
+          const startX = x - arrowLen * Math.cos(tangentAngle) / 2; 
+          const startY = y - arrowLen * Math.sin(tangentAngle) / 2; 
+          const endX = x + arrowLen * Math.cos(tangentAngle) / 2; 
+          const endY = y + arrowLen * Math.sin(tangentAngle) / 2;
+          drawArrow(ctx, startX, startY, endX, endY, {color: currentArrowColor, lineWidth: 1.5, head: 5});
+      }
+
+      // 2. Draw MAGNETIC FIELD arrow in the center
+      const r_scaled = (loopWidth/2) / 100.0; 
+      const H_mag = Math.abs(I) / (2 * r_scaled);
+      
+      let arrowWidth = 1 + H_mag * 0.3; 
+      if (arrowWidth > 6) arrowWidth = 6;
+      let arrowLen = 15 + H_mag * 3; 
+      if (arrowLen > loopHeight * 0.7) arrowLen = loopHeight * 0.7;
+      
+      const fieldArrowColor = 'green';
+      
+      if (I > 0) { 
+          drawArrow(ctx, cx, cy + arrowLen/2, cx, cy - arrowLen/2, {color: fieldArrowColor, lineWidth: arrowWidth, head: 10});
+      } 
+      else { 
+          drawArrow(ctx, cx, cy - arrowLen/2, cx, cy + arrowLen/2, {color: fieldArrowColor, lineWidth: arrowWidth, head: 10});
+      }
+  }
+  
+  function drawAmpereLawFrame() {
+      const c = $('ampereLawCanvas');
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const I = parseFloat($('ampere-I-slider').value);
+      const r_px = parseFloat($('ampere-r-slider').value);
+      const centerX = c.width / 2;
+      const centerY = c.height / 2;
+      
+      ctx.clearRect(0, 0, c.width, c.height);
+      
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, r_px, 0, 2 * Math.PI);
+      ctx.strokeStyle = 'rgba(255, 0, 0, 0.7)'; 
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      ctx.beginPath(); ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
+      ctx.fillStyle = 'gray';
+      ctx.fill();
+      ctx.strokeStyle = 'black';
+      ctx.lineWidth = 2;
+      ctx.fillStyle = 'white';
+      ctx.font = 'bold 12px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      if (I > 0) {
+          ctx.fillText('⊙',centerX,centerY);
+      } else if (I < 0) {
+          ctx.fillText('⊗',centerX,centerY);
+      } else {
+          ctx.fillText('0',centerX,centerY);
+      }
+      
+      if (Math.abs(I) < 0.1) return;
+
+      const numArrows = 12;
+      const H_mag = Math.abs(I) / (2 * Math.PI * (r_px / 50.0));
+      let arrowLen = H_mag * 30;
+      if (arrowLen < 5) arrowLen = 5; if (arrowLen > 25) arrowLen = 25;
+      
+      for (let i = 0; i < numArrows; i++) {
+          const angle = (2 * Math.PI * i) / numArrows;
+          const x = centerX + r_px * Math.cos(angle);
+          const y = centerY + r_px * Math.sin(angle);
+          let angle_H = (I > 0) ? angle + Math.PI / 2 : angle - Math.PI / 2;
+          
+          const startX = x - arrowLen * Math.cos(angle_H) / 2;
+          const startY = y - arrowLen * Math.sin(angle_H) / 2;
+          const endX = x + arrowLen * Math.cos(angle_H) / 2;
+          const endY = y + arrowLen * Math.sin(angle_H) / 2;
+          drawArrow(ctx, startX, startY, endX, endY, 'green', 2);
+      }
+  }
+
+  // ------------------
+  // Electron Drift (オームの法則)
+  // ------------------
+  function initElectronDrift() {
+      const c = $('electronDriftCanvas');
+      if (!c) return;
+      const { width, height } = c;
+
+      electronDriftState.electrons = [];
+      for (let i = 0; i < NUM_ELECTRONS; i++) {
+          electronDriftState.electrons.push({
+              x: Math.random() * width,
+              y: Math.random() * height,
+              vx: (Math.random() - 0.5) * 2 * THERMAL_SPEED,
+              vy: (Math.random() - 0.5) * 2 * THERMAL_SPEED
+          });
+      }
+
+      electronDriftState.atoms = [];
+      for (let i = 0; i < NUM_ATOMS; i++) {
+          electronDriftState.atoms.push({
+              x: Math.random() * width * 0.8 + width * 0.1, // 端すぎないように
+              y: Math.random() * height * 0.8 + height * 0.1,
+              r: 6 + Math.random() * 4 // 半径
+          });
+      }
+      electronDriftState.driftSpeed = parseFloat($('drift-E-slider').value) * 5.0;
+  }
+
+  function startElectronDrift() {
+      if (electronDriftState.status === 'running') return;
+      electronDriftState.status = 'running';
+      electronDriftState.tPrev = performance.now();
+      electronDriftState.animationFrameId = requestAnimationFrame(electronDriftLoop);
+  }
+
+  function stopElectronDrift() {
+      electronDriftState.status = 'stopped';
+      if (electronDriftState.animationFrameId) {
+          cancelAnimationFrame(electronDriftState.animationFrameId);
+          electronDriftState.animationFrameId = null;
+      }
+  }
+  
+  function resetElectronDrift() {
+      stopElectronDrift();
+      initElectronDrift();
+      drawElectronDrift();
+  }
+
+  function electronDriftLoop(ts) {
+      if (electronDriftState.status !== 'running') return;
+
+      const dt = (ts - (electronDriftState.tPrev || ts)) / 1000.0; // [sec]
+      electronDriftState.tPrev = ts;
+      
+      const c = $('electronDriftCanvas');
+      if (!c) { stopElectronDrift(); return; } // Canvasがなければ停止
+      const { width, height } = c;
+      
+      // ▼▼▼ v_drift は電場の強さ(driftSpeed)に比例し、電子のドリフト(右向き)を意味する ▼▼▼
+      const v_drift = electronDriftState.driftSpeed; 
+
+      for (let e of electronDriftState.electrons) {
+          // 1. 位置の更新 (熱運動 + ドリフト)
+          // 電子は負電荷なので、電場 E (左向き) とは逆の右向きにドリフトする
+          e.x += (e.vx + v_drift) * dt;
+          e.y += e.vy * dt;
+
+          // 2. 境界条件 (左右: 周期的 / 上下: 反射)
+          if (e.x > width) e.x -= width;
+          if (e.x < 0) e.x += width;
+          
+          if (e.y > height) { e.y = height; e.vy *= -1; }
+          if (e.y < 0) { e.y = 0; e.vy *= -1; }
+
+          // 3. 衝突判定 (簡易版)
+          for (let atom of electronDriftState.atoms) {
+              const dx = e.x - atom.x;
+              const dy = e.y - atom.y;
+              if (dx * dx + dy * dy < atom.r * atom.r) {
+                  // 衝突したら熱運動の方向をランダム化
+                  e.vx = (Math.random() - 0.5) * 2 * THERMAL_SPEED;
+                  e.vy = (Math.random() - 0.5) * 2 * THERMAL_SPEED;
+              }
+          }
+      }
+
+      drawElectronDrift();
+      electronDriftState.animationFrameId = requestAnimationFrame(electronDriftLoop);
+  }
+  
+  function drawElectronDrift() {
+      const c = $('electronDriftCanvas');
+      if (!c || !$('ohm-law').classList.contains('active')) return; 
+      
+      const ctx = c.getContext('2d');
+      const { width, height } = c;
+
+      ctx.fillStyle = '#222';
+      ctx.fillRect(0, 0, width, height);
+
+      // 原子核 (障害物)
+      ctx.fillStyle = 'rgba(255, 100, 100, 0.5)';
+      for (let atom of electronDriftState.atoms) {
+          ctx.beginPath();
+          ctx.arc(atom.x, atom.y, atom.r, 0, Math.PI * 2);
+          ctx.fill();
+      }
+
+      // 電子
+      ctx.fillStyle = '#60a5fa'; // blue-400
+      for (let e of electronDriftState.electrons) {
+          ctx.beginPath();
+          ctx.arc(e.x, e.y, 3, 0, Math.PI * 2);
+          ctx.fill();
+      }
+      
+      // ▼▼▼ 電場 E の矢印（左向き）に修正 ▼▼▼
+      if (electronDriftState.driftSpeed > 0) {
+          ctx.fillStyle = '#facc15'; // yellow-400
+          ctx.font = 'bold 14px Arial';
+          ctx.textAlign = 'left';
+          ctx.fillText('E (電場) ←', 10, 20); // テキストを修正
+          // 矢印を左向き (開始点が右、終了点が左) に修正
+          drawArrow(ctx, 120 + (electronDriftState.driftSpeed*2), 15, 75, 15, { color: '#facc15', head: 8 });
+      }
+  }
+
+  // ------------------
+  // Force comparison
+  // ------------------
+  function initializeForceState(mode){
+    forceAnimationState.currentMode=mode||"electric";
+    const p=PARTICLE_DATA[currentParticle];
+    forceAnimationState.particleCharge=p.q;
+    forceAnimationState.particleMass=p.m;
+    
+    const canvas = $('forceAnimationCanvas');
+    const v_scale = parseFloat($('v-force-slider').value);
+    const v_si = v_scale * 1e5;
+    const v_px = v_scale * 40;
+
+    if (mode === 'magnetic') {
+        const B_si = parseFloat($('B-field-slider').value);
+        
+        forceAnimationState.vx = 0;
+        forceAnimationState.vy = v_px; // 下向き
+
+        if (B_si === 0) {
+            forceAnimationState.x = canvas.width / 2;
+            forceAnimationState.y = canvas.height / 2;
+        } else {
+            const r_si = (p.m * v_si) / (Math.abs(p.q) * B_si);
+            const scale = 50 / 1e-3; // 1mmが50pxになるスケール
+            let r_px = r_si * scale;
+            
+            const max_r_px = Math.min(canvas.width, canvas.height) / 2 - 10;
+            if (r_px > max_r_px) r_px = max_r_px;
+            if (r_px < 4) r_px = 4;
+
+            forceAnimationState.x = canvas.width / 2 - r_px;
+            forceAnimationState.y = canvas.height / 2;
+        }
+    } else { // electric
+        forceAnimationState.x = 60; 
+        forceAnimationState.y = canvas.height / 2;
+        forceAnimationState.vx = 0;
+        forceAnimationState.vy = 0;
+    }
+    
+    forceAnimationState.tPrev=null; 
+    forceAnimationState.status='stopped'; 
+    forceAnimationState.initialSpeed = Math.hypot(forceAnimationState.vx, forceAnimationState.vy);
+    forceAnimationState.trail = [];
+    forceAnimationState.trail = [];
+
+    if (mode === 'electric') {
+        $('E-field-slider').disabled = false;
+        $('B-field-slider').disabled = true;
+        $('v-force-slider').disabled = true;
+        $('radius-info-force').style.display = 'none';
+    } else { // magnetic
+        $('E-field-slider').disabled = true;
+        $('B-field-slider').disabled = false;
+        $('v-force-slider').disabled = false;
+        $('radius-info-force').style.display = 'block';
+    }
+  }
+
+  function drawForce(){
+    const canvas = $('forceAnimationCanvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 背景をコピー
+    const bgCanvas = $('forceBackgroundCanvas');
+    if (bgCanvas) {
+        ctx.drawImage(bgCanvas, 0, 0);
+    }
+
+    // 軌跡を描画
+    const trail = forceAnimationState.trail;
+    if (trail.length > 1) {
+      const trailLength = trail.length;
+      for (let i = 1; i < trailLength; i++) {
+        const p1 = trail[i-1];
+        const p2 = trail[i];
+        const alpha = 0.7 * (i / trailLength); // 古いほど薄く
+        
+        let hue = 240; // デフォルトは青
+        if (forceAnimationState.currentMode === 'magnetic') {
+            const bValue = parseFloat($('B-field-slider').value);
+            const bMin = parseFloat($('B-field-slider').min);
+            const bMax = parseFloat($('B-field-slider').max);
+            const ratio = Math.max(0, Math.min(1, (bValue - bMin) / (bMax - bMin)));
+            hue = 240 * (1 - ratio);
+        }
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.strokeStyle = `hsla(${hue}, 90%, 55%, ${alpha})`;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+    }
+
+    // 現在の粒子を描画
+    const p=PARTICLE_DATA[currentParticle]; 
+    ctx.beginPath(); 
+    if (forceAnimationState.currentMode === 'magnetic') {
+      const bValue = parseFloat($('B-field-slider').value);
+      const bMin = parseFloat($('B-field-slider').min);
+      const bMax = parseFloat($('B-field-slider').max);
+      const ratio = Math.max(0, Math.min(1, (bValue - bMin) / (bMax - bMin)));
+      const hue = 240 * (1 - ratio);
+      ctx.fillStyle = `hsl(${hue}, 90%, 55%)`;
+    } else {
+      ctx.fillStyle = p.q > 0 ? '#cc3333' : '#3366cc'; 
+    }
+    
+    ctx.arc(forceAnimationState.x,forceAnimationState.y,8,0,Math.PI*2);
+    ctx.fill(); 
+    ctx.fillStyle='#fff'; 
+    ctx.textAlign='center'; 
+    ctx.textBaseline='middle'; 
+    ctx.fillText(p.label,forceAnimationState.x,forceAnimationState.y); 
+  }
+
+  function startForce(){
+    if(forceAnimationState.status==='running') return;
+    forceAnimationState.status='running';
+    forceAnimationState.tPrev=performance.now();
+    requestAnimationFrame(forceLoop);
+  }
+  function stopForce(){
+    forceAnimationState.status='stopped';
+  }
+
+  function forceLoop(ts){ 
+    if(forceAnimationState.status!=='running') return; 
+    const dt=(ts-(forceAnimationState.tPrev||ts))/1000;
+    forceAnimationState.tPrev=ts;
+    
+    const chargeSign = Math.sign(forceAnimationState.particleCharge);
+    const canvas = $('forceAnimationCanvas');
+
+    if(forceAnimationState.currentMode==='electric'){
+        const E_field_strength_sim = parseFloat($('E-field-slider').value) * 2;
+        const accelX = E_field_strength_sim * chargeSign; 
+        forceAnimationState.vx += accelX * dt; 
+        forceAnimationState.x += forceAnimationState.vx * dt;
+
+        forceAnimationState.trail.push({x: forceAnimationState.x, y: forceAnimationState.y});
+        if (forceAnimationState.trail.length > 300) {
+            forceAnimationState.trail.shift();
+        }
+    } else { // magnetic
+        const { vx, vy, initialSpeed, particleMass, particleCharge } = forceAnimationState;
+        
+        const B_si = parseFloat($('B-field-slider').value);
+        
+        if (B_si === 0) { 
+            forceAnimationState.x += vx * dt;
+            forceAnimationState.y += vy * dt;
+            $('radius-value-force').textContent = "∞";
+        } else {
+            const v_scale = parseFloat($('v-force-slider').value);
+            const v_si = v_scale * 1e5;
+            const v_px = v_scale * 40;
+
+            const r_si = (particleMass * v_si) / (Math.abs(particleCharge) * B_si);
+            $('radius-value-force').textContent = r_si.toExponential(3);
+            
+            const scale = 50 / 1e-3;
+            let r_px = r_si * scale;
+            const max_r_px = Math.min(canvas.width, canvas.height) / 2 - 10;
+            if (r_px > max_r_px) r_px = max_r_px;
+            if (r_px < 4) r_px = 4;
+
+            const sim_omega = (r_px > 0) ? v_px / r_px : 0;
+
+            const accelX = vy * sim_omega * chargeSign;
+            const accelY = -vx * sim_omega * chargeSign;
+
+            forceAnimationState.vx += accelX * dt; 
+            forceAnimationState.vy += accelY * dt; 
+
+            if (initialSpeed > 0) { 
+                const currentSpeed = Math.hypot(forceAnimationState.vx, forceAnimationState.vy);
+                if (currentSpeed > 0) { 
+                    const correctionFactor = initialSpeed / currentSpeed;
+                    forceAnimationState.vx *= correctionFactor;
+                    forceAnimationState.vy *= correctionFactor;
+                }
+            }
+
+            forceAnimationState.x += forceAnimationState.vx * dt;
+            forceAnimationState.y += forceAnimationState.vy * dt;
+        }
+
+        forceAnimationState.trail.push({x: forceAnimationState.x, y: forceAnimationState.y});
+        if (forceAnimationState.trail.length > 300) {
+            forceAnimationState.trail.shift();
+        }
+    }
+    drawForce(); 
+    requestAnimationFrame(forceLoop);
+  }
+
+  function drawElectricBG(){
+    const canvas = $('forceBackgroundCanvas');
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle='#fff'; 
+    ctx.fillRect(0,0,w,h); 
+    
+    const E_strength = parseFloat($('E-field-slider').value);
+    const E_min = parseFloat($('E-field-slider').min);
+    const E_max = parseFloat($('E-field-slider').max);
+    const ratio = (E_strength - E_min) / (E_max - E_min);
+    
+    const numArrows = Math.floor(2 + ratio * 6);
+    const y_step = h / (numArrows + 1);
+    
+    const arrowColor = 'rgba(239, 68, 68, 0.7)';
+
+    for(let i = 1; i <= numArrows; i++) {
+        const y = i * y_step;
+        drawArrow(ctx, 20, y, w - 20, y, { color: arrowColor, head: 8, lineWidth: 1.5 });
+    }
+
+    ctx.fillStyle='#333'; 
+    ctx.fillText('電場: 右向き E',10,14); 
+  }
+  function drawMagneticBG(){
+    const canvas = $('forceBackgroundCanvas');
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle='#fff'; 
+    ctx.fillRect(0,0,w,h); 
+    
+    ctx.fillStyle='#333'; 
+    ctx.fillText('磁場: 奥向き B (×)',10,14); 
+    
+    const B_si = parseFloat($('B-field-slider').value);
+    const B_min = parseFloat($('B-field-slider').min);
+    const B_max = parseFloat($('B-field-slider').max);
+    const ratio = (B_si - B_min) / (B_max - B_min);
+
+    const lineWidth = 0.5 + ratio * 2;
+    const color = 'rgba(34, 197, 94, 0.7)';
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lineWidth;
+    for(let x=20; x<w; x+=40) {
+        for(let y=20; y<h; y+=40) {
+            ctx.beginPath(); 
+            ctx.moveTo(x-5,y-5); ctx.lineTo(x+5,y+5); 
+            ctx.moveTo(x+5,y-5); ctx.lineTo(x-5,y+5);
+            ctx.stroke(); 
+        }
+    }
+  }
+
+  // ------------------
+  // Utilities
+  // ------------------
+  function drawArrow(ctx,x1,y1,x2,y2,opts={}){
+    if(!ctx) return;
+    const head=opts.head||8;
+    const color=opts.color||'#222';
+    ctx.strokeStyle=color;
+    ctx.fillStyle=color;
+    ctx.lineWidth=opts.lineWidth||1.5;
+    ctx.beginPath();
+    ctx.moveTo(x1,y1);
+    ctx.lineTo(x2,y2);
+    ctx.stroke();
+    const ang=Math.atan2(y2-y1,x2-x1);
+    ctx.beginPath();
+    ctx.moveTo(x2,y2);
+    ctx.lineTo(x2-head*Math.cos(ang-Math.PI/6),y2-head*Math.sin(ang-Math.PI/6));
+    ctx.lineTo(x2-head*Math.cos(ang+Math.PI/6),y2-head*Math.sin(ang+Math.PI/6));
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // ------------------
+  // 起動
+  // ------------------
+  window.addEventListener('load', ()=>{ try{ initDOM(); }catch(e){ console.error('initDOM failed',e); } });
+  </script>
+</body>
+</html>
