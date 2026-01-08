@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>電磁気学の歴史：詳細タイムライン</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous" onload="renderMathInElement(document.body, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });"></script>
+    <style>
+        /* フォントと基本設定 */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+            background-color: #f8f9fa;
+            color: #343a40;
+            line-height: 1.7;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* コンテンツコンテナ */
+        .container {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        /* ヘッダー */
+        header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #007bff;
+            margin-bottom: 40px;
+        }
+        header h1 {
+            color: #004a99;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        header p {
+            font-size: 1.15em;
+            color: #555;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* 序章と結論のセクション */
+        .intro-conclusion {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+            border-left: 5px solid #007bff;
+        }
+        .intro-conclusion h2 {
+            color: #0056b3;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .intro-conclusion p {
+            margin-bottom: 15px;
+        }
+        .intro-conclusion ul {
+            padding-left: 20px;
+        }
+        .intro-conclusion li {
+            margin-bottom: 10px;
+        }
+
+        /* --- 垂直タイムライン --- */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        /* タイムラインの中央線 */
+        .timeline::before {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background-color: #007bff;
+            opacity: 0.3;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -2px;
+            border-radius: 2px;
+        }
+
+        /* タイムラインの各アイテム */
+        .timeline-item {
+            padding: 20px 40px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box; /* paddingを含めて幅50%に */
+        }
+
+        /* タイムラインのアイコン（中央線上の点） */
+        .timeline-icon {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border: 4px solid #007bff;
+            border-radius: 50%;
+            top: 30px;
+            right: -10px; /* 右側のアイテム用 */
+            z-index: 10;
+        }
+
+        /* 左側のアイテム */
+        .timeline-item:nth-child(odd) {
+            left: 0;
+            padding-right: 50px;
+        }
+        .timeline-item:nth-child(odd) .timeline-icon {
+            right: -10px;
+        }
+        .timeline-item:nth-child(odd) .timeline-content {
+            text-align: right;
+        }
+        /* ふきだしの矢印（左側） */
+        .timeline-item:nth-child(odd) .timeline-content::after {
+            content: '';
+            position: absolute;
+            top: 28px;
+            right: -15px;
+            border-width: 15px;
+            border-style: solid;
+            border-color: transparent transparent transparent #ffffff;
+        }
+
+
+        /* 右側のアイテム */
+        .timeline-item:nth-child(even) {
+            left: 50%;
+            padding-left: 50px;
+        }
+        .timeline-item:nth-child(even) .timeline-icon {
+            left: -10px;
+        }
+        /* ふきだしの矢印（右側） */
+        .timeline-item:nth-child(even) .timeline-content::after {
+            content: '';
+            position: absolute;
+            top: 28px;
+            left: -15px;
+            border-width: 15px;
+            border-style: solid;
+            border-color: transparent #ffffff transparent transparent;
+        }
+
+        /* タイムラインのコンテンツ（カード） */
+        .timeline-content {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        /* 年代 */
+        .timeline-date {
+            display: inline-block;
+            padding: 6px 12px;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        /* 出来事のタイトル */
+        .timeline-content h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #004a99;
+            font-size: 1.5em;
+        }
+
+        /* 人物 */
+        .person {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        /* 詳細解説 */
+        .timeline-content p {
+            margin: 10px 0;
+            font-size: 0.95em;
+        }
+
+        /* 数式 */
+        .math-formula {
+            display: block;
+            background-color: #f1f3f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 1.1em;
+            text-align: center;
+            overflow-x: auto; /* 数式が長い場合スクロール */
+        }
+
+        /* --- レスポンシブ対応 (スマートフォン) --- */
+        @media (max-width: 768px) {
+            /* タイムラインの線を左に寄せる */
+            .timeline::before {
+                left: 20px;
+                margin-left: 0;
+            }
+
+            /* すべてのアイテムを右側に配置 */
+            .timeline-item {
+                width: 100%;
+                left: 0 !important; /* !importantで強制上書き */
+                padding-left: 60px;
+                padding-right: 15px;
+            }
+
+            /* アイコンを左の線に合わせる */
+            .timeline-icon {
+                left: 10px !important; /* !importantで強制上書き */
+                right: auto;
+            }
+
+            /* すべての矢印を左向きに */
+            .timeline-item .timeline-content::after {
+                left: -15px !important; /* !importantで強制上書き */
+                right: auto;
+                border-color: transparent #ffffff transparent transparent !important; /* !importantで強制上書き */
+            }
+
+            /* 左側アイテムの右寄せを解除 */
+            .timeline-item:nth-child(odd) .timeline-content {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ヘッダー -->
+        <header>
+            <h1>電磁気学の歴史：詳細タイムライン</h1>
+            <p>クーロンの法則からトランジスタの発明まで、電磁気学の概念と数式の発展史をたどる</p>
+        </header>
+
+        <!-- 序章 -->
+        <section class="intro-conclusion">
+            <h2>序章：電磁気学を学ぶということ</h2>
+            <p>電磁気学は、現代社会を支える電力、通信、電子工学の根幹をなす物理学の柱である。その完成された理論体系は、しばしば初学者にとって抽象的で難解なものとして映る。しかし、この理論は一人の天才によって一度に構築されたものではなく、数百年にわたる無数の実験、直感的な洞察、そして数学的な洗練の積み重ねによって築き上げられたものである。</p>
+            <p>本レポートを貫くのは、電磁気学の発展における二つの根源的なパラダイムシフトである。</p>
+            <ul>
+                <li><strong>「遠隔作用」から「近接作用 / 場」への移行</strong>： 空間を瞬時に飛び越えて伝わる力という描像から、空間そのものが物理的実体（電磁場）であり、その状態の変化が力を伝達するという描像への根本的な転換。</li>
+                <li><strong>「マクロ（古典）」から「ミクロ（量子）」への移行</strong>： 電流や抵抗といった巨視的な現象の記述から、個々の荷電粒子（電子や正孔）の微視的な振る舞いを量子力学によって記述する領域への深化。</li>
+            </ul>
+        </section>
+
+        <!-- メインのタイムライン -->
+        <div class="timeline">
+
+            <!-- 1. ライデン瓶 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">c. 1745-46年</span>
+                    <h3>ライデン瓶の発明</h3>
+                    <span class="person">P. v. ミュッセンブルーク, E. G. v. クライスト</span>
+                    <p>
+                        電荷を「蓄積」することを初めて可能にしたデバイス。現代の「コンデンサー」の原型であり、強力な電荷を安定して保持し、高エネルギーの放電を再現可能にしました。
+                    </p>
+                    <p>
+                        これにより、静電気という現象を安定的に再現し、定量的に測定する手段が整い、後のクーロンによる精密測定への道が拓かれました。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 2. 電気量保存の法則 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">c. 1750年代</span>
+                    <h3>電気量保存の法則</h3>
+                    <span class="person">ベンジャミン・フランクリン 他</span>
+                    <p>
+                        電気現象を「一流体説」（電気素）で説明しようと試みたフランクリンらにより、電気の総量は変わらないという「電気量保存の法則」の概念が確立されました。
+                    </p>
+                    <p>
+                        摩擦によって一方の物体が正に帯電するとき、もう一方は必ず負に帯電し、その総量は変わらないというこの法則は、電磁気学の最も基本的な保存則の一つです。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 3. クーロンの法則 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">1785年</span>
+                    <h3>クーロンの法則</h3>
+                    <span class="person">シャルル・ド・クーロン</span>
+                    <p>
+                        自身が発明した「ねじり秤」を用い、二つの点電荷 $q_1, q_2$ の間に働く力 $F$（クーロン力）が、電荷の積に比例し、距離 $r$ の二乗に反比例することを発見しました。
+                    </p>
+                    <div class="math-formula">
+                        $$F = k \frac{q_1 q_2}{r^2} \quad \left( k = \frac{1}{4\pi\epsilon_0} \right)$$
+                    </div>
+                    <p>
+                        この数式の形態（$F \propto 1/r^2$）はニュートンの万有引力の法則と全く同一であり、電気力も重力と同様の「遠隔作用」であるという世界観を強固にしました。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 4. ボルタ電堆 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">1800年</span>
+                    <h3>ボルタ電堆（電池）の発明</h3>
+                    <span class="person">アレッサンドロ・ボルタ</span>
+                    <p>
+                        異なる種類の金属と電解液を組み合わせることで、持続的な電位差（電圧）を生み出し、定常的な「電流」を供給し続ける装置を発明しました。
+                    </p>
+                    <p>
+                        18世紀末までの静電気（一瞬の放電）の研究から、「動く電気（電流）」の化学的・物理的性質の研究へと、電磁気学が大きく進展するきっかけとなりました。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 5. 電流の磁気作用 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">1820年</span>
+                    <h3>電流の磁気作用の発見</h3>
+                    <span class="person">ハンス・クリスチャン・エルステッド</span>
+                    <p>
+                        講義の準備中、ボルタ電池に接続した導線に電流を流した瞬間、近くに置いていた方位磁石の針が振れることを偶然発見しました。
+                    </p>
+                    <p>
+                        これは、動く電気（電流）が磁気（磁場）を生み出すことを初めて実証し、「電気」と「磁気」が別個の独立した現象ではないことを明らかにした、「電磁気学の夜明け」と称される発見です。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 6. アンペールの法則 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">c. 1820-25年</span>
+                    <h3>アンペールの法則</h3>
+                    <span class="person">アンドレ＝マリ・アンペール</span>
+                    <p>
+                        エルステッドの発見を受け、電流が作る磁場の向き（右ねじの法則）を明らかにし、電流が流れる二本の導線間に力が働くことも発見。これらの実験結果を数学的に定式化しました。
+                    </p>
+                    <div class="math-formula">
+                        $$\oint_{C} \vec{B} \cdot d\vec{r} = \mu_0 I$$
+                    </div>
+                    <p>
+                        この式は、電流 $I$ によって作られる磁場 $\vec{B}$ の周回積分が、経路を貫く総電流 $I$ のみに比例することを示しています。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 7. オームの法則 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">1827年</span>
+                    <h3>オームの法則</h3>
+                    <span class="person">ゲオルク・オーム</span>
+                    <p>
+                        ボルタ電池を用い、導体に流れる電流 $I$ と、導体の両端にかかる電位差 $V$ との関係を精密に測定し、両者の間に単純な比例関係があることを見出しました。
+                    </p>
+                    <div class="math-formula">
+                        $$V = IR$$
+                    </div>
+                    <p>
+                        この比例定数 $R$ が、物質や形状によって決まる電流の流れにくさ、すなわち「電気抵抗」であり、電気回路の設計における最も基本的な法則となりました。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 8. 電磁誘導 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">1831年</span>
+                    <h3>電磁誘導の法則</h3>
+                    <span class="person">マイケル・ファラデー</span>
+                    <p>
+                        「電気→磁気」（エルステッド）の逆、「磁気→電気」を発見。静止した磁石ではなく、「磁場の時間的変化」こそが電場（起電力）を生み出すことを突き止めました。
+                    </p>
+                    <div class="math-formula">
+                        $$V = -N \frac{\Delta \Phi}{\Delta t}$$
+                    </div>
+                    <p>
+                        $N$ 回巻きのコイルを貫く磁束 $\Phi$ が時間 $\Delta t$ の間に $\Delta \Phi$ だけ変化すると、起電力 $V$ が生じることを示します。これは現代の発電機の動作原理です。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 9. 自己誘導 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">1832年</span>
+                    <h3>自己誘導の発見</h3>
+                    <span class="person">ジョセフ・ヘンリー</span>
+                    <p>
+                        ファラデーとは独立に電磁誘導を発見。さらに、一つのコイルにおいて、そこを流れる電流自身を変化させたときに、その電流の変化を妨げる向きに起電力（逆起電力）が生じる「自己誘導」を発見しました。
+                    </p>
+                    <p>
+                        この「電流の変化を嫌う」性質（インダクタンス $L$）により、コイルは磁気エネルギー $U_L = (1/2)LI^2$ を蓄えることができます。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 10. レンツの法則 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">1833年</span>
+                    <h3>レンツの法則</h3>
+                    <span class="person">ハインリヒ・レンツ</span>
+                    <p>
+                        電磁誘導によって生じる誘導電流の「向き」に関する法則を発見しました。
+                    </p>
+                    <p>
+                        誘導電流は、常にその原因である「コイルを貫く磁束の変化を**妨げる**向き」に流れます。これは、電磁気学の現象が「エネルギー保存則」に従うことを示す、極めて重要な法則です。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 11. 「場」の概念 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">c. 1830年代〜</span>
+                    <h3>「力線」と「場」の概念</h3>
+                    <span class="person">マイケル・ファラデー</span>
+                    <p>
+                        クーロンらの「遠隔作用」の概念に反発し、電荷がその存在によって「周囲の空間そのものの状態」を変化させ、その変化した空間が力を及ぼすという「近接作用」のモデルを構想しました。
+                    </p>
+                    <p>
+                        この空間の状態を視覚化する「力線」と、力線が満ちた空間としての「場 (Field)」の導入は、電磁気学の歴史における最大の概念的飛躍であり、後のマクスウェル理論の基礎となりました。
+                    </p>
+                    <div class="math-formula">
+                        $$\vec{F} = q \vec{E}$$
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 12. ジュール熱 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">1840年</span>
+                    <h3>ジュール熱の法則</h3>
+                    <span class="person">ジェームズ・P・ジュール</span>
+                    <p>
+                        導体に電流を流すと熱が発生する現象（ジュール熱）を定量的に研究し、単位時間あたりの発熱量（消費電力 $P$）が、電流 $I$ の二乗と抵抗 $R$ に比例することを発見しました。
+                    </p>
+                    <div class="math-formula">
+                        $$P = I^2 R$$
+                    </div>
+                    <p>
+                        オームの法則を使えば $P = IV$ とも書け、電気エネルギーが熱エネルギーに「変換」されることを定量的に示し、熱力学のエネルギー保存則の確立に大きく寄与しました。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 13. マクスウェル方程式 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">1864年</span>
+                    <h3>マクスウェル方程式による電磁気学の統合</h3>
+                    <span class="person">ジェームズ・C・マクスウェル</span>
+                    <p>
+                        ファラデーの「場」の概念に基づき、それまでに知られていた電磁気の全法則を、わずか4つの方程式に統合しました。
+                    </p>
+                    <p>
+                        この過程で、アンペールの法則の矛盾を解消するために「**電場の時間変化**」も磁場を生むという「**変位電流**」を理論的に導入。これにより「磁場の変化 $\leftrightarrow$ 電場の変化」という対称性が生まれ、電磁波の存在を予言しました。
+                    </p>
+                    <div class="math-formula">
+                        $$v = \frac{1}{\sqrt{\epsilon_0 \mu_0}} \approx 3 \times 10^8 \text{ m/s}$$
+                    </div>
+                    <p>
+                        計算された電磁波の速度は光速と一致し、「光は電磁波の一種である」ことを理論的に示しました。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 14. ホール効果 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">1879年</span>
+                    <h3>ホール効果の発見</h3>
+                    <span class="person">エドウィン・ホール</span>
+                    <p>
+                        電流が流れている導体に垂直に磁場をかけると、電流と磁場の両方に垂直な方向に電位差（ホール電圧）が発生する現象を発見しました。
+                    </p>
+                    <p>
+                        これは、導体内の荷電粒子が磁場からローレンツ力を受けて軌道を曲げられるために生じます。この発見は、導体内部を流れるミクロな荷電粒子の「符号」と「密度」を知ることを可能にした、最初の実験手法となりました。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 15. 電磁波の実証 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">1888年</span>
+                    <h3>電磁波（電波）の実験的検証</h3>
+                    <span class="person">ハインリヒ・ヘルツ</span>
+                    <p>
+                        マクスウェルが純粋な数理理論から予言した「電磁波」の存在を、電気火花を用いた実験によって初めて証明しました。
+                    </p>
+                    <p>
+                        これは「理論が実験に先行した」偉大な勝利であり、ファラデーが直感した「場」が、エネルギーを運ぶ物理的実体であることを確立しました。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 16. ローレンツ力 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">c. 1892-95年</span>
+                    <h3>ローレンツ力の定式化</h3>
+                    <span class="person">ヘンドリック・A・ローレンツ</span>
+                    <p>
+                        マクスウェルの「場」が、物質内部に存在する微視的な「荷電粒子（電子）」とどのように相互作用するかを、一つの力の方程式にまとめ上げました。
+                    </p>
+                    <div class="math-formula">
+                        $$\vec{F} = q\vec{E} + q(\vec{v} \times \vec{B})$$
+                    </div>
+                    <p>
+                        第1項は電場からの力、第2項は磁場から受ける力です。これにより、ホール効果や「電流が磁場から受ける力」など、マクロな電磁気力のミクロな起源が鮮やかに説明されました。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 17. 電子の発見 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">1897年</span>
+                    <h3>電子の発見</h3>
+                    <span class="person">J・J・トムソン</span>
+                    <p>
+                        陰極線（真空放電管で観測される光線）が電場や磁場によって曲げられる軌道を、ローレンツ力の原理を用いて詳細に分析しました。
+                    </p>
+                    <p>
+                        これにより、陰極線が負の電荷を持つ粒子（電子）の流れであり、その「比電荷 $e/m$」が水素イオンなどより遥かに大きい（＝質量が極めて小さい）ことを突き止め、電流のミクロな担い手が明らかになりました。
+                    </p>
+                </div>
+            </div>
+            
+            <!-- 18. トランジスタの発明 -->
+            <div class="timeline-item">
+                <div class="timeline-icon"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">1947年</span>
+                    <h3>トランジスタの発明</h3>
+                    <span class="person">J・バーディーン, W・ブラッタン, W・ショックレー</span>
+                    <p>
+                        ベル研究所にて、古典物理学では説明不可能な「半導体」の性質を、量子力学（バンド理論、正孔）によって解明し、それを利用した固体デバイスを発明しました。
+                    </p>
+                    <p>
+                        真空管に代わる、小型・低消費電力・高信頼性の「増幅作用」と「スイッチング作用」を実現。これは「電子工学（エレクトロニクス）」を誕生させ、現代の情報化社会の基盤を築いた、マクスウェル以来の最大の転換点となりました。
+                    </p>
+                </div>
+            </div>
+
+        </div> <!-- .timeline の終わり -->
+
+        <!-- 結論 -->
+        <section class="intro-conclusion">
+            <h2>結論：古典電磁気学から現代物理学へ</h2>
+            <p>電磁気学の歴史は、実験と理論、物理的直感と数学的厳密性、そして基礎科学と技術革新が、互いに刺激し合いながら発展してきた、人類の知的探求の壮大な物語です。</p>
+            <ol>
+                <li><strong>静電気の定量化</strong>: クーロンによる「遠隔作用」の定式化。</li>
+                <li><strong>「場」の導入</strong>: ファラデーによる「近接作用」へのパラダイムシフト。</li>
+                <li><strong>電磁気の相互作用</strong>: エルステッド（電気→磁気）とファラデー（磁気→電気）による発見、およびエネルギー保存則（ジュール、レンツ）との関連付け。</li>
+                <li><strong>理論の完成</strong>: マクスウェルによる「変位電流」の導入と全法則の統合、そして「電磁波」の予言。ヘルツによるその実証。</li>
+                <li><strong>ミクロの視点</strong>: ローレンツ、ホール、トムソンによる「場」と「荷電粒子（電子）」の関係の解明。</li>
+                <li><strong>量子の応用</strong>: 量子力学（バンド理論）による半導体の解明と、トランジスタの発明による「電子工学」の誕生。</li>
+            </ol>
+        </section>
+
+    </div> <!-- .container の終わり -->
+
+</body>
+</html>
