@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物理学探究レポート：電磁気学（解答機能付き）</title>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { font-size: 11pt; background-color: white; }
+            .container { width: 100%; max-width: none; box-shadow: none; margin: 0; padding: 0; }
+            textarea { border: 1px solid #ddd; resize: none; overflow: hidden; font-family: inherit; }
+            .cycle-box { break-inside: avoid; border: 1px solid #ccc; margin-bottom: 1em; }
+            /* 印刷時は解説が開いていれば印刷する */
+            .explanation-content { display: block !important; border: 1px solid #333; }
+        }
+        body {
+            font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 210mm;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+        h1 { text-align: center; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        h2 { background-color: #e8f4f8; padding: 10px; border-left: 5px solid #3498db; margin-top: 30px; }
+        h3 { color: #2980b9; border-bottom: 1px solid #eee; margin-top: 20px; }
+        
+        /* 問題選択エリア */
+        .problem-selector {
+            background-color: #fff8e1;
+            padding: 15px;
+            border: 1px solid #ffe0b2;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        select { padding: 10px; font-size: 16px; width: 100%; margin-top: 10px; }
+
+        /* 問題文・シミュレータリンク */
+        .problem-description {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            white-space: pre-wrap;
+            border-left: 4px solid #7f8c8d;
+        }
+        .sim-link {
+            display: inline-block;
+            background-color: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .sim-link:hover { background-color: #219150; }
+
+        /* 解答セクション */
+        .answer-section {
+            border: 2px solid #e67e22;
+            background-color: #fffdf6;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .answer-input-group { margin-bottom: 15px; }
+        .answer-input-group input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .check-btn, .exp-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            margin-left: 10px;
+        }
+        .check-btn { background-color: #e67e22; }
+        .check-btn:hover { background-color: #d35400; }
+        .exp-btn { background-color: #34495e; margin-top: 10px; }
+        
+        .result-msg {
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+        .correct { color: #27ae60; }
+        .incorrect { color: #c0392b; }
+
+        /* リトライエリア */
+        .retry-area {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #ffebee;
+            border: 1px dashed #ef5350;
+            border-radius: 5px;
+            display: none; /* 初期状態は非表示 */
+        }
+
+        /* 解説エリア */
+        .explanation-content {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #eceff1;
+            border-left: 4px solid #607d8b;
+            display: none;
+            white-space: pre-wrap;
+        }
+
+        /* 問いのサイクル */
+        .cycle-container {
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #555; }
+        textarea {
+            width: 100%;
+            height: 80px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        
+        .header-info { display: flex; justify-content: space-between; margin-bottom: 20px; }
+        .header-info input { border: none; border-bottom: 1px solid #333; font-size: 16px; padding: 5px; width: 200px; }
+
+        button.print-btn {
+            background-color: #34495e;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+            display: block;
+            margin: 20px auto;
+        }
+        .cycle-label {
+            background-color: #7f8c8d;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-info">
+        <div>日付: <span id="date"></span></div>
+        <div>学年・組・番号: <input type="text" placeholder="例: 2年3組15番"></div>
+        <div>氏名: <input type="text" placeholder="物理 太郎"></div>
+    </div>
+
+    <h1>物理学探究レポート（電磁気編）</h1>
+
+    <div class="no-print problem-selector">
+        <h3>1. 取り組む課題を選択してください</h3>
+        <select id="problemSelect" onchange="updateProblem()">
+            <option value="0">-- 課題を選択してください --</option>
+            <option value="1">課題1：一様な電場中の荷電粒子の加速（第Ⅴ章 電気）</option>
+            <option value="2">課題2：複雑な抵抗回路の電流分布（第Ⅴ章 電気）</option>
+            <option value="3">課題3：コンデンサーを含む回路（第Ⅴ章 電気）</option>
+            <option value="4">課題4：磁場中の荷電粒子のらせん運動（第Ⅵ章 磁気）</option>
+            <option value="5">課題5：直交する電磁場中の粒子（速度選択器）（第Ⅵ章 磁気）</option>
+        </select>
+    </div>
+
+    <div id="problemDisplay" style="display:none;">
+        <h2>選択した課題</h2>
+        <div id="problemText" class="problem-description"></div>
+
+        <div class="answer-section">
+            <h3>理論的な解答</h3>
+            <p>シミュレーションを行う前に、物理法則を用いて理論値を計算し、以下に入力してください。</p>
+            <p id="questionPrompt" style="font-weight:bold; margin-bottom:10px;"></p>
+            
+            <div class="answer-input-group">
+                <input type="text" id="userAnswer" placeholder="解答を入力 (例: mv/qB)">
+                <button class="check-btn no-print" onclick="checkAnswer()">正誤判定</button>
+            </div>
+            
+            <div id="resultMessage" class="result-msg"></div>
+
+            <div id="retryArea" class="retry-area">
+                <p><strong>不正解です。</strong>もう一度考え直して解き直してみましょう。</p>
+                <div class="answer-input-group">
+                    <input type="text" id="retryAnswer" placeholder="解き直しの解答を入力">
+                    </div>
+            </div>
+
+            <button class="exp-btn no-print" onclick="toggleExplanation()">解説を表示 / 非表示</button>
+            <div id="explanationContent" class="explanation-content"></div>
+        </div>
+
+        <div id="simArea">
+            <h3>シミュレーションによる検証</h3>
+            <p><strong>使用シミュレータ：</strong> <span id="simName"></span></p>
+            <a id="simLink" href="#" target="_blank" class="sim-link no-print">シミュレータを開く</a>
+        </div>
+    </div>
+
+    <h2>探究プロセス：問いのサイクル（1周目）</h2>
+    <div class="cycle-container">
+        <span class="cycle-label">Cycle 1</span>
+        <div class="input-group">
+            <label>1. 問い (Question)</label>
+            <textarea placeholder="例：電圧を2倍にすると、粒子の到達速度はどう変化するか？"></textarea>
+        </div>
+        <div class="input-group">
+            <label>2. 自分の考え・仮説 (Hypothesis)</label>
+            <textarea placeholder="例：エネルギー保存則より、速度は√2倍になるはずだ。"></textarea>
+        </div>
+        <div class="input-group">
+            <label>3. 調べたこと・シミュレーション結果 (Investigation)</label>
+            <textarea placeholder="例：シミュレータで電圧Vを100Vから200Vに変更し、到達時間を計測したところ..."></textarea>
+        </div>
+        <div class="input-group">
+            <label>4. 気づいたこと (Realization)</label>
+            <textarea placeholder="例：仮説通り、速度は単純に2倍にはならなかった。これは運動エネルギーが速度の2乗に比例するためだと気づいた。"></textarea>
+        </div>
+    </div>
+
+    <h2>探究プロセス：問いのサイクル（2周目）</h2>
+    <div class="cycle-container">
+        <span class="cycle-label">Cycle 2</span>
+        <div class="input-group">
+            <label>1. 新たな問い (Next Question)</label>
+            <textarea placeholder="例：では、粒子の質量を変化させた場合はどうか？"></textarea>
+        </div>
+        <div class="input-group">
+            <label>2. 自分の考え・仮説 (Hypothesis)</label>
+            <textarea placeholder="例：運動方程式 F=ma より、質量が大きいと加速度は小さくなるので..."></textarea>
+        </div>
+        <div class="input-group">
+            <label>3. 調べたこと・シミュレーション結果 (Investigation)</label>
+            <textarea placeholder="例：質量を2倍にしてシミュレーションを行った結果..."></textarea>
+        </div>
+        <div class="input-group">
+            <label>4. 気づいたこと (Realization)</label>
+            <textarea placeholder="例：質量と加速度は反比例の関係にあることが確認できた。"></textarea>
+        </div>
+    </div>
+
+    <h2>結論</h2>
+    <div class="cycle-container" style="background-color: #f0faff; border-color: #3498db;">
+        <div class="input-group">
+            <label>5. 分かったこと (Conclusion & Summary)</label>
+            <p style="font-size:0.9em; color:#666;">2回のサイクルを通して得られた「気づき」を統合し、この課題から学んだ物理法則や考察をまとめてください。</p>
+            <textarea style="height: 150px;" placeholder="例：本探究を通じて、荷電粒子の運動は電場による仕事とエネルギーの原理に従うことが理解できた。特に理論値とシミュレーション値が一致したことから..."></textarea>
+        </div>
+    </div>
+
+    <button class="print-btn no-print" onclick="window.print()">レポートをPDF出力 / 印刷</button>
+</div>
+
+<script>
+    // 日付の設定
+    const today = new Date();
+    document.getElementById('date').innerText = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
+
+    // 問題データ（添付PDFの解答・解説に基づく）
+    // keywords: 簡易正誤判定用。入力された文字列にこれらが含まれていれば正解とみなす(and条件)
+    const problems = {
+        1: {
+            title: "一様な電場中の荷電粒子の加速",
+            text: "【問題（第Ⅴ章 電気 例題58改）】\n電圧 V [V]、間隔 d [m] の2枚の平行極板間に、質量 m [kg]、電荷 q [C] の正の荷電粒子を静かに置いた。粒子は静電気力を受けて加速し、もう一方の極板へ到達する。",
+            qPrompt: "問：反対側の極板に到達したときの粒子の速さ v を、q, m, V を用いて表せ。",
+            keywords: ["2qV", "m", "√"], 
+            modelAnswer: "v = √(2qV/m)",
+            explanation: "【解説】\nエネルギー保存則（仕事とエネルギーの関係）を用います。\n電場が粒子にする仕事 W は、電荷 q と電位差 V の積で表され、W = qV です。\nこの仕事がすべて粒子の運動エネルギーの変化になります。\n\n(1/2)mv² - 0 = qV\n\nこれを v について解くと、\nv² = 2qV/m\n∴ v = √(2qV/m)\n\nシミュレータでは、電圧Vを大きくすると速度が速くなること、質量mを大きくすると速度が遅くなることを確認してください。",
+            simName: "電磁気学シミュレータ (Electron micro physics)",
+            url: "https://takeruhonda.github.io/physics-electromagnetism-sim/Electron_micro_physics_2025_17.html"
+        },
+        2: {
+            title: "複雑な抵抗回路の電流分布",
+            text: "【問題（第Ⅴ章 電気 問題491類題）】\n図のような回路において、電源電圧を E=12V、抵抗を R1=10Ω、R2=20Ω とする（直列接続）。",
+            qPrompt: "問：回路全体を流れる電流 I [A] の値を求めよ。",
+            keywords: ["0.4"],
+            modelAnswer: "0.4 A",
+            explanation: "【解説】\nオームの法則 V = RI を用います。\n回路全体の合成抵抗 R_total は、直列接続なので足し算となります。\nR_total = R1 + R2 = 10Ω + 20Ω = 30Ω\n\n全体を流れる電流 I は、\nI = E / R_total = 12V / 30Ω = 0.4A\n\nシミュレータで抵抗値を設定し、電流計の値が0.4A（または400mA）になることを確認しましょう。",
+            simName: "電気回路シミュレータ (Electron circuit physics)",
+            url: "https://takeruhonda.github.io/physics-electromagnetism-sim/Electron_circuit_physics_2025_5.html"
+        },
+        3: {
+            title: "コンデンサーを含む回路",
+            text: "【問題（第Ⅴ章 電気 問題465類題）】\n電気容量 C = 10µF のコンデンサーに、電圧 V = 5.0V の電池を接続して十分に時間が経過した。",
+            qPrompt: "問：コンデンサーに蓄えられる電気量 Q [C] を求めよ。（指数表記可: 例 5.0e-5）",
+            keywords: ["5", "10", "-5"], // 5.0x10^-5などを許容するため緩めに設定
+            modelAnswer: "5.0 × 10⁻⁵ C (50 µC)",
+            explanation: "【解説】\nコンデンサーの基本式 Q = CV を用います。\nC = 10µF = 10 × 10⁻⁶ F\nV = 5.0 V\n\nQ = (10 × 10⁻⁶) × 5.0 = 50 × 10⁻⁶ C = 5.0 × 10⁻⁵ C\n\nシミュレータでは、電圧と容量を設定し、蓄えられる電荷（Charge）の値を確認してください。",
+            simName: "電気回路シミュレータ (Electron circuit physics)",
+            url: "https://takeruhonda.github.io/physics-electromagnetism-sim/Electron_circuit_physics_2025_5.html"
+        },
+        4: {
+            title: "磁場中の荷電粒子のらせん運動",
+            text: "【問題（第Ⅵ章 磁気 問題524/535類題）】\n磁束密度 B [T] の一様な磁場中に、質量 m [kg]、電荷 q [C] の粒子が、磁場に対して垂直に速さ v で入射した。",
+            qPrompt: "問：この粒子が描く円運動の半径 r を、m, v, q, B を用いて表せ。",
+            keywords: ["mv", "qB"],
+            modelAnswer: "r = mv / qB",
+            explanation: "【解説】\nローレンツ力を向心力とした円運動の運動方程式を立てます。\nローレンツ力の大きさ f = qvB\n向心力 F = m(v²/r)\n\n運動方程式：\nm(v²/r) = qvB\n\nこれを r について解くと、\nr = mv / qB\n\nシミュレータで磁場 B を強くすると半径 r が小さくなることを確認しましょう。",
+            simName: "電磁気学シミュレータ (Electron micro physics)",
+            url: "https://takeruhonda.github.io/physics-electromagnetism-sim/Electron_micro_physics_2025_17.html"
+        },
+        5: {
+            title: "直交する電磁場中の粒子（速度選択器）",
+            text: "【問題（第Ⅵ章 磁気 問題564参照）】\n電場 E [N/C] と磁場 B [T] が直交する空間に、荷電粒子が入射する。粒子が電場からも磁場からも力を受けるが、直進するためには力のつり合いが必要である。",
+            qPrompt: "問：粒子が直進するための速さ v を、E, B を用いて表せ。",
+            keywords: ["E/B"],
+            modelAnswer: "v = E / B",
+            explanation: "【解説】\n粒子には静電気力 F_e = qE と、ローレンツ力 F_m = qvB が働きます。\n直進するためには、これら2つの力が逆向きで大きさが等しい必要があります（つり合い）。\n\nqE = qvB\n\n両辺を q で割り、v について解くと、\nv = E / B\n\nこの速度 v を持つ粒子だけが直進できる装置を「速度選択器」と呼びます。シミュレータで電場と磁場を設定し、特定の速度で直進することを確認しましょう。",
+            simName: "電磁気学シミュレータ (Electron micro physics)",
+            url: "https://takeruhonda.github.io/physics-electromagnetism-sim/Electron_micro_physics_2025_17.html"
+        }
+    };
+
+    let currentProblemId = 0;
+
+    function updateProblem() {
+        const select = document.getElementById('problemSelect');
+        const display = document.getElementById('problemDisplay');
+        const pText = document.getElementById('problemText');
+        const qPrompt = document.getElementById('questionPrompt');
+        const simName = document.getElementById('simName');
+        const simLink = document.getElementById('simLink');
+        
+        currentProblemId = select.value;
+        
+        // リセット処理
+        document.getElementById('userAnswer').value = "";
+        document.getElementById('retryAnswer').value = "";
+        document.getElementById('resultMessage').innerHTML = "";
+        document.getElementById('retryArea').style.display = 'none';
+        document.getElementById('explanationContent').style.display = 'none';
+        
+        if(currentProblemId == 0) {
+            display.style.display = 'none';
+            return;
+        }
+
+        const data = problems[currentProblemId];
+        display.style.display = 'block';
+        pText.innerText = data.text;
+        qPrompt.innerText = data.qPrompt;
+        document.getElementById('explanationContent').innerText = data.explanation;
+        simName.innerText = data.simName;
+        simLink.href = data.url;
+    }
+
+    function checkAnswer() {
+        if(currentProblemId == 0) return;
+        
+        const userInput = document.getElementById('userAnswer').value;
+        const resultDiv = document.getElementById('resultMessage');
+        const retryDiv = document.getElementById('retryArea');
+        const data = problems[currentProblemId];
+
+        // 簡易正誤判定：キーワードがすべて含まれているかチェック
+        let isCorrect = true;
+        data.keywords.forEach(key => {
+            if(!userInput.includes(key)) {
+                isCorrect = false;
+            }
+        });
+        
+        // 入力が空の場合は不正解扱い
+        if(!userInput) isCorrect = false;
+
+        if(isCorrect) {
+            resultDiv.innerHTML = "<span class='correct'>正解です！</span> 次のステップ（シミュレーション）に進みましょう。";
+            retryDiv.style.display = 'none';
+        } else {
+            resultDiv.innerHTML = "<span class='incorrect'>不正解です。</span>";
+            retryDiv.style.display = 'block';
+        }
+    }
+
+    function toggleExplanation() {
+        const expDiv = document.getElementById('explanationContent');
+        if (expDiv.style.display === 'none') {
+            expDiv.style.display = 'block';
+        } else {
+            expDiv.style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>
