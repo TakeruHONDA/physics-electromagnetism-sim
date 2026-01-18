@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物理シミュレーション実験レポート</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+      crossorigin="anonymous"
+      onload="initKatex()"></script>
+
+    <script>
+        function initKatex() {
+            try {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false},
+                        {left: '\\[', right: '\\]', display: true}
+                    ],
+                    throwOnError: false
+                });
+            } catch (e) {
+                console.error('KaTeX auto-render failed:', e);
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 210mm; /* A4幅 */
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20mm;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            position: relative;
+        }
+        
+        /* PDF出力時の改ページ制御用クラス */
+        .no-break {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        /* ヘッダー情報 */
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        input[type="text"] {
+            border: none;
+            border-bottom: 1px solid #ccc;
+            font-size: 16px;
+            padding: 5px;
+            width: 150px;
+            background: #fafafa;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-left: 6px solid #2196f3;
+            font-size: 18px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            page-break-after: avoid;
+        }
+        h3 {
+            font-size: 16px;
+            margin-top: 15px;
+            color: #444;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            page-break-after: avoid;
+        }
+        
+        .cycle-guide {
+            background-color: #fff8e1;
+            border: 1px dashed #ffc107;
+            padding: 10px;
+            font-size: 12px;
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        .content-box {
+            margin-bottom: 20px;
+        }
+        
+        .question-text {
+            font-weight: bold;
+            color: #d32f2f;
+            background: #fff5f5;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .procedure-text {
+            background: #f1f8e9;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            resize: vertical;
+            box-sizing: border-box;
+            line-height: 1.6;
+        }
+
+        /* 印刷/PDF生成時の一時置換用スタイル */
+        .print-replacement {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap; /* 改行を維持 */
+            word-wrap: break-word; /* 長い単語を折り返す */
+            overflow-wrap: break-word;
+            background-color: #fff;
+            min-height: 40px;
+            color: #000;
+        }
+        
+        .btn-sim {
+            display: inline-block;
+            background-color: #2196f3;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            margin: 5px 0;
+            transition: background 0.3s;
+        }
+        .btn-sim:hover { background-color: #1976d2; }
+        
+        .action-area {
+            text-align: center;
+            margin-top: 40px;
+            margin-bottom: 60px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .btn-action {
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: opacity 0.3s;
+        }
+        .btn-pdf { background-color: #4caf50; }
+        .btn-pdf:hover { background-color: #388e3c; }
+        .btn-png { background-color: #ff9800; }
+        .btn-png:hover { background-color: #f57c00; }
+
+        .circuit-image-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #eee;
+            background-color: #fafafa;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .circuit-image-container img {
+            max-width: 100%;
+            max-height: 300px;
+            height: auto;
+            border: 1px solid #ccc;
+        }
+        .img-caption {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        
+        /* 画像読み込みエラー時の代替表示 */
+        .img-placeholder {
+            padding: 20px;
+            background: #eee;
+            color: #666;
+            border: 2px dashed #999;
+            font-size: 12px;
+            width: 80%;
+        }
+
+        #loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            font-size: 18px;
+            color: #333;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; width: 100%; }
+            textarea { display: none; }
+            .print-replacement { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="loading-overlay">
+    <div class="spinner"></div>
+    <div id="loading-text">処理中...</div>
+</div>
+
+<div class="container" id="report-content">
+    <h1>物理シミュレーション実験レポート</h1>
+    
+    <div class="header-info no-break">
+        <div class="input-group">
+            <label>クラス:</label>
+            <input type="text" placeholder="例: 2-A">
+        </div>
+        <div class="input-group">
+            <label>番号:</label>
+            <input type="text" placeholder="例: 15">
+        </div>
+        <div class="input-group">
+            <label>名前:</label>
+            <input type="text" placeholder="氏名を入力">
+        </div>
+    </div>
+
+    <div class="cycle-guide no-break">
+        <strong>【問いのサイクル】について</strong><br>
+        「1.問い」→「2.自分の考え・仮説」→「3.調べたこと（実験）」→「4.気づいたこと」を1サイクルとします。<br>
+        このサイクルを繰り返し、得られた「気づいたこと」を統合して考察したものを「5.わかったこと（学問）」として記述してください。
+    </div>
+
+    <div class="no-break">
+        <h2>1. コンデンサーの微視的理解とエネルギー（問題 [I] 対応）</h2>
+        <a href="https://takeruhonda.github.io/physics-electromagnetism-sim/Electron_micro_physics_2025_17.html" target="_blank" class="btn-sim no-print">
+            📡 シミュレーターを開く (Micro Physics)
+        </a>
+    </div>
+
+    <div class="content-box no-break">
+        <h3>1. 問い（条件比較）</h3>
+        <div class="question-text">
+            問題[I]では「スイッチを切った（$Q$一定）」状態で極板間隔 $d$ を広げたが、シミュレーターのように<strong>「電池をつないだまま（$V$一定）」</strong>で $d$ を広げると、静電エネルギー $U$ と電場 $E$ はどのように変化するか？ また、なぜ問題[I]の結果と異なるのか？
+        </div>
+    </div>
+
+    <div class="content-box no-break">
+        <h3>2. 自分の考え・仮説</h3>
+        <textarea placeholder="電池がつながっていると電圧 $V$ は... なので、極板を広げるとエネルギーは... すると予想する。問題[I]の結果（エネルギー増加）と比較すると..."></textarea>
+    </div>
+
+    <div class="content-box no-break">
+        <h3>3. 調べたこと（実験手順）</h3>
+        <div class="procedure-text">
+            <ol>
+                <li>シミュレーターの「コンデンサー」セクションを開く。</li>
+                <li>「印加電圧 V」を適当な値（例: 5V）に設定する。<strong>（※シミュレーターは常に電池接続状態です）</strong></li>
+                <li>「極板間距離 d」を最小（1.0mm）にし、その時のエネルギー $U$ と電場 $E$ の値を記録する。</li>
+                <li>「極板間距離 d」を広げ（例: 2.0mm）、$U$ と $E$ が増えるか減るかを確認する。</li>
+            </ol>
+        </div>
+        <h3>実験結果</h3>
+        <textarea placeholder="dを1.0mmから2.0mmに広げると、エネルギー U は... 電場 E は... に変化した。"></textarea>
+    </div>
+
+    <div class="content-box no-break">
+        <h3>4. 気づいたこと（仮説との対比）</h3>
+        <textarea placeholder="問題[I]（スイッチOFF）の計算ではエネルギーは増えたが、実験（スイッチON）では... だった。この違いは電池が... だからだと気づいた。"></textarea>
+    </div>
+
+    <div class="no-break">
+        <h2>2. 複雑な回路の定常状態と電位のバランス（問題 [II] 対応）</h2>
+        <a href="https://takeruhonda.github.io/physics-electromagnetism-sim/Electron_circuit_physics_2025_7.html" target="_blank" class="btn-sim no-print">
+            🔌 シミュレーターを開く (Circuit Physics)
+        </a>
+    </div>
+
+    <div class="content-box no-break">
+        <div class="circuit-image-container">
+            <div class="img-caption">図4：実験対象の回路図</div>
+            <img id="fig4" src="./figure4.png" alt="図4" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <div class="img-placeholder" style="display:none;">
+                [画像: figure4.png が見つかりませんでした]<br>
+                ※同じフォルダに画像を配置してください
+            </div>
+        </div>
+    </div>
+
+    <div class="content-box no-break">
+        <h3>1. 問い</h3>
+        <div class="question-text">
+            図4（上図）のような回路において、スイッチをすべて閉じて時間が経った後、中央のコンデンサー $C_3$ に電荷が全く溜まらなくなる（電流が流れない）のは、他の抵抗やコンデンサーがどのような関係の時か？
+        </div>
+    </div>
+
+    <div class="content-box no-break">
+        <h3>2. 自分の考え・仮説</h3>
+        <textarea placeholder="中央に電気が流れないということは、上下の電位が... になっているはず。そのためには抵抗値と容量が... という関係が必要だと思う。"></textarea>
+    </div>
+
+    <div class="content-box no-break">
+        <h3>3. 調べたこと（実験手順）</h3>
+        <div class="procedure-text">
+            <ol>
+                <li>図4と同じ回路（抵抗2つ、コンデンサー3つ、スイッチ2つ）を作成する。</li>
+                <li>全てのスイッチを閉じ、定常状態（電流が一定）になるまで待つ。</li>
+                <li>抵抗 $R_1, R_2$ や容量 $C_1, C_2$ の値をスライダーで変化させる。</li>
+                <li>中央のコンデンサー $C_3$ の電荷（または電圧）がちょうど <strong>0</strong> になる条件を探す。</li>
+            </ol>
+        </div>
+        <h3>実験結果</h3>
+        <textarea placeholder="R1を...Ω, R2を...Ω, C1を...F, C2を...F に設定した時、C3の電荷が0になった。計算してみると..."></textarea>
+    </div>
+
+    <div class="content-box no-break">
+        <h3>4. 気づいたこと（仮説との対比）</h3>
+        <textarea placeholder="電荷が0になる条件は、抵抗の比とコンデンサーの比が... になっている時だった。これはホイートストンブリッジと似ていて..."></textarea>
+    </div>
+
+    <div class="content-box no-break">
+        <h2>3. わかったこと（学問）</h2>
+        <p style="font-size:14px; color:#555;">※上記の2つの「気づいたこと」を統合し、考察して記述してください。</p>
+        <textarea style="height: 150px;" placeholder="今回の実験を通して、コンデンサーの条件（接続/切断）によるエネルギー変化の違いや、回路の平衡条件について以下のことがわかった。..."></textarea>
+    </div>
+</div>
+
+<div class="action-area no-print">
+    <button class="btn-action btn-pdf" onclick="generateReport('pdf')">📄 PDFとして保存</button>
+    <button class="btn-action btn-png" onclick="generateReport('png')">🖼️ 画像として保存</button>
+</div>
+<div style="text-align: center; font-size:12px; color:#666; margin-bottom:40px;" class="no-print">
+    ※「PDFとして保存」でエラーが出る場合は「画像として保存」を試してください。<br>
+    ※数式が表示されない場合はページを再読み込みしてください。
+</div>
+
+<script>
+    // ユーティリティ: 動的な数式レンダリング
+    function renderLatexInElement(element) {
+        if (typeof renderMathInElement === 'function' && element) {
+            try {
+                renderMathInElement(element, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false},
+                        {left: '\\[', right: '\\]', display: true}
+                    ],
+                    throwOnError: false
+                });
+            } catch (error) {
+                console.error("Dynamic KaTeX rendering error:", error);
+            }
+        }
+    }
+
+    // 入力欄をテキストに変換
+    function replaceInputsWithText() {
+        const textareas = document.querySelectorAll('textarea');
+        const inputs = document.querySelectorAll('input[type="text"]');
+        const replacements = [];
+
+        textareas.forEach(textarea => {
+            const div = document.createElement('div');
+            div.className = 'print-replacement';
+            // 空の場合は高さ確保用のスペースを入れる
+            div.innerText = textarea.value.trim() === "" ? "\n" : textarea.value;
+            
+            textarea.style.display = 'none';
+            textarea.parentNode.insertBefore(div, textarea);
+            replacements.push({ original: textarea, temp: div });
+        });
+
+        inputs.forEach(input => {
+            const span = document.createElement('span');
+            span.innerText = input.value;
+            span.style.borderBottom = "1px solid #333";
+            span.style.padding = "0 5px";
+            span.style.display = "inline-block";
+            span.style.minWidth = "100px";
+            span.style.fontWeight = "bold";
+
+            input.style.display = 'none';
+            input.parentNode.insertBefore(span, input);
+            replacements.push({ original: input, temp: span });
+        });
+
+        return replacements;
+    }
+
+    function restoreInputs(replacements) {
+        replacements.forEach(item => {
+            item.temp.remove();
+            item.original.style.display = '';
+        });
+    }
+
+    // ★重要: 画像の事前チェック処理
+    // 読み込めていない画像があると html2canvas がクラッシュするため、
+    // 生成前にチェックしてDOMから除外または置換する
+    function sanitizeImages() {
+        const images = document.querySelectorAll('img');
+        images.forEach(img => {
+            // naturalWidthが0の場合は読み込み失敗とみなす
+            if (img.naturalWidth === 0 || !img.complete) {
+                console.warn('Image not loaded, hiding:', img.src);
+                img.style.display = 'none';
+                // プレースホルダーがあれば表示
+                const nextEl = img.nextElementSibling;
+                if (nextEl && nextEl.classList.contains('img-placeholder')) {
+                    nextEl.style.display = 'block';
+                }
+                // html2canvasに空のsrcを渡さないようsrc属性自体を一時退避
+                img.setAttribute('data-broken-src', img.src);
+                img.removeAttribute('src');
+            }
+        });
+    }
+
+    function restoreImages() {
+        const images = document.querySelectorAll('img[data-broken-src]');
+        images.forEach(img => {
+            img.src = img.getAttribute('data-broken-src');
+            img.removeAttribute('data-broken-src');
+            // 表示状態は戻さない（ユーザーが手動で直すまでそのまま）
+        });
+    }
+
+    async function generateReport(type) {
+        const loading = document.getElementById('loading-overlay');
+        const loadingText = document.getElementById('loading-text');
+        
+        loading.style.display = 'flex';
+        loadingText.innerText = type === 'pdf' ? 'PDFを生成中...' : '画像を生成中...';
+
+        // 1. フォント読み込み待機 (重要)
+        await document.fonts.ready;
+        // 2. UI描画待ち
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        const noPrintElements = document.querySelectorAll('.no-print');
+        noPrintElements.forEach(el => el.style.display = 'none');
+
+        const replacements = replaceInputsWithText();
+        
+        // 3. 画像サニタイズ (重要: エラー回避)
+        sanitizeImages();
+
+        const element = document.getElementById('report-content');
+
+        try {
+            if (type === 'pdf') {
+                const opt = {
+                    margin:       10, // mm
+                    filename:     `物理レポート_${new Date().toISOString().slice(0,10)}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { 
+                        scale: 2, 
+                        useCORS: true, 
+                        logging: true,
+                        scrollY: 0,
+                        // 汚染された画像があっても無視して続行する設定
+                        allowTaint: true 
+                    },
+                    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                    pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+                };
+                await html2pdf().set(opt).from(element).save();
+            } else if (type === 'png') {
+                const canvas = await html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    scrollY: 0
+                });
+                
+                const link = document.createElement('a');
+                link.download = `物理レポート_${new Date().toISOString().slice(0,10)}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
+        } catch (error) {
+            console.error("Export Error:", error);
+            alert('保存中にエラーが発生しました。\n画像ファイルが見つからない、またはブラウザの制限による可能性があります。\n\n詳細: ' + error.message);
+        } finally {
+            // 復元処理
+            restoreInputs(replacements);
+            restoreImages(); // 画像srcを戻す
+            noPrintElements.forEach(el => el.style.display = '');
+            loading.style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>
