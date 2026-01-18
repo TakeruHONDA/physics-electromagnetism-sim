@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物理 電磁気学シミュレーション実習 | Physics Lab</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb; /* 知的な青 */
+            --accent-color: #f59e0b;  /* 活気のオレンジ */
+            --bg-color: #f8fafc;      /* 清潔な背景色 */
+            --text-color: #1e293b;
+            --card-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* ヘッダーデザイン */
+        header {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            letter-spacing: 0.05em;
+        }
+
+        header p {
+            margin-top: 10px;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* メインコンテナ */
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* セクション見出し */
+        .section-title {
+            font-size: 1.5rem;
+            border-left: 5px solid var(--primary-color);
+            padding-left: 15px;
+            margin-bottom: 20px;
+            margin-top: 40px;
+            color: #334155;
+        }
+
+        /* グリッドレイアウト */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        /* カードデザイン */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.15);
+            border-color: var(--primary-color);
+        }
+
+        /* カード内の装飾 */
+        .card-icon {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.25rem;
+            color: #1e3a8a;
+        }
+
+        .card p {
+            font-size: 0.95rem;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .card-footer {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .card-footer i {
+            margin-left: 5px;
+            transition: margin-left 0.3s;
+        }
+
+        .card:hover .card-footer i {
+            margin-left: 10px;
+        }
+
+        /* 特別なカード（レポート） */
+        .card.report {
+            background: linear-gradient(to bottom right, #fff, #eff6ff);
+            border: 2px solid #bfdbfe;
+        }
+        .card.report .card-icon {
+            color: #ea580c; /* 目立つ色 */
+        }
+
+        /* フッター */
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            margin-top: 60px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* スマホ対応 */
+        @media (max-width: 600px) {
+            header h1 { font-size: 1.6rem; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1><i class="fa-solid fa-atom"></i> 電磁気学 実習ポータル</h1>
+        <p>シミュレーションを通して、目に見えない現象を解き明かそう</p>
+    </header>
+
+    <div class="container">
+        
+        <div class="section-title">STEP 1: 実験と観察</div>
+        <div class="grid">
+            <a href="https://takeruhonda.github.io/physics-electromagnetism-sim/Electron_micro_physics_2025_17.html" target="_blank" class="card">
+                <div class="card-icon"><i class="fa-solid fa-microscope"></i></div>
+                <h3>コンデンサーの微視的理解</h3>
+                <p>極板間の電子の動きや電場の様子をミクロな視点で観察し、エネルギーの正体を探ります。</p>
+                <div class="card-footer">シミュレーターを開く <i class="fa-solid fa-arrow-right"></i></div>
+            </a>
+
+            <a href="https://takeruhonda.github.io/physics-electromagnetism-sim/Electron_circuit_physics_2025_7.html" target="_blank" class="card">
+                <div class="card-icon"><i class="fa-solid fa-plug"></i></div>
+                <h3>複雑な回路と電位バランス</h3>
+                <p>回路全体の定常状態や電位の関係を操作しながら確認し、電流が止まる条件を見つけます。</p>
+                <div class="card-footer">シミュレーターを開く <i class="fa-solid fa-arrow-right"></i></div>
+            </a>
+        </div>
+
+        <div class="section-title">STEP 2: 深める・確かめる</div>
+        <div class="grid">
+            <a href="https://takeruhonda.github.io/physics-electromagnetism-sim/Electron_micro_history_physics_2025_3.html" target="_blank" class="card">
+                <div class="card-icon"><i class="fa-solid fa-book-open"></i></div>
+                <h3>物理学の歴史と背景</h3>
+                <p>先人たちはどのように電気現象を発見したのか？歴史的な背景から理解を深めます。</p>
+                <div class="card-footer">歴史を学ぶ <i class="fa-solid fa-arrow-right"></i></div>
+            </a>
+
+            <a href="https://takeruhonda.github.io/physics-electromagnetism-sim/Q_Electron_micro_physics_2025.html" target="_blank" class="card">
+                <div class="card-icon"><i class="fa-solid fa-circle-question"></i></div>
+                <h3>理解度チェッククイズ</h3>
+                <p>実験で得た知識が定着しているか、簡単なクイズ形式の問題で確認しましょう。</p>
+                <div class="card-footer">挑戦する <i class="fa-solid fa-arrow-right"></i></div>
+            </a>
+        </div>
+
+        <div class="section-title">STEP 3: 考察・提出</div>
+        <div class="grid">
+            <a href="https://takeruhonda.github.io/physics-electromagnetism-sim/Electron_Report01_physics_2025_1.html" target="_blank" class="card report">
+                <div class="card-icon"><i class="fa-solid fa-file-pen"></i></div>
+                <h3>実験レポート作成</h3>
+                <p>問いのサイクルに基づき、仮説・実験・考察をまとめます。作成後はPDFで保存して提出してください。</p>
+                <div class="card-footer">レポートを書く <i class="fa-solid fa-arrow-right"></i></div>
+            </a>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Physics Simulation Laboratory. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
