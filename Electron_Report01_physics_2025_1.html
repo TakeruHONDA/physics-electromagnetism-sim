@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物理シミュレーション実験レポート</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']], // $...$ を数式として認識させる設定
+                processEscapes: true
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        body {
+            font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 210mm; /* A4幅 */
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20mm;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+        /* ヘッダー情報 */
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        input[type="text"] {
+            border: none;
+            border-bottom: 1px solid #ccc;
+            font-size: 16px;
+            padding: 5px;
+            width: 150px;
+            background: #fafafa;
+        }
+        
+        /* セクションスタイル */
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-left: 6px solid #2196f3;
+            font-size: 18px;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 16px;
+            margin-top: 15px;
+            color: #444;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        /* サイクル説明ボックス */
+        .cycle-guide {
+            background-color: #fff8e1;
+            border: 1px dashed #ffc107;
+            padding: 10px;
+            font-size: 12px;
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+        /* コンテンツエリア */
+        .content-box {
+            margin-bottom: 15px;
+        }
+        .question-text {
+            font-weight: bold;
+            color: #d32f2f;
+            background: #fff5f5;
+            padding: 10px;
+            border-radius: 4px;
+            line-height: 1.8; /* 数式が見やすいように行間を少し広げる */
+        }
+        .procedure-text {
+            background: #f1f8e9;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 4px;
+            line-height: 1.8;
+        }
+        textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: inherit;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+        
+        /* ボタン類 */
+        .btn-sim {
+            display: inline-block;
+            background-color: #2196f3;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 14px;
+            margin: 5px 0;
+            transition: background 0.3s;
+        }
+        .btn-sim:hover {
+            background-color: #1976d2;
+        }
+        .action-area {
+            text-align: center;
+            margin-top: 40px;
+        }
+        .btn-pdf {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn-pdf:hover {
+            background-color: #388e3c;
+        }
+
+        /* 画像表示エリアのスタイル（サーバー読み込み用） */
+        .circuit-image-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #eee;
+            background-color: #fafafa;
+        }
+        .circuit-image-container img {
+            max-width: 100%;       /* 幅は親要素に合わせる */
+            max-height: 300px;     /* 高くなりすぎないように制限 */
+            height: auto;
+            border: 1px solid #ccc;
+        }
+        .img-caption {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        /* 印刷/PDF化時のスタイル制御 */
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; padding: 0; }
+            textarea { border: none; resize: none; border-bottom: 1px solid #eee; }
+            input[type="text"] { background: white; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="report-content">
+    <h1>物理シミュレーション実験レポート</h1>
+    
+    <div class="header-info">
+        <div class="input-group">
+            <label>クラス:</label>
+            <input type="text" placeholder="例: 2-A">
+        </div>
+        <div class="input-group">
+            <label>番号:</label>
+            <input type="text" placeholder="例: 15">
+        </div>
+        <div class="input-group">
+            <label>名前:</label>
+            <input type="text" placeholder="氏名を入力">
+        </div>
+    </div>
+
+    <div class="cycle-guide">
+        <strong>【問いのサイクル】について</strong><br>
+        「1.問い」→「2.自分の考え・仮説」→「3.調べたこと（実験）」→「4.気づいたこと」を1サイクルとします。<br>
+        このサイクルを繰り返し、得られた「気づいたこと」を統合して考察したものを「5.わかったこと（学問）」として記述してください。
+    </div>
+
+    <h2>1. コンデンサーの微視的理解とエネルギー（問題 [I] 対応）</h2>
+    <a href="https://takeruhonda.github.io/physics-electromagnetism-sim/Electron_micro_physics_2025_17.html" target="_blank" class="btn-sim no-print">
+        📡 シミュレーターを開く (Micro Physics)
+    </a>
+
+    <div class="content-box">
+        <h3>1. 問い</h3>
+        <div class="question-text">
+            電池をつないで充電した後、スイッチを開いて（電荷を閉じ込めて）極板間隔 $d$ を2倍に広げると、極板間の電圧と静電エネルギーはどうなるか？また、エネルギーが増える場合、その源は何か？
+        </div>
+    </div>
+
+    <div class="content-box">
+        <h3>2. 自分の考え・仮説</h3>
+        <textarea placeholder="スイッチを切っているので電荷は... だから電圧は... になると予想する。エネルギーについては..."></textarea>
+    </div>
+
+    <div class="content-box">
+        <h3>3. 調べたこと（実験手順）</h3>
+        <div class="procedure-text">
+            <ol>
+                <li>シミュレーターでコンデンサーと電池の回路を作成し、スイッチをONにして充電する。</li>
+                <li><strong>スイッチをOFF（または電池を削除）にする。</strong>（※ここが重要）</li>
+                <li>極板間隔 $d$ を広げ、電圧計の数値、電荷の密度、電場の様子を観察する。</li>
+                <li>エネルギー表示を確認し、変化の有無を記録する。</li>
+            </ol>
+        </div>
+        <h3>実験結果</h3>
+        <textarea placeholder="dを広げると電圧計の値は... 電荷の分布は... エネルギーの値は..."></textarea>
+    </div>
+
+    <div class="content-box">
+        <h3>4. 気づいたこと（仮説との対比）</h3>
+        <textarea placeholder="予想と違い、...だった。電池が繋がっていないのにエネルギーが増えたのは... だからだと気づいた。"></textarea>
+    </div>
+
+    <h2>2. 複雑な回路の定常状態と電位のバランス（問題 [II] 対応）</h2>
+    <a href="https://takeruhonda.github.io/physics-electromagnetism-sim/Electron_circuit_physics_2025_7.html" target="_blank" class="btn-sim no-print">
+        🔌 シミュレーターを開く (Circuit Physics)
+    </a>
+
+    <div class="content-box">
+        <div class="circuit-image-container">
+            <div class="img-caption">図4：実験対象の回路図</div>
+            <img src="./figure4.png" alt="図4 回路図" onerror="this.style.display='none'; alert('画像(figure4.png)が見つかりません。HTMLと同じ場所に置いてください。')">
+        </div>
+    </div>
+
+    <div class="content-box">
+        <h3>1. 問い</h3>
+        <div class="question-text">
+            図4（上図）のような回路において、スイッチをすべて閉じて時間が経った後、中央のコンデンサー $C_3$ に電荷が全く溜まらなくなる（電流が流れない）のは、他の抵抗やコンデンサーがどのような関係の時か？
+        </div>
+    </div>
+
+    <div class="content-box">
+        <h3>2. 自分の考え・仮説</h3>
+        <textarea placeholder="中央に電気が流れないということは、上下の電位が... になっているはず。そのためには抵抗値と容量が... という関係が必要だと思う。"></textarea>
+    </div>
+
+    <div class="content-box">
+        <h3>3. 調べたこと（実験手順）</h3>
+        <div class="procedure-text">
+            <ol>
+                <li>図4と同じ回路（抵抗2つ、コンデンサー3つ、スイッチ2つ）を作成する。</li>
+                <li>全てのスイッチを閉じ、定常状態（電流が一定）になるまで待つ。</li>
+                <li>抵抗 $R_1, R_2$ や容量 $C_1, C_2$ の値をスライダーで変化させる。</li>
+                <li>中央のコンデンサー $C_3$ の電荷（または電圧）がちょうど <strong>0</strong> になる条件を探す。</li>
+            </ol>
+        </div>
+        <h3>実験結果</h3>
+        <textarea placeholder="R1を...Ω, R2を...Ω, C1を...F, C2を...F に設定した時、C3の電荷が0になった。計算してみると..."></textarea>
+    </div>
+
+    <div class="content-box">
+        <h3>4. 気づいたこと（仮説との対比）</h3>
+        <textarea placeholder="電荷が0になる条件は、抵抗の比とコンデンサーの比が... になっている時だった。これはホイートストンブリッジと似ていて..."></textarea>
+    </div>
+
+    <h2>3. わかったこと（学問）</h2>
+    <div class="content-box">
+        <p style="font-size:14px; color:#555;">※上記の2つの「気づいたこと」を統合し、考察して記述してください。</p>
+        <textarea style="height: 150px;" placeholder="今回の実験を通して、コンデンサーのエネルギー保存と回路の電位平衡について以下のことがわかった。..."></textarea>
+    </div>
+</div>
+
+<div class="action-area no-print">
+    <button class="btn-pdf" onclick="generatePDF()">📄 PDFとして保存して提出</button>
+    <p style="font-size:12px; color:#666;">※ボタンを押すとPDFがダウンロードされます。</p>
+</div>
+
+<script>
+    // PDF生成
+    function generatePDF() {
+        const element = document.getElementById('report-content');
+        
+        // テキストエリアの内容をHTMLに焼き付ける（PDFでの表示ズレ防止）
+        document.querySelectorAll('textarea').forEach(area => {
+            area.innerHTML = area.value;
+        });
+        document.querySelectorAll('input[type="text"]').forEach(input => {
+            input.setAttribute('value', input.value);
+        });
+
+        const opt = {
+            margin:       0,
+            filename:     '物理シミュレーション実験レポート.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true }, 
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        // 不要な要素を隠す
+        document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            // 生成後に復帰
+            document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
+            alert('PDFがダウンロードされました。');
+        });
+    }
+</script>
+
+</body>
+</html>
