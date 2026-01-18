@@ -6,9 +6,9 @@
     <title>物理シミュレーション実験レポート</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
     <script>
-        // PDF化の際に崩れにくい SVG出力を明示的に指定
         window.MathJax = {
             loader: { load: ['input/tex', 'output/svg'] },
             tex: {
@@ -40,19 +40,7 @@
             position: relative;
         }
         
-        /* ヘッダー情報 */
-        .header-info {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 2px solid #000;
-            padding-bottom: 10px;
-            margin-bottom: 30px;
-        }
-        .input-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        /* 入力欄のデザイン */
         input[type="text"] {
             border: none;
             border-bottom: 1px solid #ccc;
@@ -60,60 +48,6 @@
             padding: 5px;
             width: 150px;
             background: #fafafa;
-        }
-        
-        /* セクションスタイル */
-        h1 {
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 20px;
-        }
-        h2 {
-            background-color: #e3f2fd;
-            padding: 10px;
-            border-left: 6px solid #2196f3;
-            font-size: 18px;
-            margin-top: 30px;
-            page-break-after: avoid; /* タイトル直後の改ページを防ぐ */
-        }
-        h3 {
-            font-size: 16px;
-            margin-top: 15px;
-            color: #444;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 5px;
-            page-break-after: avoid;
-        }
-        
-        /* サイクル説明ボックス */
-        .cycle-guide {
-            background-color: #fff8e1;
-            border: 1px dashed #ffc107;
-            padding: 10px;
-            font-size: 12px;
-            margin-bottom: 20px;
-            color: #666;
-        }
-
-        /* コンテンツエリア */
-        .content-box {
-            margin-bottom: 15px;
-            page-break-inside: avoid; /* ボックスの途中での改ページを防ぐ努力をする */
-        }
-        .question-text {
-            font-weight: bold;
-            color: #d32f2f;
-            background: #fff5f5;
-            padding: 10px;
-            border-radius: 4px;
-            line-height: 1.8;
-        }
-        .procedure-text {
-            background: #f1f8e9;
-            padding: 10px;
-            font-size: 14px;
-            border-radius: 4px;
-            line-height: 1.8;
         }
         textarea {
             width: 100%;
@@ -128,109 +62,93 @@
             line-height: 1.6;
         }
 
-        /* PDF生成時の一時置換用スタイル */
+        /* 印刷・保存時の一時置換用スタイル */
         .print-replacement {
             width: 100%;
             padding: 10px;
-            border: 1px solid #ccc; /* 印刷時は薄い枠線をつける */
+            border: 1px solid #ccc;
             border-radius: 4px;
             font-family: inherit;
             font-size: 14px;
             line-height: 1.6;
-            white-space: pre-wrap; /* 改行を維持 */
+            white-space: pre-wrap;
             background-color: #fff;
             min-height: 40px;
         }
         
+        /* 見出しデザイン */
+        h1 { text-align: center; margin-bottom: 20px; }
+        h2 {
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-left: 6px solid #2196f3;
+            font-size: 18px;
+            margin-top: 30px;
+        }
+        h3 {
+            font-size: 16px;
+            margin-top: 15px;
+            color: #444;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        
+        /* その他パーツ */
+        .cycle-guide {
+            background-color: #fff8e1;
+            border: 1px dashed #ffc107;
+            padding: 10px; font-size: 12px; margin-bottom: 20px; color: #666;
+        }
+        .question-text {
+            font-weight: bold; color: #d32f2f; background: #fff5f5; padding: 10px; border-radius: 4px; line-height: 1.8;
+        }
+        .procedure-text {
+            background: #f1f8e9; padding: 10px; font-size: 14px; border-radius: 4px; line-height: 1.8;
+        }
+        .header-info {
+            display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 30px;
+        }
+        .input-group { display: flex; align-items: center; gap: 10px; }
+
         /* ボタン類 */
         .btn-sim {
-            display: inline-block;
-            background-color: #2196f3;
-            color: white;
-            padding: 8px 16px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 14px;
-            margin: 5px 0;
-            transition: background 0.3s;
-        }
-        .btn-sim:hover {
-            background-color: #1976d2;
+            display: inline-block; background-color: #2196f3; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px; margin: 5px 0;
         }
         .action-area {
-            text-align: center;
-            margin-top: 40px;
-            margin-bottom: 40px;
+            text-align: center; margin-top: 40px; margin-bottom: 40px; display: flex; justify-content: center; gap: 20px;
         }
         .btn-pdf {
-            background-color: #4caf50;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 18px;
-            border-radius: 5px;
-            cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background-color: #4caf50; color: white; border: none; padding: 15px 30px; font-size: 16px; border-radius: 5px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        .btn-pdf:hover {
-            background-color: #388e3c;
+        .btn-png {
+            background-color: #ff9800; color: white; border: none; padding: 15px 30px; font-size: 16px; border-radius: 5px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
+        .btn-pdf:hover { background-color: #388e3c; }
+        .btn-png:hover { background-color: #f57c00; }
 
-        /* 画像表示エリア */
-        .circuit-image-container {
-            text-align: center;
-            margin: 20px 0;
-            padding: 10px;
-            border: 1px solid #eee;
-            background-color: #fafafa;
+        /* 画像アップロードエリア（ドラッグ＆ドロップ対応） */
+        .image-upload-area {
+            border: 2px dashed #ccc; padding: 20px; text-align: center; margin-bottom: 15px; border-radius: 8px; cursor: pointer; background-color: #fafafa; transition: background 0.2s;
         }
-        .circuit-image-container img {
-            max-width: 100%;
-            max-height: 300px;
-            height: auto;
-            border: 1px solid #ccc;
-        }
-        .img-caption {
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 5px;
-            color: #555;
-        }
+        .image-upload-area:hover { background-color: #f0f0f0; border-color: #999; }
+        .image-upload-area img { max-width: 100%; max-height: 300px; display: none; margin: 0 auto; }
+        .upload-placeholder { color: #777; font-size: 14px; }
 
-        /* ローディングオーバーレイ */
+        /* ローディング画面 */
         #loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            font-size: 20px;
-            color: #333;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.9); z-index: 9999; justify-content: center; align-items: center; flex-direction: column; font-size: 20px; color: #333;
         }
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 15px;
+            border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* 印刷/PDF化時のスタイル制御 */
         @media print {
             .no-print { display: none !important; }
             body { background: white; padding: 0; }
             .container { box-shadow: none; padding: 0; max-width: 100%; }
-            textarea { display: none; } /* 本来のtextareaは隠す */
-            .print-replacement { display: block; } /* 置換テキストを表示 */
+            textarea { display: none; }
+            .print-replacement { display: block; }
         }
     </style>
 </head>
@@ -238,25 +156,16 @@
 
 <div id="loading-overlay">
     <div class="spinner"></div>
-    <div>PDFを作成中...<br><span style="font-size:14px; color:#666;">※数秒かかることがあります</span></div>
+    <div id="loading-text">処理中...</div>
 </div>
 
 <div class="container" id="report-content">
     <h1>物理シミュレーション実験レポート</h1>
     
     <div class="header-info">
-        <div class="input-group">
-            <label>クラス:</label>
-            <input type="text" placeholder="例: 2-A">
-        </div>
-        <div class="input-group">
-            <label>番号:</label>
-            <input type="text" placeholder="例: 15">
-        </div>
-        <div class="input-group">
-            <label>名前:</label>
-            <input type="text" placeholder="氏名を入力">
-        </div>
+        <div class="input-group"><label>クラス:</label><input type="text" placeholder="例: 2-A"></div>
+        <div class="input-group"><label>番号:</label><input type="text" placeholder="例: 15"></div>
+        <div class="input-group"><label>名前:</label><input type="text" placeholder="氏名を入力"></div>
     </div>
 
     <div class="cycle-guide">
@@ -266,9 +175,7 @@
     </div>
 
     <h2>1. コンデンサーの微視的理解とエネルギー（問題 [I] 対応）</h2>
-    <a href="https://takeruhonda.github.io/physics-electromagnetism-sim/Electron_micro_physics_2025_17.html" target="_blank" class="btn-sim no-print">
-        📡 シミュレーターを開く (Micro Physics)
-    </a>
+    <a href="https://takeruhonda.github.io/physics-electromagnetism-sim/Electron_micro_physics_2025_17.html" target="_blank" class="btn-sim no-print">📡 シミュレーターを開く (Micro Physics)</a>
 
     <div class="content-box">
         <h3>1. 問い（条件比較）</h3>
@@ -277,17 +184,13 @@
         </div>
     </div>
 
-    <div class="content-box">
-        <h3>2. 自分の考え・仮説</h3>
-        <textarea placeholder="電池がつながっていると電圧 $V$ は... なので、極板を広げるとエネルギーは... すると予想する。問題[I]の結果（エネルギー増加）と比較すると..."></textarea>
-    </div>
+    <div class="content-box"><h3>2. 自分の考え・仮説</h3><textarea placeholder="電池がつながっていると電圧 $V$ は... なので、極板を広げるとエネルギーは... すると予想する。"></textarea></div>
 
     <div class="content-box">
         <h3>3. 調べたこと（実験手順）</h3>
         <div class="procedure-text">
             <ol>
-                <li>シミュレーターの「コンデンサー」セクションを開く。</li>
-                <li>「印加電圧 V」を適当な値（例: 5V）に設定する。<strong>（※シミュレーターは常に電池接続状態です）</strong></li>
+                <li>シミュレーターの「コンデンサー」セクションを開く。（※常に電池接続状態）</li>
                 <li>「極板間距離 d」を最小（1.0mm）にし、その時のエネルギー $U$ と電場 $E$ の値を記録する。</li>
                 <li>「極板間距離 d」を広げ（例: 2.0mm）、$U$ と $E$ が増えるか減るかを確認する。</li>
             </ol>
@@ -296,102 +199,111 @@
         <textarea placeholder="dを1.0mmから2.0mmに広げると、エネルギー U は... 電場 E は... に変化した。"></textarea>
     </div>
 
-    <div class="content-box">
-        <h3>4. 気づいたこと（仮説との対比）</h3>
-        <textarea placeholder="問題[I]（スイッチOFF）の計算ではエネルギーは増えたが、実験（スイッチON）では... だった。この違いは電池が... だからだと気づいた。"></textarea>
-    </div>
+    <div class="content-box"><h3>4. 気づいたこと</h3><textarea placeholder="問題[I]（スイッチOFF）の計算ではエネルギーは増えたが、実験（スイッチON）では... だった。"></textarea></div>
 
     <h2>2. 複雑な回路の定常状態と電位のバランス（問題 [II] 対応）</h2>
-    <a href="https://takeruhonda.github.io/physics-electromagnetism-sim/Electron_circuit_physics_2025_7.html" target="_blank" class="btn-sim no-print">
-        🔌 シミュレーターを開く (Circuit Physics)
-    </a>
+    <a href="https://takeruhonda.github.io/physics-electromagnetism-sim/Electron_circuit_physics_2025_7.html" target="_blank" class="btn-sim no-print">🔌 シミュレーターを開く (Circuit Physics)</a>
 
     <div class="content-box">
-        <div class="circuit-image-container">
-            <div class="img-caption">図4：実験対象の回路図</div>
-            <img src="./figure4.png" alt="図4 回路図" onerror="this.style.display='none'; console.log('画像(figure4.png)なし');">
+        <div class="image-upload-area" id="circuit-image-area" onclick="document.getElementById('file-input').click()">
+            <div class="upload-placeholder">
+                <strong>📸 ここをクリックして「図4（回路図）」を選択</strong><br>
+                または画像をここにドラッグ＆ドロップしてください
+            </div>
+            <img id="preview-img" alt="回路図">
+            <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="loadImage(event)">
         </div>
     </div>
 
     <div class="content-box">
         <h3>1. 問い</h3>
         <div class="question-text">
-            図4（上図）のような回路において、スイッチをすべて閉じて時間が経った後、中央のコンデンサー $C_3$ に電荷が全く溜まらなくなる（電流が流れない）のは、他の抵抗やコンデンサーがどのような関係の時か？
+            図4（上図）のような回路において、スイッチをすべて閉じて時間が経った後、中央のコンデンサー $C_3$ に電荷が全く溜まらなくなるのは、他の抵抗やコンデンサーがどのような関係の時か？
         </div>
     </div>
 
-    <div class="content-box">
-        <h3>2. 自分の考え・仮説</h3>
-        <textarea placeholder="中央に電気が流れないということは、上下の電位が... になっているはず。そのためには抵抗値と容量が... という関係が必要だと思う。"></textarea>
-    </div>
+    <div class="content-box"><h3>2. 自分の考え・仮説</h3><textarea placeholder="中央に電気が流れないということは..."></textarea></div>
 
     <div class="content-box">
         <h3>3. 調べたこと（実験手順）</h3>
         <div class="procedure-text">
             <ol>
-                <li>図4と同じ回路（抵抗2つ、コンデンサー3つ、スイッチ2つ）を作成する。</li>
-                <li>全てのスイッチを閉じ、定常状態（電流が一定）になるまで待つ。</li>
-                <li>抵抗 $R_1, R_2$ や容量 $C_1, C_2$ の値をスライダーで変化させる。</li>
-                <li>中央のコンデンサー $C_3$ の電荷（または電圧）がちょうど <strong>0</strong> になる条件を探す。</li>
+                <li>図4と同じ回路を作成し、全てのスイッチを閉じて定常状態にする。</li>
+                <li>抵抗 $R$ や容量 $C$ を変化させ、中央の $C_3$ の電荷が <strong>0</strong> になる条件を探す。</li>
             </ol>
         </div>
-        <h3>実験結果</h3>
-        <textarea placeholder="R1を...Ω, R2を...Ω, C1を...F, C2を...F に設定した時、C3の電荷が0になった。計算してみると..."></textarea>
+        <h3>実験結果</h3><textarea placeholder="R1を...Ω, R2を...Ω に設定した時、C3の電荷が0になった。"></textarea>
     </div>
 
-    <div class="content-box">
-        <h3>4. 気づいたこと（仮説との対比）</h3>
-        <textarea placeholder="電荷が0になる条件は、抵抗の比とコンデンサーの比が... になっている時だった。これはホイートストンブリッジと似ていて..."></textarea>
-    </div>
+    <div class="content-box"><h3>4. 気づいたこと</h3><textarea placeholder="電荷が0になる条件は、抵抗の比とコンデンサーの比が..."></textarea></div>
 
     <h2>3. わかったこと（学問）</h2>
     <div class="content-box">
         <p style="font-size:14px; color:#555;">※上記の2つの「気づいたこと」を統合し、考察して記述してください。</p>
-        <textarea style="height: 150px;" placeholder="今回の実験を通して、コンデンサーの条件（接続/切断）によるエネルギー変化の違いや、回路の平衡条件について以下のことがわかった。..."></textarea>
+        <textarea style="height: 150px;" placeholder="今回の実験を通して、コンデンサーのエネルギー保存と回路の電位平衡について以下のことがわかった。..."></textarea>
     </div>
 </div>
 
 <div class="action-area no-print">
-    <button class="btn-pdf" onclick="generatePDF()">📄 PDFとして保存して提出</button>
-    <p style="font-size:12px; color:#666;">※ボタンを押すとPDFがダウンロードされます。</p>
+    <button class="btn-pdf" onclick="saveReport('pdf')">📄 PDFとして保存</button>
+    <button class="btn-png" onclick="saveReport('png')">🖼️ 画像(PNG)として保存</button>
 </div>
 
 <script>
-    async function generatePDF() {
-        // 1. ローディング表示
-        const loading = document.getElementById('loading-overlay');
-        loading.style.display = 'flex';
+    // 画像読み込み処理
+    function loadImage(event) {
+        const file = event.target.files[0];
+        if (file) readFile(file);
+    }
+    function readFile(file) {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.getElementById('preview-img');
+            img.src = e.target.result;
+            img.style.display = 'block';
+            document.querySelector('.upload-placeholder').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    }
+    // ドラッグ＆ドロップ対応
+    const dropArea = document.getElementById('circuit-image-area');
+    dropArea.addEventListener('dragover', (e) => { e.preventDefault(); dropArea.style.backgroundColor = '#e3f2fd'; });
+    dropArea.addEventListener('dragleave', (e) => { dropArea.style.backgroundColor = '#fafafa'; });
+    dropArea.addEventListener('drop', (e) => {
+        e.preventDefault(); dropArea.style.backgroundColor = '#fafafa';
+        if (e.dataTransfer.files[0] && e.dataTransfer.files[0].type.startsWith('image/')) {
+            readFile(e.dataTransfer.files[0]);
+        }
+    });
 
-        // 少し待機してDOMのレンダリングを完了させる
-        await new Promise(resolve => setTimeout(resolve, 100));
+    // 保存処理（PDF/PNG共通）
+    async function saveReport(type) {
+        const loading = document.getElementById('loading-overlay');
+        const loadingText = document.getElementById('loading-text');
+        loading.style.display = 'flex';
+        loadingText.innerText = (type === 'pdf') ? "PDFを作成中..." : "画像を作成中...";
+
+        await new Promise(resolve => setTimeout(resolve, 100)); // 描画待ち
 
         try {
             const element = document.getElementById('report-content');
             
-            // 2. 入力エリアのテキスト化処理（重要）
-            // PDF化ライブラリはtextareaの中身（value）を無視しがちなので、
-            // 一時的にdivタグに置き換えて、見た目通りのテキストとしてレンダリングさせます。
+            // 入力欄をテキスト(div/span)に置換
             const textareas = document.querySelectorAll('textarea');
             const inputs = document.querySelectorAll('input[type="text"]');
-            
-            // 復元用に元の要素を保存するリスト
             const replacements = [];
 
-            // Textareaの置換
             textareas.forEach(textarea => {
                 const div = document.createElement('div');
                 div.className = 'print-replacement';
-                div.innerText = textarea.value; // 入力内容をセット
-                div.style.minHeight = textarea.clientHeight + 'px'; // 高さ合わせ
-                
-                // DOMの差し替え
+                div.innerText = textarea.value;
+                div.style.minHeight = textarea.clientHeight + 'px';
                 textarea.style.display = 'none';
                 textarea.parentNode.insertBefore(div, textarea);
-                
                 replacements.push({ original: textarea, temp: div });
             });
 
-            // Inputの置換
             inputs.forEach(input => {
                 const span = document.createElement('span');
                 span.innerText = input.value;
@@ -399,47 +311,40 @@
                 span.style.padding = "0 5px";
                 span.style.display = "inline-block";
                 span.style.minWidth = "100px";
-
                 input.style.display = 'none';
                 input.parentNode.insertBefore(span, input);
-                
                 replacements.push({ original: input, temp: span });
             });
 
-            // 3. 不要な要素（ボタンなど）を隠す
             document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
 
-            // 4. PDF生成設定
-            const opt = {
-                margin:       10, // 余白（mm）
-                filename:     '物理シミュレーション実験レポート.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { 
-                    scale: 2, // 高解像度化
-                    useCORS: true, // 画像読み込み許可
-                    logging: true,
-                    // 数式（SVG）を正しく描画するための設定
-                    ignoreElements: (element) => element.classList.contains('no-print')
-                },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
+            if (type === 'pdf') {
+                // PDF保存
+                const opt = {
+                    margin: 10,
+                    filename: '物理シミュレーション実験レポート.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, logging: false },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+                await html2pdf().set(opt).from(element).save();
+            } else {
+                // PNG保存
+                const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+                const link = document.createElement('a');
+                link.download = '物理シミュレーション実験レポート.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            }
 
-            // 5. 生成実行
-            await html2pdf().set(opt).from(element).save();
-
-            // 6. 復元処理（終わったら元の入力フォームに戻す）
-            replacements.forEach(item => {
-                item.temp.remove();
-                item.original.style.display = '';
-            });
-
+            // 復元処理
+            replacements.forEach(item => { item.temp.remove(); item.original.style.display = ''; });
             document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
 
         } catch (error) {
             console.error(error);
-            alert('PDFの作成に失敗しました。\n\n考えられる原因:\n・画像ファイル(figure4.png)が読み込めない（セキュリティ制限など）\n・ブラウザのバージョンが古い\n\nコンソールログを確認してください。');
+            alert('保存に失敗しました。\nコンソールログを確認してください。');
         } finally {
-            // ローディング非表示
             loading.style.display = 'none';
         }
     }
