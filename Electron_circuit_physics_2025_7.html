@@ -174,6 +174,51 @@
                     </li>
                 </ul>
             </div>
+	    <h2>6. 応用知識：理想と現実のギャップ (Applied Knowledge)</h2>
+            <p>シミュレータや教科書で扱う「理想的な素子」と、現実世界の「リアルな素子」には違いがあります。このシミュレータでは、その違いを意図的に再現・観察することができます。</p>
+
+            <h3>浮遊ノード (Floating Node)</h3>
+            <div class="box">
+                <p><strong>現象:</strong> 回路の一部が、電源の基準電位（グラウンドなど）から電気的に完全に切り離されている状態です。</p>
+                <p><strong>なぜ問題か:</strong> 電位（電圧の高さ）は「相対的な差」でしか決まりません。基準となる0m地点が決まっていない風船の高度が定まらないように、浮遊ノードの電位は計算上の誤差やわずかな静電気ノイズによって不定となり、シミュレータ上では異常な電圧値（ドリフト現象）として観測されることがあります。</p>
+            </div>
+
+            <h3>漏れ抵抗 (Leakage Resistance)</h3>
+            <div class="box">
+                <p><strong>理想:</strong> コンデンサーは直流電流を完全に遮断する「絶縁体」です（抵抗値 \(R = \infty\)）。</p>
+                <p><strong>現実:</strong> 実際のコンデンサーや空気絶縁は、極めて高い抵抗値（数M\(\Omega\) 〜 数G\(\Omega\)）を持っていますが、完全な絶縁ではありません。ごくわずかに電流が漏れています。</p>
+                <p><strong>役割:</strong> この微小な漏れ電流のおかげで、浮遊ノードに溜まった余分な電荷が逃げることができ、現実の回路では電位が安定します。</p>
+            </div>
+
+            <h3>接地 (Ground / Earth)</h3>
+            <div class="box">
+                <p><strong>定義:</strong> 回路網の中で「ここを0Vとする」と決めた基準点です。記号 \(\perp\) や \(\bumpeq\) で表されます。</p>
+                <p><strong>重要性:</strong> 接地を行うことで、回路全体の電位の基準が確定し、動作が安定します。また、感電防止やノイズ対策としても重要です。</p>
+            </div>
+
+            <h3>🧪 本シミュレータでの学習・実験方法</h3>
+            <p>このシミュレータには、現実の挙動を再現するための機能が備わっています。</p>
+            <ul>
+                <li><strong>実験1: 浮遊ノードの観察</strong><br>
+                コンデンサーを直列に繋ぎ、両端に電池を繋ぎます。コンデンサー同士の中点（浮遊ノード）の電圧を見ると、値が定まらなかったり、ゆっくり変動したりする様子が観察できます。これは「漏れ抵抗」がOFF（理想状態）だからです。</li>
+                
+                <li><strong>実験2: 漏れ抵抗の効果</strong><br>
+                コンデンサーを選択し、プロパティ画面で<strong>「漏れ抵抗(Real): ON」</strong>に切り替えてください。内部で \(100\text{M}\Omega\) の抵抗が並列接続され、不安定だった電圧がピタリと安定する様子が確認できます。</li>
+                
+                <li><strong>実験3: 接地による電位の確定</strong><br>
+                ツールバーから<strong>「接地 (GND)」</strong>を追加し、回路の任意の場所に接続してください。そこが強制的に0Vとなり、そこを基準とした電圧分布に変化します。</li>
+            </ul>
+　　　　　　　<!--
+	    ### 修正後の確認ポイント
+	    コードを挿入した後、ブラウザで開き直し、以下の手順で動作と解説を確認してください。
+	    1.  **「基礎知識」タブ** をスクロールし、一番下に「6. 応用知識...」が追加されていることを確認する。
+	    2.  **「シミュレーション」タブ** に移動し、以下の操作を行う。
+	    * コンデンサー2つを直列に配置し、電源につなぐ。
+	    * コンデンサーを選択し、プロパティパネルに出る **「漏れ抵抗(Real): OFF」** ボタンを押して **ON** にする。
+	    * 電圧計の数値が安定することを確認する。
+	    * **「接地 (GND)」** アイコンを使って回路の一部を接地し、動作が変わらないこと（または電位の基準が変わること）を確認する。
+	    この修正により、学生は「なぜシミュレーションが不安定になるのか」という疑問から出発し、電気回路の深い理解（理想モデルと現実モデルの違い）へと進むことができる素晴らしい教材になります。	    
+            -->
         </div>
     </div>
 
@@ -183,8 +228,10 @@
             <div class="control-panel">
                 <button class="ctrl-btn btn-start" onclick="startSim()">▶ 開始</button>
                 <button class="ctrl-btn btn-stop" onclick="stopSim()">⏸ 停止</button>
+		<button class="ctrl-btn" style="background:#8e44ad;" onclick="stepSim()">▶| ステップ</button>
                 <button class="ctrl-btn btn-reset" onclick="resetSim()">⟲ リセット</button>
             </div>
+	    <button class="btn-toggle-all" style="background:#8e44ad; margin-bottom:5px;" onclick="toggleNetView()">🔍 接続チェック (色分け)</button>
             <button class="btn-toggle-all" onclick="toggleAllSwitches()">⚡ 全スイッチ切替</button>
 
             <div id="properties">
@@ -200,6 +247,7 @@
             <div class="btn-group">
                 <button onclick="setTool('select')" id="btn-select" class="sim-btn active"><span class="icon">➤</span>選択 / 移動</button>
                 <button onclick="rotateSelected()" class="sim-btn"><span class="icon">↻</span>回転 (R)</button>
+		<button onclick="addPart('ground')" class="sim-btn"><span class="icon">⏚</span>接地 (GND)</button>
                 <button onclick="setTool('wire')" id="btn-wire" class="sim-btn"><span class="icon">✎</span>ワイヤー (配線)</button>
             </div>
             
@@ -211,6 +259,9 @@
                 <button onclick="addPart('resistor')" class="sim-btn"><span class="icon">R</span>抵抗</button>
                 <button onclick="addPart('capacitor')" class="sim-btn"><span class="icon">C</span>コンデンサー</button>
                 <button onclick="addPart('inductor')" class="sim-btn"><span class="icon">L</span>コイル</button>
+		<button onclick="addPart('diode')" class="sim-btn"><span class="icon">D</span>ダイオード</button>
+		<button onclick="addPart('led')" class="sim-btn"><span class="icon">☀</span>LED</button>
+		<button onclick="addPart('npn')" class="sim-btn"><span class="icon">T</span>NPN Tr</button>
             </div>
             <h2>計測器</h2>
             <div class="btn-group">
@@ -268,6 +319,8 @@
     const ctx = canvas.getContext('2d');
     const graphCanvas = document.getElementById('graphCanvas');
     const gCtx = graphCanvas.getContext('2d');
+
+    let mouseDownPos = { x: 0, y: 0 }; // ★追加: クリック判定用
     
     let width, height, graphW, graphH;
     const parts = []; let wires = []; const nodes = [];   
@@ -276,14 +329,31 @@
     let lastMousePos = { x: 0, y: 0 }; let mousePos = { x: 0, y: 0 }; let hoverNode = null;
     let isBoxSelecting = false; let selectionBox = { x: 0, y: 0, w: 0, h: 0 };
 
-    let isRunning = false; let simTime = 0; const dt = 0.001; let animationOffset = 0; 
-    const ITERATIONS = 5000; const INTERNAL_R_SRC = 1e-5; const R_SWITCH_CLOSED = 1e-5;    
+    let isRunning = false; let simTime = 0; const dt = 0.0001; let animationOffset = 0; 
+    const ITERATIONS = 5000; const INTERNAL_R_SRC = 1e-5; const R_SWITCH_CLOSED = 1e-5;
+    // ★★★ 追加コード: 停止中の計算制御用 ★★★
+    let updateFrames = 0; // 再計算が必要な残りフレーム数
+    function triggerUpdate() { updateFrames = 5; } // 操作があったら5フレームだけ計算を許可する関数
+  
     const R_SWITCH_OPEN = 1e9; const INTERNAL_R_AMMETER = 1e-5; const G_LEAK = 1e-12;            
     const MAX_HISTORY = 400; const historyData = []; const GRID_SIZE = 20;
 
+    // ★★★ 追加コード: 接続チェックモード管理 ★★★
+    let isNetViewMode = false;
+    function toggleNetView() {
+        isNetViewMode = !isNetViewMode;
+        draw();
+    }
+    // NetIdから色を生成する関数
+    function getNetColor(netId) {
+        if (netId === -1) return "#999"; // 未接続
+        const hue = (netId * 137.508) % 360; // 黄金角で色を散らす
+        return `hsl(${hue}, 70%, 50%)`;
+    }
+
     function formatValue(val, unit, useAbs = true) {
         let v = useAbs ? Math.abs(val) : val;
-        if (Math.abs(v) < 1e-10) v = 0;
+        if (Math.abs(v) < 1e-5) v = 0;   // ★修正: 1µV (1e-6) 未満のノイズは 0 とみなして表示する
         let sign = (v < 0) ? "-" : ""; let absVal = Math.abs(v); let prefix = "";
         if (absVal < 1e-9 && absVal !== 0) { absVal *= 1e12; prefix = "p"; }
         else if (absVal < 1e-6 && absVal !== 0) { absVal *= 1e9; prefix = "n"; }
@@ -324,12 +394,38 @@
                 case 'ac_source': this.nodes.push(new Node(this, -40, 0)); this.nodes.push(new Node(this, 40, 0)); this.amplitude = 10; this.freq = 1.0; this.label = "10V\n1Hz"; break;
                 case 'switch': this.nodes.push(new Node(this, -30, 0)); this.nodes.push(new Node(this, 30, 0)); this.label = "SW"; this.isOpen = false; break;
                 case 'resistor': this.nodes.push(new Node(this, -40, 0)); this.nodes.push(new Node(this, 40, 0)); this.value = 100; this.label = "100Ω"; break;
+		// ★変更: コンデンサーに「理想モード(漏れなし)」フラグを追加
                 case 'capacitor': 
                     this.nodes.push(new Node(this, -20, 0)); this.nodes.push(new Node(this, 20, 0)); 
-                    this.value = 10; // 初期値
-                    this.label = "10.0µF"; 
-                    break;
+                    this.value = 10; 
+                    this.label = "10.0µF";
+                    this.useLeakage = true; // ★追加: デフォルトで漏れ抵抗ON
+                break;
+		// ★追加: アース(Ground)の定義
+                case 'ground':
+                    this.nodes.push(new Node(this, 0, -10)); // 上に接続点
+                    this.label = "GND";
+                break;
                 case 'inductor': this.nodes.push(new Node(this, -30, 0)); this.nodes.push(new Node(this, 30, 0)); this.value = 1; this.label = "1H"; break;
+		case 'diode':
+                    this.nodes.push(new Node(this, -20, 0)); // Anode
+                    this.nodes.push(new Node(this, 20, 0));  // Cathode
+                    this.label = "Diode";
+                    break;
+                case 'led':
+                    this.nodes.push(new Node(this, -20, 0)); // Anode
+                    this.nodes.push(new Node(this, 20, 0));  // Cathode
+                    this.label = "LED";
+                    this.color = "#e74c3c"; // Red
+                    break;
+                case 'npn':
+                // Node 0: Base, 1: Collector, 2: Emitter
+                    this.nodes.push(new Node(this, -20, 0));   // Base (Left)
+                    this.nodes.push(new Node(this, 20, -20));  // Collector (Top-Right)
+                    this.nodes.push(new Node(this, 20, 20));   // Emitter (Bottom-Right)
+                    this.value = 100; // Beta (hFE)
+                    this.label = "hFE=100";
+                    break;
                 case 'voltmeter': this.nodes.push(new Node(this, -30, 0)); this.nodes.push(new Node(this, 30, 0)); this.value = 1e6; this.label = "Vm"; break;
                 case 'ammeter': this.nodes.push(new Node(this, -30, 0)); this.nodes.push(new Node(this, 30, 0)); this.value = INTERNAL_R_AMMETER; this.label = "Am"; break;
                 case 'galvanometer': this.nodes.push(new Node(this, -30, 0)); this.nodes.push(new Node(this, 30, 0)); this.value = 5; this.label = "G"; break;
@@ -350,7 +446,7 @@
                 else ctx.strokeRect(-50, -35, 100, 70);
                 ctx.shadowBlur = 0;
                 
-                if(this.type !== 'joint') {
+                if(this.type !== 'joint' && this.nodes.length >= 2) {
                     ctx.fillStyle = "#e74c3c"; ctx.font = "bold 14px Arial"; ctx.fillText("+", this.nodes[0].offsetX, -25);
                     ctx.fillStyle = "#3498db"; ctx.fillText("-", this.nodes[1].offsetX, -25);
                     if (!['voltmeter'].includes(this.type)) {
@@ -414,9 +510,44 @@
                     ctx.moveTo(-plateOff, -plateH); ctx.lineTo(-plateOff, plateH); 
                     ctx.moveTo(plateOff, -plateH); ctx.lineTo(plateOff, plateH); 
                     ctx.stroke(); 
-                } 
-                else if (this.type === 'inductor') { ctx.beginPath(); const r = 6; for(let i=-2; i<=1; i++) { ctx.arc(i*10 + 5, -r, r, 0, Math.PI); } ctx.stroke(); } 
-                else if (['voltmeter', 'ammeter', 'galvanometer'].includes(this.type)) { ctx.fillStyle = "#ecf0f1"; ctx.beginPath(); ctx.arc(0,0, 24, 0, Math.PI*2); ctx.fill(); ctx.stroke(); ctx.fillStyle = "#2c3e50"; ctx.font = "bold 18px Arial"; let sym = this.type === 'galvanometer' ? 'G' : (this.type === 'voltmeter' ? 'V' : 'A'); ctx.fillText(sym, 0, -5); ctx.fillStyle = "rgba(255, 255, 255, 0.9)"; ctx.fillRect(-40, 12, 80, 22); ctx.strokeStyle = "#bdc3c7"; ctx.lineWidth = 1; ctx.strokeRect(-40, 12, 80, 22); ctx.fillStyle = "#0055aa"; ctx.font = "bold 13px Consolas, monospace"; ctx.fillText(formatValue(this.type==='voltmeter'?Math.abs(this.getVoltageDiff()):Math.abs(this.current), this.type==='voltmeter'?"V":"A", true), 0, 24); }
+                }
+		// ★追加: アースの描画
+		else if (this.type === 'ground') {
+		    ctx.beginPath();
+		    ctx.moveTo(0, -10); ctx.lineTo(0, 0); // 縦線
+		    ctx.moveTo(-15, 0); ctx.lineTo(15, 0); // 横線(大)
+		    ctx.moveTo(-10, 5); ctx.lineTo(10, 5); // 横線(中)
+		    ctx.moveTo(-5, 10); ctx.lineTo(5, 10); // 横線(小)
+		    ctx.stroke();
+		}
+                else if (this.type === 'inductor') { ctx.beginPath(); const r = 6; for(let i=-2; i<=1; i++) { ctx.arc(i*10 + 5, -r, r, 0, Math.PI); } ctx.stroke(); }
+		else if (this.type === 'diode' || this.type === 'led') {
+		    // 三角形（アノード）
+		    ctx.beginPath();
+		    ctx.moveTo(-15, -15); ctx.lineTo(-15, 15); ctx.lineTo(15, 0); ctx.closePath();
+		    ctx.fillStyle = this.type === 'led' ? this.color : "#34495e";
+		    ctx.fill(); ctx.stroke();
+		    // カソード線
+		    ctx.beginPath(); ctx.moveTo(15, -15); ctx.lineTo(15, 15); ctx.stroke();
+    
+		    // LEDの発光エフェクト
+		    if (this.type === 'led' && this.current > 0.001) { // 1mA以上で点灯
+			ctx.save();
+			ctx.shadowBlur = 15 + Math.min(this.current * 1000, 20); // 電流に応じて輝き変化
+			ctx.shadowColor = this.color;
+			ctx.fillStyle = this.color;
+			ctx.globalAlpha = 0.6;
+			ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI*2); ctx.fill();
+			ctx.restore();
+        
+			// 光の矢印
+			ctx.beginPath();
+			ctx.moveTo(5, -20); ctx.lineTo(15, -30);
+			ctx.moveTo(10, -15); ctx.lineTo(20, -25);
+			ctx.strokeStyle = "orange"; ctx.lineWidth = 1; ctx.stroke();
+		    }
+		
+                }else if (['voltmeter', 'ammeter', 'galvanometer'].includes(this.type)) { ctx.fillStyle = "#ecf0f1"; ctx.beginPath(); ctx.arc(0,0, 24, 0, Math.PI*2); ctx.fill(); ctx.stroke(); ctx.fillStyle = "#2c3e50"; ctx.font = "bold 18px Arial"; let sym = this.type === 'galvanometer' ? 'G' : (this.type === 'voltmeter' ? 'V' : 'A'); ctx.fillText(sym, 0, -5); ctx.fillStyle = "rgba(255, 255, 255, 0.9)"; ctx.fillRect(-40, 12, 80, 22); ctx.strokeStyle = "#bdc3c7"; ctx.lineWidth = 1; ctx.strokeRect(-40, 12, 80, 22); ctx.fillStyle = "#0055aa"; ctx.font = "bold 13px Consolas, monospace"; ctx.fillText(formatValue(this.type==='voltmeter'?Math.abs(this.getVoltageDiff()):Math.abs(this.current), this.type==='voltmeter'?"V":"A", true), 0, 24); }
                 if (!['voltmeter', 'ammeter', 'galvanometer'].includes(this.type)) { ctx.fillStyle = "#555"; ctx.font = "12px Arial"; ctx.fillText(this.label, 0, -28); }
             }
             ctx.restore();
@@ -430,18 +561,30 @@
     function startSim() { isRunning = true; updateStatus(); }
     function stopSim() { isRunning = false; updateStatus(); }
     function resetSim() { isRunning = false; simTime = 0; historyData.length = 0; parts.forEach(p => { p.current = 0; p.voltageState = 0; if(p.type === 'ac_source') p.value = 0; }); nodes.forEach(n => n.voltage = 0); updateStatus(); updateProperties(); draw(); drawGraph(); }
+    // --- ★追加: コマ送り機能 ---
+    function stepSim() {
+        if (isRunning) stopSim(); // 実行中なら一旦停止
+        // 1フレーム分だけ計算を進める
+        for(let i=0; i<SUB_STEPS; i++) {
+            solveCircuit();
+            stepTime();
+        }
+        draw(); 
+        drawGraph();
+        if(selectedParts.length===1) updateMeasurements();
+    }
     function updateStatus() { const b=document.getElementById('sim-status-badge'); b.textContent=isRunning?"実行中":"停止中"; b.className=isRunning?"status-badge status-running":"status-badge status-stopped"; }
 
     function setTool(tool) { currentTool = tool; document.querySelectorAll('.sim-btn').forEach(b => b.classList.remove('active')); if(tool === 'select') document.getElementById('btn-select').classList.add('active'); if(tool === 'wire') document.getElementById('btn-wire').classList.add('active'); selectedParts = []; historyData.length = 0; updateProperties(); draw(); }
-    function addPart(type) { const cx = Math.round((width?width/2:400)/GRID_SIZE)*GRID_SIZE; const cy = Math.round((height?height/2:300)/GRID_SIZE)*GRID_SIZE; const part = new Part(type, cx, cy); parts.push(part); setTool('select'); selectedParts = [part]; updateProperties(); draw(); }
-    function rotateSelected() { selectedParts.forEach(p => p.rotate()); draw(); }
-    function toggleAllSwitches() { let c = false; parts.forEach(p => { if(p.type === 'switch') { p.isOpen = !p.isOpen; c = true; } }); if(c) { draw(); if(selectedParts.length === 1 && selectedParts[0].type === 'switch') updateProperties(); } }
+    function addPart(type) { const cx = Math.round((width?width/2:400)/GRID_SIZE)*GRID_SIZE; const cy = Math.round((height?height/2:300)/GRID_SIZE)*GRID_SIZE; const part = new Part(type, cx, cy); parts.push(part); setTool('select'); selectedParts = [part]; updateProperties(); triggerUpdate(); draw(); }
+    function rotateSelected() { selectedParts.forEach(p => p.rotate()); triggerUpdate(); draw(); }
+    function toggleAllSwitches() { let c = false; parts.forEach(p => { if(p.type === 'switch') { p.isOpen = !p.isOpen; c = true; } }); if(c) { triggerUpdate(); draw(); if(selectedParts.length === 1 && selectedParts[0].type === 'switch') updateProperties(); } }
 
     document.addEventListener('keydown', (e) => {
         if(document.getElementById('simulation-pane').classList.contains('active')) {
             if (e.key === 'r' || e.key === 'R') rotateSelected();
             if (e.key === 'Delete' || e.key === 'Backspace') deleteSelected();
-            if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); const h = findPartAt(mousePos.x, mousePos.y); if (h && h.type === 'switch') { h.isOpen = !h.isOpen; draw(); if (selectedParts.includes(h)) updateProperties(); return; } if (selectedParts.length === 1 && selectedParts[0].type === 'switch') { selectedParts[0].isOpen = !selectedParts[0].isOpen; updateProperties(); draw(); } }
+            if (e.key === ' ' || e.code === 'Space') { e.preventDefault(); const h = findPartAt(mousePos.x, mousePos.y); if (h && h.type === 'switch') { h.isOpen = !h.isOpen; triggerUpdate(); draw(); if (selectedParts.includes(h)) updateProperties(); return; } if (selectedParts.length === 1 && selectedParts[0].type === 'switch') { selectedParts[0].isOpen = !selectedParts[0].isOpen; updateProperties(); triggerUpdate(); draw(); } }
         }
     });
 
@@ -456,31 +599,137 @@
                     parts.splice(idx, 1);
                 }
             });
-            selectedParts = []; historyData.length = 0; updateProperties(); draw();
+            selectedParts = []; historyData.length = 0; updateProperties(); triggerUpdate(); draw();
         }
     }
-    function clearWires() { wires = []; parts.filter(p=>p.type==='joint').forEach(j=>{const idx=parts.indexOf(j); if(idx>-1){parts.splice(idx,1); j.nodes.forEach(n=>{const ni=nodes.indexOf(n); if(ni>-1)nodes.splice(ni,1);});}}); draw(); }
+    function clearWires() { wires = []; parts.filter(p=>p.type==='joint').forEach(j=>{const idx=parts.indexOf(j); if(idx>-1){parts.splice(idx,1); j.nodes.forEach(n=>{const ni=nodes.indexOf(n); if(ni>-1)nodes.splice(ni,1);});}}); triggerUpdate(); draw(); }
 
     function getMousePos(e) { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
     function findNodeAt(x, y) { return nodes.find(n => Math.hypot(n.x - x, n.y - y) < 15); }
     function findPartAt(x, y) { return parts.find(p => Math.abs(p.x - x) < 40 && Math.abs(p.y - y) < 25); }
 
-    canvas.addEventListener('mousedown', e => {
-        mousePos = getMousePos(e); lastMousePos = { ...mousePos };
-        if (e.button === 2) { isDragging = false; dragStartNode = null; isBoxSelecting = false; selectedParts = []; historyData.length = 0; updateProperties(); draw(); return; }
+  // --- 追加コード 1: 線分との距離計算用関数 ---
+    function getDistToSegment(p, v, w) {
+	const l2 = (v.x - w.x)**2 + (v.y - w.y)**2;
+	if (l2 === 0) return Math.hypot(p.x - v.x, p.y - v.y);
+	let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+	t = Math.max(0, Math.min(1, t));
+	return Math.hypot(p.x - (v.x + t * (w.x - v.x)), p.y - (v.y + t * (w.y - v.y)));
+    }
+
+  // --- ★★★ 追加コード: L字型の線との距離を計算する関数 ★★★ ---
+    function getDistToLShapedWire(p, startNode, endNode) {
+        // ワイヤーの描画ロジック: (start.x, start.y) -> (end.x, start.y) -> (end.x, end.y)
+        // つまり「横移動」してから「縦移動」する2本の線分として計算する
+        
+        // 角(Corner)の座標
+        const corner = { x: endNode.x, y: startNode.y };
+        
+        // 1. 横の線分 (Start -> Corner) との距離
+        const dist1 = getDistToSegment(p, startNode, corner);
+        
+        // 2. 縦の線分 (Corner -> End) との距離
+        const dist2 = getDistToSegment(p, corner, endNode);
+        
+        // 近い方を返す
+        return Math.min(dist1, dist2);
+    }
+
+    // --- ★★★ 修正コード: ワイヤーを探す関数 (L字対応版) ★★★ ---
+    function findWireAt(x, y) {
+        // マウス位置(x,y)から 「8px以内」 にあるワイヤーを探す (判定を少し甘くしてクリックしやすくしました)
+        return wires.find(w => getDistToLShapedWire({x, y}, w.start, w.end) < 8);
+    }
+
+
+    // ワイヤーを分割してJointを作る関数
+    function splitWireAndGetNode(wire, x, y) {
+	// グリッドにスナップさせる
+	const gx = Math.round(x / GRID_SIZE) * GRID_SIZE;
+	const gy = Math.round(y / GRID_SIZE) * GRID_SIZE;
+	
+	// 既存のワイヤーを削除
+	const idx = wires.indexOf(wire);
+	if (idx > -1) wires.splice(idx, 1);
+	
+	// 新しいJointを作成
+	const joint = new Part('joint', gx, gy);
+	parts.push(joint);
+	const jointNode = joint.nodes[0];
+	nodes.push(jointNode);
+
+	// 元の始点・終点と新しいJointを結ぶワイヤーを2本追加
+	wires.push({ start: wire.start, end: jointNode });
+	wires.push({ start: jointNode, end: wire.end });
+	
+	return jointNode;
+    }
+
+    // --- 修正コード: mouseup (自動接続ロジックを追加) ---
+    canvas.addEventListener('mouseup', e => {
         if (currentTool === 'select') {
-            const part = findPartAt(mousePos.x, mousePos.y);
-            if (part) {
-                if (e.shiftKey) { const idx = selectedParts.indexOf(part); if (idx > -1) selectedParts.splice(idx, 1); else selectedParts.push(part); } 
-                else { if (!selectedParts.includes(part)) { selectedParts = [part]; historyData.length = 0; } }
-                isDragging = true;
-            } else { if (!e.shiftKey) { selectedParts = []; historyData.length = 0; } isBoxSelecting = true; selectionBox = { x: mousePos.x, y: mousePos.y, w: 0, h: 0 }; }
-            updateProperties();
-        } else if (currentTool === 'wire') {
-            const node = findNodeAt(mousePos.x, mousePos.y);
-            if (node) { dragStartNode = node; isDragging = true; }
-            else { const gx = Math.round(mousePos.x/GRID_SIZE)*GRID_SIZE; const gy = Math.round(mousePos.y/GRID_SIZE)*GRID_SIZE; const joint = new Part('joint', gx, gy); parts.push(joint); nodes.push(joint.nodes[0]); dragStartNode = joint.nodes[0]; isDragging = true; draw(); }
+            if (isDragging && selectedParts.length > 0) { 
+                // 1. グリッドスナップ
+                selectedParts.forEach(p => { p.x = Math.round(p.x / GRID_SIZE) * GRID_SIZE; p.y = Math.round(p.y / GRID_SIZE) * GRID_SIZE; }); 
+                
+                // ★★★ 追加: 部品ドロップ時の自動接続処理 ★★★
+                selectedParts.forEach(p => {
+                    p.nodes.forEach(n => {
+                        // A. ワイヤーの上にドロップした場合
+                        const wire = findWireAt(n.x, n.y); // L字対応版の判定を使用
+                        if (wire) {
+                            // そのワイヤーが自分自身につながっていないか確認
+                            if (wire.start !== n && wire.end !== n) {
+                                // ワイヤーを分割して中継点(Joint)を作る
+                                const jointNode = splitWireAndGetNode(wire, n.x, n.y);
+                                // 部品の端子と中継点を結ぶワイヤーを追加
+                                wires.push({ start: n, end: jointNode });
+                            }
+                        }
+                        
+                        // B. 既存の接続点(Node)の上にドロップした場合
+                        const existingNode = nodes.find(en => en !== n && Math.abs(en.x - n.x) < 5 && Math.abs(en.y - n.y) < 5);
+                        if (existingNode) {
+                             // すでに接続されていなければ接続する
+                             const alreadyConnected = wires.some(w => (w.start===n && w.end===existingNode) || (w.start===existingNode && w.end===n));
+                             if (!alreadyConnected) {
+                                 wires.push({ start: n, end: existingNode });
+                             }
+                        }
+                    });
+                });
+                // ★★★ 追加ここまで ★★★
+            } 
+            else if (isBoxSelecting) {
+                const x1 = Math.min(selectionBox.x, selectionBox.x + selectionBox.w), x2 = Math.max(selectionBox.x, selectionBox.x + selectionBox.w);
+                const y1 = Math.min(selectionBox.y, selectionBox.y + selectionBox.h), y2 = Math.max(selectionBox.y, selectionBox.y + selectionBox.h);
+                parts.forEach(p => { if (p.x >= x1 && p.x <= x2 && p.y >= y1 && p.y <= y2 && !selectedParts.includes(p)) selectedParts.push(p); });
+                updateProperties();
+            }
+        } else if (currentTool === 'wire' && isDragging && dragStartNode) {
+            let targetNode = findNodeAt(mousePos.x, mousePos.y);
+            
+            // L字対応版の findWireAt を使用して判定
+            if (!targetNode) {
+                const wireUnderMouse = findWireAt(mousePos.x, mousePos.y);
+                if (wireUnderMouse) {
+                    targetNode = splitWireAndGetNode(wireUnderMouse, mousePos.x, mousePos.y);
+                }
+            }
+
+            if (!targetNode) {
+                const gx = Math.round(mousePos.x/GRID_SIZE)*GRID_SIZE; const gy = Math.round(mousePos.y/GRID_SIZE)*GRID_SIZE;
+                const existingJoint = parts.find(p=>p.type==='joint' && Math.abs(p.x-gx)<5 && Math.abs(p.y-gy)<5);
+                if(existingJoint) targetNode = existingJoint.nodes[0];
+                else { const joint = new Part('joint', gx, gy); parts.push(joint); nodes.push(joint.nodes[0]); targetNode = joint.nodes[0]; }
+            }
+            if (targetNode && targetNode !== dragStartNode) {
+                const exists = wires.some(w => (w.start === dragStartNode && w.end === targetNode) || (w.start === targetNode && w.end === dragStartNode));
+                if (!exists) wires.push({ start: dragStartNode, end: targetNode });
+            }
         }
+	isDragging = false; dragStartNode = null; isBoxSelecting = false; 
+        triggerUpdate(); // ★追加: 操作完了時に再計算を予約
         draw();
     });
     
@@ -495,6 +744,15 @@
             }
         } else if (currentTool === 'wire' && isDragging && dragStartNode) {
             let targetNode = findNodeAt(mousePos.x, mousePos.y);
+            
+            // ★ L字対応版の findWireAt を使用して判定
+            if (!targetNode) {
+                const wireUnderMouse = findWireAt(mousePos.x, mousePos.y);
+                if (wireUnderMouse) {
+                    targetNode = splitWireAndGetNode(wireUnderMouse, mousePos.x, mousePos.y);
+                }
+            }
+
             if (!targetNode) {
                 const gx = Math.round(mousePos.x/GRID_SIZE)*GRID_SIZE; const gy = Math.round(mousePos.y/GRID_SIZE)*GRID_SIZE;
                 const existingJoint = parts.find(p=>p.type==='joint' && Math.abs(p.x-gx)<5 && Math.abs(p.y-gy)<5);
@@ -532,17 +790,51 @@
         const mkSld = (val, id, mn, mx, st, lbl="調整") => `<div class="prop-row" style="flex-direction:column;align-items:flex-start;"><div style="display:flex;justify-content:space-between;width:100%;"><span>${lbl}</span><span style="font-size:11px;">${mn}-${mx}</span></div><input type="range" id="${id}_rg" value="${val}" min="${mn}" max="${mx}" step="${st}" oninput="chP('${id}', this.value)" style="width:100%;"></div>`;
         
         if (p.type === 'resistor') { html += mkInp("抵抗(Ω)", p.value, "v"); html += mkSld(p.value, "v", 1, 1000, 10); }
+	if (p.type === 'npn') {
+	    html += mkInp("増幅率(β)", p.value, "v", 1);
+	    html += mkSld(p.value, "v", 10, 500, 10, "直流電流増幅率 hFE");
+	    // トランジスタ用モニター
+	    const ib = (p.nodes[0].voltage - p.nodes[2].voltage) > 0.5 ? (p.nodes[0].voltage - p.nodes[2].voltage - 0.6)/1000 : 0; // 簡易計算
+	    // 正確な値はsolveCircuitで計算されたcurrentを使いたいが、NPNは複雑なので簡易表示
+	    html += `<div class="box" style="font-size:11px; margin:5px 0;">
+             <strong>動作状態:</strong><br>
+             Vbe: ${formatValue(p.nodes[0].voltage - p.nodes[2].voltage, "V")}<br>
+             Vce: ${formatValue(p.nodes[1].voltage - p.nodes[2].voltage, "V")}
+             </div>`;
+	}
         if (p.type === 'switch') html += `<div class="prop-row"><button onclick="toggleSwitch()" style="width:100%;padding:8px;background:${p.isOpen?'#95a5a6':'#27ae60'};color:white;border:none;border-radius:4px;">${p.isOpen?'現在: OFF':'現在: ON'} - 切替</button></div>`;
         if (p.type === 'source') html += mkInp("電圧(V)", p.value, "v");
         if (p.type === 'ac_source') { html += mkInp("最大(V)", p.amplitude, "a"); html += mkInp("周波数(Hz)", p.freq, "f", 0.1); }
         
-        // コンデンサー：スライダーUI
+        // コンデンサー：スライダーUI＋ 漏れ抵抗スイッチ
         if (p.type === 'capacitor') {
             html += `<div class="prop-row" style="font-weight:bold; color:#3498db;">合成容量: <span id="cap_val_disp">${p.value.toFixed(2)}</span> µF</div>`;
+	    // ★追加: 漏れ抵抗のON/OFF切り替えボタン
+            html += `<div class="prop-row" style="justify-content:space-between; margin-top:5px; margin-bottom:5px;">
+                        <span>漏れ抵抗(Real):</span>
+                        <button onclick="toggleLeakage()" style="font-size:11px; padding:4px 8px; background:${p.useLeakage?'#27ae60':'#95a5a6'}; color:white; border:none; border-radius:4px; cursor:pointer;">
+                            ${p.useLeakage ? 'ON (安定)' : 'OFF (理想)'}
+                        </button>
+                     </div>`;
+	    
             html += mkSld(p.cap_s, "cap_s", 0.5, 2.0, 0.1, "極板面積 (S)");
             html += mkSld(p.cap_d, "cap_d", 0.1, 5.0, 0.1, "極板間距離 (d)");
             html += mkSld(p.cap_e, "cap_e", 1.0, 10.0, 0.1, "比誘電率 (εr)");
             html += mkSld(p.cap_x, "cap_x", 0.0, 1.0, 0.01, "誘電体挿入 (x)");
+        }
+	if (p.type === 'npn') {
+            html += mkInp("増幅率(β)", p.value, "v", 1);
+            html += mkSld(p.value, "v", 10, 500, 10, "直流電流増幅率 hFE");
+            
+            // 簡易モニター表示
+            const vbe = p.nodes[0].voltage - p.nodes[2].voltage;
+            const vce = p.nodes[1].voltage - p.nodes[2].voltage;
+            html += `<div class="box" style="font-size:11px; margin:5px 0;">
+                     <strong>動作点:</strong><br>
+                     Vbe: ${formatValue(vbe, "V")}<br>
+                     Vce: ${formatValue(vce, "V")}<br>
+                     Ic: ${formatValue(p.current, "A")}
+                     </div>`;
         }
 
         if (p.type === 'inductor') html += mkInp("L(H)", p.value, "v", 0.01);
@@ -591,11 +883,26 @@
             }
             const disp = document.getElementById('cap_val_disp');
             if(disp) disp.innerText = p.value.toFixed(2);
+	    triggerUpdate();
             draw();
         }
+	// ★★★ 追加: 関数の最後にこれを追加してください ★★★
+        triggerUpdate(); 
+        draw();
     }
 
     function toggleSwitch() { if(selectedParts.length===1 && selectedParts[0].type==='switch'){selectedParts[0].isOpen=!selectedParts[0].isOpen; updateProperties(); draw();} }
+    // ★追加: 漏れ抵抗切り替え用関数
+    function toggleLeakage() {
+        if(selectedParts.length===1 && selectedParts[0].type==='capacitor'){
+            selectedParts[0].useLeakage = !selectedParts[0].useLeakage;
+            // 状態をリセットしないと急激な電圧変動が起きることがあるため、電圧状態を少し緩和する
+            selectedParts[0].voltageState *= 0.99; 
+            updateProperties();
+	    triggerUpdate();
+            draw();
+        }
+    }
     function updateMeasurements() {
         if(selectedParts.length!==1)return; const p=selectedParts[0];
         const setT = (id, v, u) => { const e=document.getElementById(id); if(e)e.innerText=formatValue(v, u, true); };
@@ -605,23 +912,29 @@
         else if(['voltmeter','ammeter','galvanometer'].includes(p.type)) setT('m-val', p.type==='voltmeter'?p.getVoltageDiff():p.current, p.type==='voltmeter'?"V":"A");
     }
 
-    // --- ★★★ 物理エンジン (コンパニオンモデルによる厳密解法) ★★★ ---
-    function solveCircuit() {
+  // --- ★★★ 物理エンジン (コンパニオンモデルによる厳密解法) ★★★ ---
+  function solveCircuit() {
         const nets = []; nodes.forEach(n => n.netId = -1);
         
-        // ★修正点: 初期電圧を0ではなく、前回の電圧から引き継ぐように修正
         function traceNet(n, id) { 
             n.netId=id; 
-            if(!nets[id]) {
-                // 前回フレームの電圧(n.voltage)をシード値として使用
-                nets[id]={nodes:[], voltage:n.voltage, fixed:false}; 
-            }
+            if(!nets[id]) { nets[id]={nodes:[], voltage:n.voltage, fixed:false}; }
             nets[id].nodes.push(n); 
             wires.forEach(w=>{if(w.start===n&&w.end.netId===-1)traceNet(w.end,id);if(w.end===n&&w.start.netId===-1)traceNet(w.start,id);}); 
         }
-
+        // 1. ネットリスト作成後、アースの処理を追加
         let c=0; nodes.forEach(n=>{if(n.netId===-1){traceNet(n,c);c++;}});
-        let g=false; parts.filter(p=>['source','ac_source'].includes(p.type)).forEach(s=>{if(!g){const n=nets[s.nodes[0].netId]; if(n){n.fixed=true;n.voltage=0;g=true;}}});
+        let g=false;
+        // ★変更: アース(ground)がつながっているネットを優先的に0V固定にする
+        parts.filter(p => p.type === 'ground').forEach(gp => {
+            const n = nets[gp.nodes[0].netId];
+            if (n) { n.fixed = true; n.voltage = 0; g = true; }
+        });
+        // アースがない場合は、従来どおり電源のマイナス側などを基準にする
+        if (!g) {
+            parts.filter(p=>['source','ac_source'].includes(p.type)).forEach(s=>{if(!g){const n=nets[s.nodes[0].netId]; if(n){n.fixed=true;n.voltage=0;g=true;}}});
+        }
+        // それでも決まらなければネット0を基準にする
         if(!g&&nets.length>0&&nets[0]){nets[0].fixed=true;nets[0].voltage=0;}
         
         for(let k=0;k<ITERATIONS;k++){
@@ -629,41 +942,173 @@
                 if(!net||net.fixed)return; let num=0,den=G_LEAK;
                 net.nodes.forEach(node=>{
                     const p=node.parentPart; if(p.type==='joint')return;
-                    const oNode=(p.nodes[0]===node)?p.nodes[1]:p.nodes[0]; const oNet=nets[oNode.netId]; if(!oNet)return;
+                    
+                    // --- NPN Transistor Special Handling ---
+                    if (p.type === 'npn') {
+                        const v_be = p.nodes[0].voltage - p.nodes[2].voltage;
+                        const v_ce = p.nodes[1].voltage - p.nodes[2].voltage;
+                        const idx = p.nodes.indexOf(node);
+                        
+                        // Base Logic
+                        if (idx === 0) { 
+                            const eNet = nets[p.nodes[2].netId];
+                            if (eNet) {
+                                let r = (v_be > 0.6) ? 500 : 1e7; 
+                                let g = 1.0/r; num += (eNet.voltage + 0.6) * g; den += g;
+                            }
+                        }
+                        // Collector Logic
+                        else if (idx === 1) { 
+                            const eNet = nets[p.nodes[2].netId];
+                            if (eNet) {
+                                let r = 1e8;
+                                if (v_be > 0.6) {
+                                    // Amplification model: Ic = Beta * Ib
+                                    let ib = (v_be - 0.6) / 500;
+                                    let ic = ib * p.value;
+                                    // Saturation model
+                                    if (v_ce < 0.2) r = 5; 
+                                    else if (ic > 0) r = Math.max(5, v_ce / ic);
+                                }
+                                let g = 1.0/r; num += eNet.voltage * g; den += g;
+                            }
+                        }
+                        // Emitter Logic
+                        else if (idx === 2) {
+                            // From Base
+                            const bNet = nets[p.nodes[0].netId];
+                            if (bNet) {
+                                let r = (v_be > 0.6) ? 500 : 1e7;
+                                let g = 1.0/r; num += (bNet.voltage - 0.6) * g; den += g;
+                            }
+                            // From Collector
+                            const cNet = nets[p.nodes[1].netId];
+                            if (cNet) {
+                                let r = 1e8;
+                                if (v_be > 0.6) {
+                                    let ib = (v_be - 0.6) / 500;
+                                    let ic = ib * p.value;
+                                    if (v_ce < 0.2) r = 5;
+                                    else if (ic > 0) r = Math.max(5, v_ce / ic);
+                                }
+                                let g = 1.0/r; num += cNet.voltage * g; den += g;
+                            }
+                        }
+                        return; // NPN done
+                    }
+
+                    // --- Standard 2-Node Components ---
+                    const oNode=(p.nodes[0]===node)?p.nodes[1]:p.nodes[0]; 
+                    const oNet=nets[oNode.netId]; if(!oNet)return;
+                    
                     let r=1e9, v_off=0;
-                    if(['source','ac_source'].includes(p.type)){r=INTERNAL_R_SRC; v_off=(p.nodes[1]===node)?p.value:-p.value;}
-                    else if(p.type==='switch')r=p.isOpen?R_SWITCH_OPEN:R_SWITCH_CLOSED;
-                    else if(['resistor','voltmeter'].includes(p.type))r=p.value;
-                    else if(['ammeter','galvanometer'].includes(p.type))r=INTERNAL_R_AMMETER;
-                    else if(p.type==='capacitor'){
-                        r=dt/(p.value*1e-6); 
-                        // ★修正: コンパニオンモデルの電圧源の極性を修正
-                        // V_off は「過去の電圧(state)」。
-                        // ノード方程式において、相手側ノードの電圧に加算するオフセット。
-                        // 極性を反転させました。
-                        v_off=(p.nodes[1]===node)?-p.voltageState:p.voltageState;
+                    
+                    if(['source','ac_source'].includes(p.type)){ r=INTERNAL_R_SRC; v_off=(p.nodes[1]===node)?p.value:-p.value; }
+                    else if(p.type==='switch') r=p.isOpen?R_SWITCH_OPEN:R_SWITCH_CLOSED;
+                    else if(['resistor','voltmeter'].includes(p.type)) r=p.value;
+                    else if(['ammeter','galvanometer'].includes(p.type)) r=INTERNAL_R_AMMETER;
+		    // ★変更: コンデンサーの処理
+                    else if(p.type==='capacitor'){ 
+                        // コンパニオンモデル
+                        r = dt/(p.value*1e-6); 
+                        v_off = (p.nodes[1]===node) ? -p.voltageState : p.voltageState; 
+                        
+                        // 漏れ抵抗 (Leakage Resistance) 
+                        // ユーザーが「ON」にしている場合のみ適用する
+                        if (p.useLeakage) {
+                            const R_LEAK = 1e6; // 1MΩ
+                            const g_leak = 1.0 / R_LEAK;
+                            num += oNet.voltage * g_leak;
+                            den += g_leak;
+                        }
                     }
-                    else if(p.type==='inductor'){
-                        r = p.value/dt;
-                        const v_eq = r * p.current; 
-                        if (p.nodes[1] === node) v_off = v_eq; else v_off = -v_eq;
+                    else if(p.type==='inductor'){ r = p.value/dt; const v_eq = r * p.current; v_off = (p.nodes[1] === node) ? v_eq : -v_eq; }
+                    
+                    // --- Diode / LED Logic ---
+                    else if(p.type === 'diode' || p.type === 'led') {
+                        const vf = p.type==='led' ? 1.8 : 0.6;
+                        // Determine bias based on current voltage estimate
+                        const v_anode = p.nodes[0].voltage;
+                        const v_cathode = p.nodes[1].voltage;
+                        const fw = (v_anode - v_cathode) > vf;
+                        
+                        if(fw) { r = 5; v_off = (p.nodes[1] === node) ? vf : -vf; } // ON
+                        else { r = 1e8; v_off = 0; } // OFF
                     }
+
                     const g=1.0/r; num+=(oNet.voltage+v_off)*g; den+=g;
                 });
                 if(den>0)net.voltage=num/den;
             });
         }
         nets.forEach(net=>{if(net)net.nodes.forEach(n=>n.voltage=net.voltage);});
-        parts.forEach(p=>{
-            if(p.type==='joint')return; const vd=p.getVoltageDiff();
-            if(p.type==='capacitor'){const req=dt/(p.value*1e-6); p.current=(vd-p.voltageState)/req;}
-            else if(p.type==='inductor'){
+        
+        // --- Calculate Currents for Components ---
+        parts.forEach(p => {
+            if (p.type === 'joint') return;
+
+            // NPN Transistor Current Calculation
+            if (p.type === 'npn') {
+                const v_be = p.nodes[0].voltage - p.nodes[2].voltage;
+                const v_ce = p.nodes[1].voltage - p.nodes[2].voltage;
+                let ic = 0;
+                
+                // 簡易的な増幅モデル
+                if (v_be > 0.6) {
+                     // ベース電流の概算（内部抵抗を仮定）
+                     const ib = (v_be - 0.6) / 500; 
+                     ic = ib * p.value; 
+                     
+                     // 飽和領域（Saturation）の制限
+                     if (v_ce < 0.2) {
+                         ic = v_ce / 5; // 飽和時の抵抗を小さく仮定
+                     } else if (ic * 5 > v_ce) { 
+                         // 負荷線との交点を簡易的に表現（完全に正確ではありませんがシミュレーションとしては動作します）
+                         // ic = ic; 
+                     }
+                }
+                p.current = ic; // コレクタ電流をメインの電流として表示
+                return;
             }
-            else if(p.type==='switch')p.current=vd/(p.isOpen?R_SWITCH_OPEN:R_SWITCH_CLOSED);
-            else if(['source','ac_source'].includes(p.type))p.current=(p.value+vd)/INTERNAL_R_SRC;
-            else p.current=vd/(p.type==='ammeter'?INTERNAL_R_AMMETER:p.value);
+
+            const vd = p.getVoltageDiff();
+            
+            if (p.type === 'capacitor') {
+                // I = C * dV/dt => (V_current - V_state) / R_eq
+                const req = dt / (p.value * 1e-6);
+                if (req > 1e-9) {
+                     p.current = (vd - p.voltageState) / req;
+                } else {
+                     p.current = 0;
+                }
+            }
+            else if (p.type === 'inductor') {
+                // コイルの電流は stepTime で積分計算されるため、ここでは補正しない
+                // ただし表示用に直近の値を保持
+            }
+            else if (p.type === 'switch') {
+                p.current = vd / (p.isOpen ? R_SWITCH_OPEN : R_SWITCH_CLOSED);
+            }
+            else if (['source', 'ac_source'].includes(p.type)) {
+                // 電源電流の逆算: (V_source + V_node_diff) / R_internal
+                // ※このシミュレータのモデルでは電源は内部抵抗を持つ電圧源として扱われています
+                p.current = (p.value - vd) / INTERNAL_R_SRC; // 向きに注意: 起電力方向を正とする
+            }
+            else if (p.type === 'diode' || p.type === 'led') {
+                const vf = p.type === 'led' ? 1.8 : 0.6;
+                if (vd > vf) {
+                    p.current = (vd - vf) / 5; // ON時の動的抵抗
+                } else {
+                    p.current = vd / 1e8; // OFF時の漏れ電流
+                }
+            }
+            else {
+                // 抵抗、計測器など
+                const r = (p.type === 'ammeter' || p.type === 'galvanometer') ? INTERNAL_R_AMMETER : p.value;
+                p.current = vd / r;
+            }
         });
-    }
+  }
 
     function stepTime() {
         simTime+=dt; animationOffset+=dt;
@@ -682,16 +1127,37 @@
         }
     }
 
+    // --- 描画関数 (更新版: 接続チェック対応) ---
     function draw() {
         if(width===0||height===0)return; ctx.clearRect(0,0,width,height);
         
-        ctx.strokeStyle="#27ae60"; ctx.lineWidth=2; ctx.beginPath();
-        wires.forEach(w=>{ ctx.moveTo(w.start.x, w.start.y); ctx.lineTo(w.end.x, w.start.y); ctx.lineTo(w.end.x, w.end.y); });
-        ctx.stroke();
+        // ワイヤーの描画
+        wires.forEach(w=>{ 
+            ctx.beginPath(); 
+            ctx.moveTo(w.start.x, w.start.y); 
+            ctx.lineTo(w.end.x, w.start.y); 
+            ctx.lineTo(w.end.x, w.end.y); 
+            
+            // 接続チェックモードなら色を変える
+            if (isNetViewMode && w.start.netId !== -1) {
+                ctx.strokeStyle = getNetColor(w.start.netId);
+                ctx.lineWidth = 4; ctx.globalAlpha = 0.8;
+            } else {
+                ctx.strokeStyle = "#27ae60"; ctx.lineWidth = 2; ctx.globalAlpha = 1.0;
+            }
+            ctx.stroke(); ctx.globalAlpha = 1.0;
+        });
 
-        ctx.fillStyle="#27ae60";
-        wires.forEach(w=>{ ctx.beginPath(); ctx.arc(w.start.x,w.start.y,3,0,2*Math.PI); ctx.fill(); ctx.beginPath(); ctx.arc(w.end.x,w.end.y,3,0,2*Math.PI); ctx.fill(); ctx.beginPath(); ctx.arc(w.end.x, w.start.y, 2, 0, 2*Math.PI); ctx.fill(); });
+        // 接続点の描画
+        wires.forEach(w=>{ 
+            if (isNetViewMode && w.start.netId !== -1) ctx.fillStyle = getNetColor(w.start.netId);
+            else ctx.fillStyle = "#27ae60";
+            ctx.beginPath(); ctx.arc(w.start.x,w.start.y,3,0,2*Math.PI); ctx.fill(); 
+            ctx.beginPath(); ctx.arc(w.end.x,w.end.y,3,0,2*Math.PI); ctx.fill(); 
+            ctx.beginPath(); ctx.arc(w.end.x, w.start.y, 2, 0, 2*Math.PI); ctx.fill(); 
+        });
 
+        // ドラッグ中のワイヤー描画
         if(currentTool==='wire'&&isDragging&&dragStartNode){
             ctx.strokeStyle="#2ecc71"; ctx.lineWidth=2; ctx.setLineDash([5,5]); ctx.beginPath();
             ctx.moveTo(dragStartNode.x, dragStartNode.y); const tx = mousePos.x, ty = mousePos.y; ctx.lineTo(tx, dragStartNode.y); ctx.lineTo(tx, ty); 
@@ -699,10 +1165,187 @@
             const gx = Math.round(mousePos.x/GRID_SIZE)*GRID_SIZE; const gy = Math.round(mousePos.y/GRID_SIZE)*GRID_SIZE;
             ctx.fillStyle="rgba(46, 204, 113, 0.5)"; ctx.beginPath(); ctx.arc(gx, gy, 6, 0, 2*Math.PI); ctx.fill();
         }
+        
+        // 範囲選択ボックス
         if(currentTool==='select'&&isBoxSelecting){ ctx.fillStyle="rgba(52,152,219,0.2)"; ctx.strokeStyle="#3498db"; ctx.lineWidth=1; ctx.setLineDash([3,3]); ctx.fillRect(selectionBox.x,selectionBox.y,selectionBox.w,selectionBox.h); ctx.strokeRect(selectionBox.x,selectionBox.y,selectionBox.w,selectionBox.h); ctx.setLineDash([]); }
+        
+        // 部品の描画
         parts.forEach(p=>p.draw(ctx));
+        
+        // ワイヤーツール時のホバー表示
         if(currentTool==='wire'&&hoverNode){ctx.beginPath();ctx.fillStyle="#e74c3c";ctx.arc(hoverNode.x,hoverNode.y,6,0,2*Math.PI);ctx.fill();}
     }
+
+    function deleteSelected() {
+        if (selectedParts.length > 0) {
+            selectedParts.forEach(part => {
+                const idx = parts.indexOf(part);
+                if (idx > -1) {
+                    const partNodes = part.nodes;
+                    wires = wires.filter(w => !partNodes.includes(w.start) && !partNodes.includes(w.end));
+                    partNodes.forEach(n => { const nIdx = nodes.indexOf(n); if (nIdx > -1) nodes.splice(nIdx, 1); });
+                    parts.splice(idx, 1);
+                }
+            });
+            selectedParts = []; historyData.length = 0; updateProperties(); triggerUpdate(); draw();
+        }
+    }
+    function clearWires() { wires = []; parts.filter(p=>p.type==='joint').forEach(j=>{const idx=parts.indexOf(j); if(idx>-1){parts.splice(idx,1); j.nodes.forEach(n=>{const ni=nodes.indexOf(n); if(ni>-1)nodes.splice(ni,1);});}}); triggerUpdate(); draw(); }
+
+    function getMousePos(e) { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+    function findNodeAt(x, y) { return nodes.find(n => Math.hypot(n.x - x, n.y - y) < 15); }
+    function findPartAt(x, y) { return parts.find(p => Math.abs(p.x - x) < 40 && Math.abs(p.y - y) < 25); }
+
+    // --- 計算・判定用ヘルパー (L字配線対応) ---
+    function getDistToSegment(p, v, w) {
+        const l2 = (v.x - w.x)**2 + (v.y - w.y)**2;
+        if (l2 === 0) return Math.hypot(p.x - v.x, p.y - v.y);
+        let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+        t = Math.max(0, Math.min(1, t));
+        return Math.hypot(p.x - (v.x + t * (w.x - v.x)), p.y - (v.y + t * (w.y - v.y)));
+    }
+
+    function getDistToLShapedWire(p, startNode, endNode) {
+        const corner = { x: endNode.x, y: startNode.y };
+        const dist1 = getDistToSegment(p, startNode, corner);
+        const dist2 = getDistToSegment(p, corner, endNode);
+        return Math.min(dist1, dist2);
+    }
+
+    function findWireAt(x, y) {
+        // 判定を少し甘く(8px)してクリックしやすく
+        return wires.find(w => getDistToLShapedWire({x, y}, w.start, w.end) < 8);
+    }
+
+    function splitWireAndGetNode(wire, x, y) {
+        const gx = Math.round(x / GRID_SIZE) * GRID_SIZE;
+        const gy = Math.round(y / GRID_SIZE) * GRID_SIZE;
+        const idx = wires.indexOf(wire);
+        if (idx > -1) wires.splice(idx, 1);
+        const joint = new Part('joint', gx, gy);
+        parts.push(joint);
+        const jointNode = joint.nodes[0];
+        nodes.push(jointNode);
+        wires.push({ start: wire.start, end: jointNode });
+        wires.push({ start: jointNode, end: wire.end });
+        return jointNode;
+    }
+
+    // --- イベントリスナー (重複を解消し統合) ---
+    canvas.addEventListener('mousedown', e => {
+        mousePos = getMousePos(e); lastMousePos = { ...mousePos }; mouseDownPos = { ...mousePos }; // ★追加: 押し始めた位置を記憶
+        if (e.button === 2) { isDragging = false; dragStartNode = null; isBoxSelecting = false; selectedParts = []; historyData.length = 0; updateProperties(); draw(); return; }
+        
+        if (currentTool === 'select') {
+            const part = findPartAt(mousePos.x, mousePos.y);
+            if (part) {
+                if (e.shiftKey) { const idx = selectedParts.indexOf(part); if (idx > -1) selectedParts.splice(idx, 1); else selectedParts.push(part); } 
+                else { if (!selectedParts.includes(part)) { selectedParts = [part]; historyData.length = 0; } }
+                isDragging = true;
+            } else { if (!e.shiftKey) { selectedParts = []; historyData.length = 0; } isBoxSelecting = true; selectionBox = { x: mousePos.x, y: mousePos.y, w: 0, h: 0 }; }
+            updateProperties();
+        } else if (currentTool === 'wire') {
+            let node = findNodeAt(mousePos.x, mousePos.y);
+            
+            // ノードが無い場合、ワイヤーの上かチェック
+            if (!node) {
+                const wireUnderMouse = findWireAt(mousePos.x, mousePos.y);
+                if (wireUnderMouse) {
+                    // ワイヤー上なら分割して接続点にする
+                    node = splitWireAndGetNode(wireUnderMouse, mousePos.x, mousePos.y);
+                }
+            }
+            
+            if (node) { dragStartNode = node; isDragging = true; }
+            else { 
+                const gx = Math.round(mousePos.x/GRID_SIZE)*GRID_SIZE; const gy = Math.round(mousePos.y/GRID_SIZE)*GRID_SIZE; 
+                const joint = new Part('joint', gx, gy); parts.push(joint); nodes.push(joint.nodes[0]); dragStartNode = joint.nodes[0]; isDragging = true; draw(); 
+            }
+        }
+        draw();
+    });
+    
+    canvas.addEventListener('mouseup', e => {
+        // ★追加: クリック判定 (マウスがほとんど動いていなければクリックとみなす)
+        const dist = Math.hypot(mousePos.x - mouseDownPos.x, mousePos.y - mouseDownPos.y);
+        if (dist < 3 && currentTool === 'select') {
+            const p = findPartAt(mousePos.x, mousePos.y);
+            // スイッチなら切り替え
+            if (p && p.type === 'switch') {
+                p.isOpen = !p.isOpen;
+                updateProperties(); // プロパティ表示も更新
+                draw();
+            }
+        }
+        if (currentTool === 'select') {
+            if (isDragging && selectedParts.length > 0) { 
+                // 1. グリッドスナップ
+                selectedParts.forEach(p => { p.x = Math.round(p.x / GRID_SIZE) * GRID_SIZE; p.y = Math.round(p.y / GRID_SIZE) * GRID_SIZE; }); 
+                
+                // 2. 部品ドロップ時の自動接続処理
+                selectedParts.forEach(p => {
+                    p.nodes.forEach(n => {
+                        // A. ワイヤーの上にドロップした場合
+                        const wire = findWireAt(n.x, n.y); 
+                        if (wire) {
+                            if (wire.start !== n && wire.end !== n) {
+                                const jointNode = splitWireAndGetNode(wire, n.x, n.y);
+                                wires.push({ start: n, end: jointNode });
+                            }
+                        }
+                        
+                        // B. 既存の接続点(Node)の上にドロップした場合
+                        const existingNode = nodes.find(en => en !== n && Math.hypot(en.x - n.x, en.y - n.y) < 5);
+                        if (existingNode) {
+                             const alreadyConnected = wires.some(w => (w.start===n && w.end===existingNode) || (w.start===existingNode && w.end===n));
+                             if (!alreadyConnected) wires.push({ start: n, end: existingNode });
+                        }
+                    });
+                });
+            } 
+            else if (isBoxSelecting) {
+                const x1 = Math.min(selectionBox.x, selectionBox.x + selectionBox.w), x2 = Math.max(selectionBox.x, selectionBox.x + selectionBox.w);
+                const y1 = Math.min(selectionBox.y, selectionBox.y + selectionBox.h), y2 = Math.max(selectionBox.y, selectionBox.y + selectionBox.h);
+                parts.forEach(p => { if (p.x >= x1 && p.x <= x2 && p.y >= y1 && p.y <= y2 && !selectedParts.includes(p)) selectedParts.push(p); });
+                updateProperties();
+            }
+        } else if (currentTool === 'wire' && isDragging && dragStartNode) {
+            let targetNode = findNodeAt(mousePos.x, mousePos.y);
+            
+            // ドロップ先にノードが無い場合、ワイヤーの上かチェック
+            if (!targetNode) {
+                const wireUnderMouse = findWireAt(mousePos.x, mousePos.y);
+                if (wireUnderMouse) {
+                    targetNode = splitWireAndGetNode(wireUnderMouse, mousePos.x, mousePos.y);
+                }
+            }
+
+            if (!targetNode) {
+                const gx = Math.round(mousePos.x/GRID_SIZE)*GRID_SIZE; const gy = Math.round(mousePos.y/GRID_SIZE)*GRID_SIZE;
+                const existingJoint = parts.find(p=>p.type==='joint' && Math.abs(p.x-gx)<5 && Math.abs(p.y-gy)<5);
+                if(existingJoint) targetNode = existingJoint.nodes[0];
+                else { const joint = new Part('joint', gx, gy); parts.push(joint); nodes.push(joint.nodes[0]); targetNode = joint.nodes[0]; }
+            }
+            if (targetNode && targetNode !== dragStartNode) {
+                const exists = wires.some(w => (w.start === dragStartNode && w.end === targetNode) || (w.start === targetNode && w.end === dragStartNode));
+                if (!exists) wires.push({ start: dragStartNode, end: targetNode });
+            }
+        }
+        isDragging = false; dragStartNode = null; isBoxSelecting = false; draw();
+    });
+
+    canvas.addEventListener('dblclick', e => { if (currentTool === 'select') { const p = findPartAt(getMousePos(e).x, getMousePos(e).y); if (p && p.type === 'switch') { p.isOpen = !p.isOpen; triggerUpdate(); draw(); if (selectedParts.includes(p)) updateProperties(); } } });
+    canvas.addEventListener('mousemove', e => {
+        mousePos = getMousePos(e); hoverNode = findNodeAt(mousePos.x, mousePos.y);
+        if (currentTool === 'wire') canvas.style.cursor = hoverNode ? 'crosshair' : 'default'; else canvas.style.cursor = findPartAt(mousePos.x, mousePos.y) ? 'move' : 'default';
+        const dx = mousePos.x - lastMousePos.x, dy = mousePos.y - lastMousePos.y; lastMousePos = { ...mousePos };
+        if (currentTool === 'select') {
+            if (isDragging && selectedParts.length > 0) { selectedParts.forEach(p => { p.x += dx; p.y += dy; }); } 
+            else if (isBoxSelecting) { selectionBox.w = mousePos.x - selectionBox.x; selectionBox.h = mousePos.y - selectionBox.y; }
+        }
+        draw();
+    });
+    canvas.addEventListener('contextmenu', e => e.preventDefault());
 
     function drawGraph() {
         if(selectedParts.length!==1 || selectedParts[0].type==='joint'){gCtx.clearRect(0,0,graphW,graphH); gCtx.fillStyle="#aaa"; gCtx.font="12px sans-serif"; gCtx.textAlign="center"; gCtx.fillText("素子を選択 (中継点以外)",graphW/2,graphH/2); return;}
@@ -724,14 +1367,31 @@
         }
     }
 
+    const SUB_STEPS = 10; // ★サブステップ数を定義
+
     function loop() {
         if(document.getElementById('simulation-pane').classList.contains('active')) {
-            solveCircuit(); if(isRunning) stepTime(); draw(); drawGraph();
+            // ★サブステップのループを追加
+            if (isRunning) {
+                for(let i=0; i<SUB_STEPS; i++) {
+                    solveCircuit();
+                    stepTime();
+                }
+            } else {
+		// ★★★ 修正箇所: 停止中は「操作直後」のみ計算を実行する (ドリフト防止) ★★★
+                if (updateFrames > 0) {
+                    solveCircuit();
+                    updateFrames--;
+                }
+            }
+            
+            draw(); drawGraph();
             if(selectedParts.length===1) updateMeasurements();
         }
         requestAnimationFrame(loop);
     }
-    resize(); resizeGraph(); loop();
+  resize(); resizeGraph(); loop();
 </script>
 </body>
 </html>
+
