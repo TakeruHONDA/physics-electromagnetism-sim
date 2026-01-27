@@ -397,6 +397,27 @@
         凡例: <span style="color:#4facfe">● 自由電子</span>, <span style="color:#ff5e62">○ 正孔</span>, <span style="color:#666">● 固定原子</span>
       </div>
     </div>
+    <div class="note">
+      <h3>🎓 物理の深層: なぜ温度を上げると電気が流れるの？</h3>
+      <p>
+        金属（導体）は温度が上がると原子の振動が邪魔をして抵抗が増えますが、半導体は逆に<b>抵抗が下がります</b>。
+        これは、熱エネルギーによって結合（価電子帯）から脱出し、自由に動けるようになった電子（伝導帯の電子）の数が劇的に増えるからです。
+      </p>
+      <p>
+        半導体中のキャリア密度（電子・正孔の数）$n_i$ は、温度 $T$ に対して以下の指数関数の法則に従います。
+      </p>
+      <div style="text-align:center; margin: 10px 0; font-size: 1.1em;">
+        $$n_i \propto e^{-\frac{E_g}{2k_B T}}$$
+      </div>
+      <ul>
+        <li>$E_g$: バンドギャップエネルギー（結合を切るのに必要なエネルギー）</li>
+        <li>$k_B$: ボルツマン定数</li>
+        <li>$T$: 絶対温度 [K]</li>
+      </ul>
+      <p>
+        シミュレーションで温度スライダーを右（高温）に動かすと、指数関数的にキャリア（赤と青の粒）が増えていくのは、この物理法則を再現しているからです。
+      </p>
+    </div>
   </div>
 
   <div id="semi-container-B" style="display:none; margin-top:15px;">
@@ -443,6 +464,58 @@
           <li><b>順バイアス (V>0):</b> 電子と正孔が接合面に押し込まれ、空乏層を乗り越えて電流が流れます。</li>
           <li><b>逆バイアス (V<0):</b> キャリアが接合面から遠ざかり、空乏層が広がるため電流は流れません。</li>
         </ul>
+      </div>
+      <div class="note">
+      <h3>📐 空乏層の幅と電圧の関係</h3>
+      <p>
+        接合面にできるキャリアのない領域「空乏層」の幅 $W$ は、固定されたイオン（不純物原子）が作る電位差によって決まります。
+        外部から電圧 $V$ をかけると、空乏層の幅は以下のように変化します。
+      </p>
+      <div style="text-align:center; margin: 10px 0; font-size: 1.1em;">
+        $$W \propto \sqrt{V_{bi} - V}$$
+      </div>
+      <ul>
+        <li>$W$: 空乏層の幅</li>
+        <li>$V_{bi}$: 内蔵電位（接合によって自然にできる電位差）</li>
+        <li>$V$: 外部からかけた電圧（順バイアスなら正、逆バイアスなら負）</li>
+      </ul>
+      <p>
+        <b>動作のポイント:</b>
+        <ul>
+          <li><b>逆バイアス ($V < 0$):</b> 平根の中身 $(V_{bi} - V)$ が大きくなるため、<b>空乏層 $W$ は広がります</b>。これが壁となり電流をブロックします。</li>
+          <li><b>順バイアス ($V > 0$):</b> 平根の中身が小さくなるため、<b>空乏層 $W$ は狭くなります</b>。さらに電圧を上げると空乏層は消滅し、電流がドッと流れます。</li>
+        </ul>
+      </p>
+    </div>
+      <div class="note" style="background-color: #fff8e1; border-left: 5px solid #ffc107;">
+        <h3>🤔 科学の問い: 「ぶつかって消える」のに、なぜ電流が流れるの？</h3>
+        <p>
+          強い順バイアス（5.0Vなど）をかけると、接合面で電子と正孔が激しく衝突して消滅（再結合）します。
+          一見するとキャリアが消えて電流が止まりそうに見えますが、物理学的には<b>「消滅（再結合）している状態こそが、電流が流れている証拠」</b>なのです。
+        </p>
+        
+        <h4>1. 消費と補充のサイクル</h4>
+        <p>
+          シミュレーション上で粒子が消えても、回路の電流は止まりません。再結合によって消滅した分だけ、<b>電源（電池）から新しい電子と正孔が即座に補充され続けている</b>からです。
+          この「高速での消費と補充の繰り返し」こそが、ダイオードを流れる電流の正体です。
+        </p>
+
+        <h4>2. エネルギー保存則とLEDの発光</h4>
+        <p>
+          自由電子（高いエネルギー状態）が正孔（低いエネルギー状態の穴）に落ち込むとき、そのエネルギー差が放出されます。
+          このとき放出されるエネルギー $E$ は、半導体のバンドギャップ $E_g$ に相当し、以下の式で表されます。
+        </p>
+        <div style="text-align:center; margin: 10px 0;">
+            $$E = h\nu \approx E_g$$
+        </div>
+        <ul>
+            <li>$h$: プランク定数 ($6.626 \times 10^{-34} \text{ J}\cdot\text{s}$)</li>
+            <li>$\nu$: 放出される光（フォトン）の振動数</li>
+        </ul>
+        <p>
+          このエネルギーが「熱」ではなく「光」として放出されるように設計されたものが <b>LED（発光ダイオード）</b> です。
+          シミュレーションで黄色く光るエフェクトは、まさにこのエネルギー放出（発光）を表現しています。
+        </p>
       </div>
     </div>
   </div>
@@ -2132,7 +2205,7 @@
   }
 
 // ==========================================
-// 追加機能: 半導体シミュレーション・ロジック (最終修正版)
+// 追加機能: 半導体シミュレーション・ロジック (完全版)
 // ==========================================
 
 // 共通ヘルパー
@@ -2142,7 +2215,11 @@ const $semi = (id) => document.getElementById(id);
 const semiState = {
   mode: 'A', // 'A', 'B', 'C'
   active: false,
-  animationId: null, // アニメーションID管理用（多重起動防止の鍵）
+  animationId: null, // アニメーションID管理
+
+  // 再結合時のフラッシュエフェクト管理
+  effects: [],
+
   // A用
   a: { particles: [], type: 'metal', temp: 300, width: 600, height: 250 },
   // B用
@@ -2151,9 +2228,41 @@ const semiState = {
   c: { particles: [], bias: 0, depletionWidth: 40, width: 600, height: 200 }
 };
 
-// --- 初期化 & モード切替 ---
+// --- エフェクト描画関数 ---
+function drawAndUpdateEffects(ctx) {
+  for(let i = semiState.effects.length - 1; i >= 0; i--) {
+    const e = semiState.effects[i];
+    e.age++;
+    
+    // maxAge未定義ならデフォルト15
+    const max = e.maxAge || 15; 
+    
+    if(e.age >= max) {
+       semiState.effects.splice(i, 1);
+       continue;
+    }
+
+    // ageがマイナスの間は表示しない（ディレイ）
+    if(e.age < 0) continue;
+
+    const prog = e.age / max;
+    const alpha = (1 - prog) * 0.6; 
+    const r = 8 + 25 * prog; 
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(e.x, e.y, r, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(255, 230, 80, ${alpha})`;
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = `rgba(255, 230, 80, ${alpha})`;
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+// --- 初期化 & ループ開始 ---
 function initSemiconductor() {
-  // 【重要】既にループが回っている場合は確実に停止する
+  // 多重起動防止
   if (semiState.animationId) {
     cancelAnimationFrame(semiState.animationId);
     semiState.animationId = null;
@@ -2161,17 +2270,39 @@ function initSemiconductor() {
   
   semiState.active = true;
   
-  // モードごとの初期状態リセット
+  // 各モードの初期化
   if(semiState.mode === 'A') resetSemiA();
-  if(semiState.mode === 'B') { /* Gridの状態は維持する */ } 
+  if(semiState.mode === 'B') { /* Grid維持 */ } 
   if(semiState.mode === 'C') resetSemiC();
 
-  // ループ開始
+  // ★重要: アニメーションループを開始
   loopSemi();
 }
 
+// --- メインループ関数 (これが動作の要です) ---
+function loopSemi() {
+  if(!semiState.active) return;
+
+  // 現在のモードに合わせて描画関数を呼び出す
+  if(semiState.mode === 'A') {
+      const ctx = $semi('cvs-semi-a').getContext('2d');
+      drawSemiA(ctx);
+  } else if(semiState.mode === 'B') {
+      const ctx = $semi('cvs-semi-b').getContext('2d');
+      drawSemiB(ctx);
+  } else if(semiState.mode === 'C') {
+      const ctx = $semi('cvs-semi-c').getContext('2d');
+      drawSemiC(ctx);
+  }
+
+  // 次のフレームを予約
+  semiState.animationId = requestAnimationFrame(loopSemi);
+}
+
+// --- モード切替 ---
 function switchSemiMode(mode) {
   semiState.mode = mode;
+  semiState.effects = []; // エフェクトリセット
   
   // 表示切替
   const modes = ['A', 'B', 'C'];
@@ -2182,7 +2313,7 @@ function switchSemiMode(mode) {
     if(btn) btn.className = (mode === m) ? 'active' : '';
   });
 
-  // 各モードのリセット・再描画
+  // リセット
   if(mode === 'A') resetSemiA();
   if(mode === 'B') resetSemiB();
   if(mode === 'C') resetSemiC();
@@ -2199,12 +2330,8 @@ function updateSemiA() {
 
 function resetSemiA() {
   const s = semiState.a;
-    // ★追加: 現在のCanvasサイズに合わせてステートを更新（堅牢性向上）
   const canvas = document.getElementById('cvs-semi-a');
-  if(canvas) {
-      s.width = canvas.width;
-      s.height = canvas.height;
-  }
+  if(canvas) { s.width = canvas.width; s.height = canvas.height; }
 
   s.particles = [];
   const count = 80; 
@@ -2214,40 +2341,35 @@ function resetSemiA() {
     const y = Math.random() * s.height;
     
     let isFree = false;
-    if(s.type === 'metal') {
-      isFree = true; 
-    } else if (s.type === 'insulator') {
-      isFree = false; 
-    } else if (s.type === 'semi') {
+    if(s.type === 'metal') isFree = true; 
+    else if (s.type === 'insulator') isFree = false; 
+    else if (s.type === 'semi') {
       const prob = Math.max(0, (s.temp - 100) / 1500); 
       isFree = Math.random() < prob;
     }
 
     if (isFree) {
+      // 位置をずらして生成
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 20;
+      
       s.particles.push({
         x: x, y: y,
         vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2,
-        type: 'electron', 
-        homeX: x, homeY: y
+        type: 'electron', homeX: x, homeY: y, dying: 0
       });
+      
       if (s.type === 'semi') {
         s.particles.push({
-          x: x, y: y,
-	  // ★修正: vx, vy を 0 ではなく、電子より遅いランダムな速度にする
-          // 電子の速度係数は 2 なので、正孔は 0.5 くらい（電子の1/4の速さ）に設定
+          x: x + Math.cos(angle) * dist, 
+          y: y + Math.sin(angle) * dist,
           vx: (Math.random()-0.5) * 0.5, 
           vy: (Math.random()-0.5) * 0.5,
-          type: 'hole', 
-          homeX: x, homeY: y
+          type: 'hole', homeX: x, homeY: y, dying: 0
         });
       }
     } else {
-      s.particles.push({
-        x: x, y: y,
-        vx: 0, vy: 0,
-        type: 'bound',
-        homeX: x, homeY: y
-      });
+      s.particles.push({ x: x, y: y, vx: 0, vy: 0, type: 'bound', homeX: x, homeY: y });
     }
   }
 }
@@ -2256,60 +2378,95 @@ function drawSemiA(ctx) {
   const s = semiState.a;
   ctx.clearRect(0,0,s.width, s.height);
 
-  // 固定原子/正孔のベース位置
+  // 1. エフェクト（光）
+  drawAndUpdateEffects(ctx);
+
+  // 2. 固定原子
   ctx.fillStyle = '#444';
   for(let p of s.particles) {
-    if(p.type === 'bound' || p.type === 'hole') {
-      ctx.beginPath(); ctx.arc(p.homeX, p.homeY, 3, 0, Math.PI*2); ctx.fill();
+    if(p.type === 'bound') {
+      const jit = 1; 
+      ctx.beginPath(); ctx.arc(p.homeX+(Math.random()-0.5)*jit, p.homeY+(Math.random()-0.5)*jit, 3, 0, Math.PI*2); ctx.fill();
     }
   }
 
+  // 3. 移動と衝突判定
+  let nextParticles = [];
+  const activeElectrons = [];
+  const activeHoles = [];
+
   for(let p of s.particles) {
-    if (p.type === 'electron') {
-      p.x += p.vx * (1 + s.temp/300);
-      p.y += p.vy * (1 + s.temp/300);
+    if(p.type === 'bound') { nextParticles.push(p); continue; }
 
-      // 壁で跳ね返るのではなく、反対側へループさせる（正孔と同じ挙動に統一）
-      if(p.x < 0) p.x = s.width;
-      if(p.x > s.width) p.x = 0;
-      if(p.y < 0) p.y = s.height;
-      if(p.y > s.height) p.y = 0;
-      
-      
-      ctx.fillStyle = '#4facfe';
-      ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2); ctx.fill();
-      
-    } else if (p.type === 'hole') {
-      // ★修正: ランダムウォークをやめ、速度ベースの移動に変更
-      // 温度が高いほど速く動く係数を掛ける
-      p.x += p.vx * (1 + s.temp/300);
-      p.y += p.vy * (1 + s.temp/300);
+    if (p.dying > 0) {
+      p.dying--; 
+      if (p.dying > 0) nextParticles.push(p);
+      continue;
+    }
+    
+    const speedFactor = 0.7 * (1 + s.temp/300);
+    p.x += p.vx * speedFactor;
+    p.y += p.vy * speedFactor;
+    
+    if(p.x < 0) p.x = s.width; if(p.x > s.width) p.x = 0;
+    if(p.y < 0) p.y = s.height; if(p.y > s.height) p.y = 0;
+    
+    if(p.type === 'electron') activeElectrons.push(p);
+    else if(p.type === 'hole') activeHoles.push(p);
+    
+    nextParticles.push(p);
+  }
+
+  const recombineDist = 9; 
+  for(let e of activeElectrons) {
+      if(e.dying > 0) continue;
+      for(let h of activeHoles) {
+          if(h.dying > 0) continue;
+          const dx = e.x - h.x; const dy = e.y - h.y;
+          if(dx*dx + dy*dy < recombineDist * recombineDist) {
+              const duration = 30;
+              e.dying = duration; h.dying = duration;
+              const mx = (e.x + h.x) / 2; const my = (e.y + h.y) / 2;
+              e.x = mx; e.y = my; h.x = mx; h.y = my;
+              semiState.effects.push({x: mx, y: my, age: -5, maxAge: duration}); 
+              break; 
+          }
+      }
+  }
+  s.particles = nextParticles;
+
+  // 4. 再生成
+  const currentPairs = s.particles.filter(p => p.type === 'electron' && !p.dying).length;
+  let targetPairs = 0;
+  if(s.type === 'semi') {
+      const prob = Math.max(0, (s.temp - 50) / 1000); 
+      targetPairs = Math.floor(80 * prob); 
+  } else if (s.type === 'metal') targetPairs = 80; 
   
-      // 画面端のループ処理（ここは前回のままでOK）
-      if(p.x < 0) p.x = s.width;
-      if(p.x > s.width) p.x = 0;
-      if(p.y < 0) p.y = s.height;
-      if(p.y > s.height) p.y = 0;
+  if(s.type === 'semi' && currentPairs < targetPairs) {
+      if(Math.random() < 0.05) { 
+          const x = Math.random() * s.width; const y = Math.random() * s.height;
+          const angle = Math.random() * Math.PI * 2; const dist = 20; 
+          s.particles.push({ x: x, y: y, vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2, type: 'electron', homeX: x, homeY: y, dying: 0 });
+          s.particles.push({ x: x + Math.cos(angle)*dist, y: y + Math.sin(angle)*dist, vx: (Math.random()-0.5)*0.5, vy: (Math.random()-0.5)*0.5, type: 'hole', homeX: x, homeY: y, dying: 0 });
+      }
+  } else if (s.type === 'metal' && currentPairs < 80) {
+       const x = Math.random() * s.width; const y = Math.random() * s.height;
+       s.particles.push({x, y, vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2, type: 'electron', homeX: x, homeY: y, dying: 0});
+  }
 
-      ctx.strokeStyle = '#ff5e62';
-      ctx.lineWidth = 2;
-      // homeX基準ではなく、現在の p.x, p.y に描画
-      ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2); ctx.stroke();
-      
-    } else if (p.type === 'bound') {
-      const jit = 2; 
-      const dx = (Math.random()-0.5)*jit;
-      const dy = (Math.random()-0.5)*jit;
-      
-      ctx.fillStyle = '#888'; 
-      ctx.beginPath(); ctx.arc(p.homeX+dx, p.homeY+dy, 3, 0, Math.PI*2); ctx.fill();
+  // 5. 描画
+  for(let p of s.particles) {
+    if(p.type === 'electron') {
+      ctx.fillStyle = '#4facfe'; ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2); ctx.fill();
+    } else if (p.type === 'hole') {
+      ctx.strokeStyle = '#ff5e62'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(p.x, p.y, 5, 0, Math.PI*2); ctx.stroke();
     }
   }
 }
 
-
 // ==========================================
-// Feature B: ドーピング (スマホ対応版)
+// Feature B: ドーピング
 // ==========================================
 function setSemiTool(t) {
   semiState.b.tool = t;
@@ -2320,65 +2477,38 @@ function setSemiTool(t) {
 
 function resetSemiB() {
   const s = semiState.b;
-  s.grid = [];
-  s.particles = [];
+  s.grid = []; s.particles = [];
   for(let r=0; r<s.rows; r++){
     const row = [];
-    for(let c=0; c<s.cols; c++){
-      row.push({ type: 'Si' });
-    }
+    for(let c=0; c<s.cols; c++) row.push({ type: 'Si' });
     s.grid.push(row);
   }
 }
 
- 
-// マウス・タッチ共通処理
 function handleGridInput(e) {
-  // タッチイベントの場合はスクロール等を防ぐ
-  if(e.type === 'touchstart' || e.type === 'touchmove') {
-    if(e.cancelable) e.preventDefault(); 
-  }
-
+  if(e.type === 'touchstart' || e.type === 'touchmove') if(e.cancelable) e.preventDefault(); 
   const cvs = e.target;
   const rect = cvs.getBoundingClientRect();
-  
-  // 座標取得 (タッチとマウスの差異吸収)
-  let clientX = e.clientX;
-  let clientY = e.clientY;
+  let clientX = e.clientX; let clientY = e.clientY;
   if(e.changedTouches && e.changedTouches.length > 0) {
-      clientX = e.changedTouches[0].clientX;
-      clientY = e.changedTouches[0].clientY;
+      clientX = e.changedTouches[0].clientX; clientY = e.changedTouches[0].clientY;
   }
-  
-  // ★修正箇所: 表示サイズと内部解像度の比率を計算
   const scaleX = cvs.width / rect.width;
   const scaleY = cvs.height / rect.height;
-
-  // ★修正箇所: スケールを掛けて内部座標に変換
   const x = (clientX - rect.left) * scaleX;
   const y = (clientY - rect.top) * scaleY;
   
   const s = semiState.b;
-  
   const c = Math.floor(x / s.cellSize);
   const r = Math.floor(y / s.cellSize);
   
   if(r>=0 && r<s.rows && c>=0 && c<s.cols) {
-    // ★修正: 「すでに同じタイプなら何もしない」ガード節を追加
-    // これにより、同じマスをなぞり続けても粒子が無限に増えなくなります
     if (s.grid[r][c].type === s.tool) return;
-   
     s.grid[r][c].type = s.tool;
-    if (s.tool === 'N') { 
-      // 発生する電子にも初期速度を少し与える
-      s.particles.push({x: x, y: y, vx: (Math.random()-0.5)*3, vy: (Math.random()-0.5)*3, type:'e'});
-    } else if (s.tool === 'P') { 
-      // 正孔も同様
-      s.particles.push({x: x, y: y, vx: (Math.random()-0.5), vy: (Math.random()-0.5), type:'h'});
-    }
+    if (s.tool === 'N') s.particles.push({x: x, y: y, vx: (Math.random()-0.5)*3, vy: (Math.random()-0.5)*3, type:'e'});
+    else if (s.tool === 'P') s.particles.push({x: x, y: y, vx: (Math.random()-0.5), vy: (Math.random()-0.5), type:'h'});
   }
 }
-
 
 function drawSemiB(ctx) {
   const s = semiState.b;
@@ -2386,177 +2516,136 @@ function drawSemiB(ctx) {
   const h = ctx.canvas.height;
   ctx.clearRect(0,0,w,h);
   
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.font = '14px Arial';
-  
+  // Grid
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '14px Arial';
   for(let r=0; r<s.rows; r++){
     for(let c=0; c<s.cols; c++){
       const atom = s.grid[r][c];
-      const cx = c * s.cellSize + s.cellSize/2;
-      const cy = r * s.cellSize + s.cellSize/2;
-      
-      ctx.beginPath();
-      ctx.arc(cx, cy, 18, 0, Math.PI*2);
+      const cx = c * s.cellSize + s.cellSize/2; const cy = r * s.cellSize + s.cellSize/2;
+      ctx.beginPath(); ctx.arc(cx, cy, 18, 0, Math.PI*2);
       if(atom.type === 'Si') ctx.fillStyle = '#ddd';
       if(atom.type === 'N') ctx.fillStyle = '#ffeeba'; 
       if(atom.type === 'P') ctx.fillStyle = '#b8daff'; 
-      ctx.fill();
-      ctx.strokeStyle = '#999';
-      ctx.stroke();
-      
-      ctx.fillStyle = '#444';
-      ctx.fillText(atom.type === 'N' ? 'P' : (atom.type==='P'?'B':'Si'), cx, cy);
-      
+      ctx.fill(); ctx.strokeStyle = '#999'; ctx.stroke();
+      ctx.fillStyle = '#444'; ctx.fillText(atom.type === 'N' ? 'P' : (atom.type==='P'?'B':'Si'), cx, cy);
       if(c < s.cols-1) { ctx.beginPath(); ctx.moveTo(cx+18, cy); ctx.lineTo(cx+s.cellSize-18, cy); ctx.stroke(); }
       if(r < s.rows-1) { ctx.beginPath(); ctx.moveTo(cx, cy+18); ctx.lineTo(cx, cy+s.cellSize-18, ctx.stroke()); }
     }
   }
   
+  // Particles & Collision
+  const electrons = s.particles.filter(p => p.type === 'e');
+  const holes = s.particles.filter(p => p.type === 'h');
+  const toRemove = new Set();
+  const recombineDist = 12;
+
+  for(let e of electrons) {
+      if(toRemove.has(e)) continue;
+      for(let h of holes) {
+          if(toRemove.has(h)) continue;
+          const dx = e.x - h.x; const dy = e.y - h.y;
+          if(dx*dx + dy*dy < recombineDist * recombineDist) {
+              toRemove.add(e); toRemove.add(h);
+              semiState.effects.push({x: (e.x+h.x)/2, y: (e.y+h.y)/2, age:0});
+              break; 
+          }
+      }
+  }
+  if(toRemove.size > 0) s.particles = s.particles.filter(p => !toRemove.has(p));
+
   for(let p of s.particles) {
-    p.x += p.vx;
-    p.y += p.vy;
+    p.x += p.vx; p.y += p.vy;
     if(p.x<0 || p.x>w) p.vx *= -1;
     if(p.y<0 || p.y>h) p.vy *= -1;
-    
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.type==='e'?4:6, 0, Math.PI*2);
-    if(p.type==='e') {
-      ctx.fillStyle = 'red'; ctx.fill(); 
-    } else {
-      ctx.strokeStyle = 'blue'; ctx.lineWidth=2; ctx.stroke(); 
-    }
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.type==='e'?4:6, 0, Math.PI*2);
+    if(p.type==='e') { ctx.fillStyle = 'red'; ctx.fill(); } 
+    else { ctx.strokeStyle = 'blue'; ctx.lineWidth=2; ctx.stroke(); }
   }
+  drawAndUpdateEffects(ctx);
 }
-
 
 // ==========================================
 // Feature C: PN接合
 // ==========================================
 function resetSemiC() {
   const s = semiState.c;
-
-  // ★追加: 現在のCanvasサイズに合わせてステートを更新（堅牢性向上）
   const canvas = document.getElementById('cvs-semi-c');
-  if(canvas) {
-      s.width = canvas.width;
-      s.height = canvas.height;
-  }
-    
+  if(canvas) { s.width = canvas.width; s.height = canvas.height; }
   s.particles = [];
   const n = 60; 
-  
-  // N型領域 (左)
-  for(let i=0; i<n; i++) {
-    s.particles.push({
-      x: Math.random() * (s.width/2 - 20),
-      y: Math.random() * s.height,
-      vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2,
-      type: 'e'
-    });
-  }
-  // P型領域 (右)
-  for(let i=0; i<n; i++) {
-    s.particles.push({
-      x: s.width/2 + 20 + Math.random() * (s.width/2 - 20),
-      y: Math.random() * s.height,
-      vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2,
-      type: 'h'
-    });
-  }
+  for(let i=0; i<n; i++) s.particles.push({ x: Math.random() * (s.width/2 - 20), y: Math.random() * s.height, vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2, type: 'e' });
+  for(let i=0; i<n; i++) s.particles.push({ x: s.width/2 + 20 + Math.random() * (s.width/2 - 20), y: Math.random() * s.height, vx: (Math.random()-0.5)*2, vy: (Math.random()-0.5)*2, type: 'h' });
 }
 
 function drawSemiC(ctx) {
   const s = semiState.c;
   ctx.clearRect(0,0,s.width, s.height);
-  
+  // ★削除: ここにあった drawAndUpdateEffects(ctx); を削除
+
   const mid = s.width / 2;
-  
   let depletionW = 60 - s.bias * 15; 
-  if(depletionW < 0) depletionW = 0;
-  if(depletionW > 250) depletionW = 250;
+  if(depletionW < 0) depletionW = 0; if(depletionW > 250) depletionW = 250;
   
-  ctx.fillStyle = '#1a1a2e'; // N側: わずかに青みのある黒
-  ctx.fillRect(0,0,mid,s.height);
+  // 背景を描画 (ここが以前はエフェクトを上書きしていました)
+  ctx.fillStyle = '#1a1a2e'; ctx.fillRect(0,0,mid,s.height);
+  ctx.fillStyle = '#2e1a1a'; ctx.fillRect(mid,0,mid,s.height);
+  ctx.fillStyle = 'rgba(255,255,255,0.1)'; ctx.fillRect(mid - depletionW/2, 0, depletionW, s.height);
   
-  ctx.fillStyle = '#2e1a1a'; // P側: わずかに赤みのある黒
-  ctx.fillRect(mid,0,mid,s.height);
-  
-  // 空乏層
-  ctx.fillStyle = 'rgba(255,255,255,0.1)';
-  ctx.fillRect(mid - depletionW/2, 0, depletionW, s.height);
-  
-  ctx.font = '20px Arial';
-  ctx.fillStyle = '#444';
+  ctx.font = '20px Arial'; ctx.fillStyle = '#444';
   ctx.fillText('+', mid - 80, 50); ctx.fillText('+', mid - 80, 150);
   ctx.fillText('-', mid + 70, 50); ctx.fillText('-', mid + 70, 150);
 
-  const pushForce = s.bias * 0.5; 
-  const barrierForce = 0.8;       
-  
+  // 全領域衝突判定
+  const recombineDist = 12; 
+  const toRemove = new Set();
+  const electrons = s.particles.filter(p => p.type === 'e');
+  const holes = s.particles.filter(p => p.type === 'h');
+
+  for(let e of electrons) {
+      if(toRemove.has(e)) continue;
+      for(let h of holes) {
+          if(toRemove.has(h)) continue;
+          const dx = e.x - h.x; const dy = e.y - h.y;
+          if(dx*dx + dy*dy < recombineDist * recombineDist) {
+              toRemove.add(e); toRemove.add(h);
+              const mx = (e.x + h.x) / 2; const my = (e.y + h.y) / 2;
+              semiState.effects.push({x: mx, y: my, age: 0});
+              break; 
+          }
+      }
+  }
+  if(toRemove.size > 0) s.particles = s.particles.filter(p => !toRemove.has(p));
+
+  const pushForce = s.bias * 0.5; const barrierForce = 0.8;       
   for (let i = s.particles.length - 1; i >= 0; i--) {
     let p = s.particles[i];
-    
-    p.x += p.vx;
-    p.y += p.vy;
+    p.x += p.vx; p.y += p.vy;
     
     if(p.type === 'e') p.x += pushForce; 
     if(p.type === 'h') p.x -= pushForce; 
     
     const inDepletion = (p.x > mid - depletionW/2 && p.x < mid + depletionW/2);
-    
     if(inDepletion) {
         if(p.type === 'e') p.x -= barrierForce; 
         if(p.type === 'h') p.x += barrierForce;
-        
-        if(Math.random() < 0.1) {
-             s.particles.splice(i, 1);
-             continue;
-        }
     }
 
-    if(p.type === 'e') {
-       if(p.x > s.width) p.x = 0; 
-       if(p.x < 0) p.x = 0; 
-    } else {
-       if(p.x < 0) p.x = s.width;
-       if(p.x > s.width) p.x = s.width;
-    }
-    
-    if(p.y < 0) p.y = s.height;
-    if(p.y > s.height) p.y = 0;
+    if(p.type === 'e') { if(p.x > s.width) p.x = 0; if(p.x < 0) p.x = 0; } 
+    else { if(p.x < 0) p.x = s.width; if(p.x > s.width) p.x = s.width; }
+    if(p.y < 0) p.y = s.height; if(p.y > s.height) p.y = 0;
 
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
-    if(p.type === 'e') {
-      ctx.fillStyle = '#4facfe'; ctx.fill(); 
-    } else {
-      ctx.strokeStyle = '#ff5e62'; ctx.lineWidth=2; ctx.stroke(); 
-    }
+    ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
+    if(p.type === 'e') { ctx.fillStyle = '#4facfe'; ctx.fill(); } 
+    else { ctx.strokeStyle = '#ff5e62'; ctx.lineWidth=2; ctx.stroke(); }
   }
   
   if(s.particles.length < 80) {
-      if(Math.random()<0.5) s.particles.push({x:0, y:Math.random()*s.height, vx:1, vy:0, type:'e'});
-      else s.particles.push({x:s.width, y:Math.random()*s.height, vx:-1, vy:0, type:'h'});
-  }
-}
-
-// --- メインループ ---
-function loopSemi() {
-  // セクションが非表示ならループ停止（IDもクリア）
-  const section = document.getElementById('semiconductor');
-  if(!semiState.active || !section || section.style.display === 'none') {
-      semiState.animationId = null;
-      return; 
+      if(Math.random()<0.5) s.particles.push({x:0, y:Math.random()*s.height, vx:1, vy:0, type:'e'}); 
+      else s.particles.push({x:s.width, y:Math.random()*s.height, vx:-1, vy:0, type:'h'}); 
   }
 
-  // 描画実行
-  if(semiState.mode === 'A') drawSemiA($semi('cvs-semi-a').getContext('2d'));
-  else if(semiState.mode === 'B') drawSemiB($semi('cvs-semi-b').getContext('2d'));
-  else if(semiState.mode === 'C') drawSemiC($semi('cvs-semi-c').getContext('2d'));
-
-  // 【重要修正】ここでIDを保存する！
-  semiState.animationId = requestAnimationFrame(loopSemi);
+  // ★追加: 最後にエフェクトを描画することで、背景の上に表示させる
+  drawAndUpdateEffects(ctx);
 }
 
 // --- ページ読込時のセットアップ (イベントリスナーはここで1回だけ登録) ---
