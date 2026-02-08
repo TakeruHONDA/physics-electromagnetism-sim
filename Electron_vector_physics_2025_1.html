@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【演習・角度指定付】ローレンツ力と外積の完全解析</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+    <script defer
+      src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+      crossorigin="anonymous"
+      onload="
+        try {
+          renderMathInElement(document.body, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ],
+            throwOnError: false
+          });
+        } catch (e) {
+          console.error('KaTeX auto-render onload failed:', e);
+        }
+      "></script>
+
+    <style>
+        body { margin: 0; overflow: hidden; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f0f4f8; }
+        #canvas-container { width: 100vw; height: 100vh; }
+        
+        /* UIパネルのデザイン */
+        #ui-panel {
+            position: absolute; top: 10px; right: 10px; width: 400px;
+            background: rgba(255, 255, 255, 0.95); padding: 20px;
+            border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            max-height: 95vh; overflow-y: auto; display: flex; flex-direction: column;
+            z-index: 10;
+        }
+        
+        h1 { font-size: 1.1rem; margin-top: 0; color: #333; border-bottom: 2px solid #007bff; padding-bottom: 8px; }
+        h2 { font-size: 0.95rem; margin: 15px 0 5px 0; color: #444; border-left: 4px solid #00cc00; padding-left: 8px; }
+
+        .control-group { margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        .slider-container { display: flex; align-items: center; justify-content: space-between; font-size: 0.85rem; margin-top: 5px; }
+        input[type=range] { flex-grow: 1; margin: 0 10px; cursor: pointer; }
+        .value-display { width: 40px; text-align: right; font-family: monospace; font-weight: bold; color: #007bff; }
+        
+        .legend { display: flex; align-items: center; font-weight: bold; font-size: 0.9rem; color: #333; }
+        .color-box { width: 12px; height: 12px; margin-right: 8px; border-radius: 2px; }
+
+        /* 数式表示エリア */
+        .math-display { 
+            background: #fff; padding: 10px; border-radius: 8px; 
+            border: 1px solid #ddd; margin-top: 10px; font-size: 0.85rem; 
+            overflow-x: auto;
+        }
+        .math-section-title { font-weight: bold; margin-bottom: 5px; color: #555; font-size: 0.9rem; background: #eef; padding: 2px 5px; border-radius: 3px; }
+        
+        /* タブ切り替え */
+        .tab-container { display: flex; margin-bottom: 15px; border-bottom: 1px solid #ccc; }
+        .tab-btn { 
+            flex: 1; padding: 10px; background: none; border: none; 
+            cursor: pointer; font-weight: bold; color: #666; 
+            border-bottom: 3px solid transparent; transition: all 0.2s;
+        }
+        .tab-btn.active { color: #007bff; border-bottom: 3px solid #007bff; }
+        .tab-btn:hover { background: #f8f9fa; }
+        
+        .panel-content { display: none; }
+        .panel-content.active { display: block; }
+
+        /* ボタン */
+        .btn { width: 100%; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; transition: transform 0.1s; }
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn:active { transform: scale(0.98); }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-reset { background: #6c757d; color: white; margin-top: 5px; padding: 5px; font-size: 0.8rem;}
+
+        .question-badge { 
+            background: #ffaa00; color: white; padding: 5px 10px; 
+            border-radius: 20px; font-size: 0.8rem; display: inline-block; margin-bottom: 10px;
+        }
+
+        /* スマホ対応 */
+        @media (max-width: 600px) {
+            #ui-panel { width: 90%; right: 5%; top: auto; bottom: 10px; max-height: 50vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <div id="ui-panel">
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="switchTab('simulation')">シミュレーション</button>
+            <button class="tab-btn" onclick="switchTab('practice')">演習問題</button>
+        </div>
+
+        <div id="simulation-panel" class="panel-content active">
+            <h1>ベクトル操作パネル</h1>
+            
+            <div class="control-group">
+                <div class="legend"><div class="color-box" style="background:#ff4444;"></div>電荷 $q$</div>
+                <div class="slider-container">
+                    <span>-2</span>
+                    <input type="range" id="q-slider" min="-2" max="2" step="1" value="1">
+                    <span id="q-val" class="value-display">1</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="legend"><div class="color-box" style="background:#00cc00;"></div>速度 $\vec{v}$ (緑)</div>
+                <div class="slider-container">
+                    <label>x:</label><input type="range" id="vx-slider" min="-5" max="5" step="0.5" value="3">
+                    <span id="vx-val" class="value-display">3</span>
+                </div>
+                <div class="slider-container">
+                    <label>z:</label><input type="range" id="vz-slider" min="-5" max="5" step="0.5" value="0">
+                    <span id="vz-val" class="value-display">0</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <div class="legend"><div class="color-box" style="background:#0088ff;"></div>磁場 $\vec{B}$ (青)</div>
+                <div class="slider-container" style="background:#eef; padding:5px; border-radius:4px;">
+                    <label>なす角 $\theta$:</label>
+                    <input type="range" id="angle-slider" min="0" max="360" step="1" value="90">
+                    <span id="angle-val" class="value-display">90°</span>
+                </div>
+                <div class="slider-container">
+                    <label>x:</label><input type="range" id="bx-slider" min="-5" max="5" step="0.1" value="0">
+                    <span id="bx-val" class="value-display">0</span>
+                </div>
+                <div class="slider-container">
+                    <label>z:</label><input type="range" id="bz-slider" min="-5" max="5" step="0.1" value="3">
+                    <span id="bz-val" class="value-display">3</span>
+                </div>
+            </div>
+            
+            <button class="btn btn-reset" onclick="resetSim()">リセット</button>
+
+            <h2>外積・なす角の計算解析</h2>
+            <div class="math-display" id="formula-display">
+                </div>
+        </div>
+
+        <div id="practice-panel" class="panel-content">
+            <h1><span class="question-badge">Challenge</span> 外積計算ドリル</h1>
+            <p style="font-size:0.9rem; color:#666;">
+                以下の条件のとき、ローレンツ力 $\vec{F}$ の向きと大きさを求めてください。<br>
+                (注: $\vec{v}, \vec{B}$ はxz平面、力はy軸方向です)
+            </p>
+
+            <div style="background:#f8f9fa; padding:15px; border-radius:8px; border:2px solid #007bff; margin-bottom:15px;">
+                <div id="question-text" style="font-weight:bold; line-height:1.8;">
+                    問題を作成してください...
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="btn-generate" onclick="generateQuestion()">問題を作成する</button>
+            <button class="btn btn-success" id="btn-answer" onclick="showAnswer()" disabled>答え合わせ / 図示</button>
+            
+            <div id="answer-section" style="display:none; margin-top:15px;">
+                <h2 style="color:#d63384; border-color:#d63384;">正解と解説</h2>
+                <div class="math-display" id="answer-display"></div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // --- 変数定義 ---
+    let q = 1;
+    let v = new THREE.Vector3(3, 0, 0);
+    let B = new THREE.Vector3(0, 0, 3);
+    let F = new THREE.Vector3();
+
+    // 演習モード用フラグ
+    let isPracticeMode = false;
+    let practiceAnswerVisible = false;
+
+    // Three.js グローバル変数
+    let scene, camera, renderer, controls;
+    let arrowV, arrowB, arrowF; // MeshArrowインスタンス
+    let particleGeometry, particleMaterial, particle;
+
+    // --- MeshArrow クラス定義 ---
+    // ArrowHelperの代わりに、太くて見やすい円柱+円錐の矢印を作成・管理するクラス
+    class MeshArrow {
+        constructor(colorHex) {
+            this.group = new THREE.Group();
+            this.color = colorHex;
+            
+            // 軸(Cylinder)の作成: 太さ0.08
+            const shaftGeo = new THREE.CylinderGeometry(0.08, 0.08, 1, 16);
+            const material = new THREE.MeshPhongMaterial({ color: this.color, shininess: 50 });
+            this.shaft = new THREE.Mesh(shaftGeo, material);
+            // Cylinderの中心は原点にあるため、Y軸プラス方向に0.5ずらして底面を原点に合わせる準備
+            this.shaft.position.y = 0.5; 
+            // 影をつける
+            this.shaft.castShadow = true;
+            this.group.add(this.shaft);
+            
+            // 矢尻(Cone)の作成: 底面半径0.2, 高さ0.5
+            const headGeo = new THREE.ConeGeometry(0.25, 0.6, 16);
+            this.head = new THREE.Mesh(headGeo, material);
+            this.head.position.y = 1.3; // 仮の位置
+            this.head.castShadow = true;
+            this.group.add(this.head);
+            
+            this.group.visible = false; // 初期状態は非表示
+            scene.add(this.group);
+        }
+        
+        // ベクトルを受け取り、矢印の向きと長さを更新するメソッド
+        update(vector) {
+            const len = vector.length();
+            
+            // 長さが極端に短い場合は非表示
+            if (len < 0.1) {
+                this.group.visible = false;
+                return;
+            }
+            this.group.visible = true;
+            
+            // 矢尻の長さを決定（ベクトルの長さに応じて調整、ただし上限あり）
+            // ベクトルが短い時は矢尻も小さくするが、ある程度長さがある時は固定サイズに近づける
+            const headLen = Math.min(len * 0.3, 0.8);
+            const shaftLen = len - headLen;
+            
+            // 軸の更新
+            // CylinderGeometryの初期高さは1なので、scale.yで長さを調整
+            this.shaft.scale.set(1, shaftLen, 1);
+            this.shaft.position.y = shaftLen / 2;
+            
+            // 矢尻の更新
+            // ConeGeometryの初期高さは0.6なので、scale.yで長さを調整
+            this.head.scale.set(1, headLen / 0.6, 1);
+            this.head.position.y = shaftLen + headLen / 2;
+            
+            // 向きの更新
+            // デフォルトのY軸向きから、目的のvectorの向きへ回転させるクォータニオンを計算
+            const dir = vector.clone().normalize();
+            this.group.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+        }
+        
+        setVisibility(visible) {
+            this.group.visible = visible;
+        }
+    }
+
+    // --- 初期化処理 ---
+    function init() {
+        const container = document.getElementById('canvas-container');
+
+        // シーン
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xf0f4f8);
+
+        // カメラ
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(12, 10, 12);
+        camera.lookAt(0, 0, 0);
+
+        // レンダラー
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        container.appendChild(renderer.domElement);
+
+        // コントロール
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+
+        // ライト
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+        dirLight.position.set(5, 10, 7);
+        dirLight.castShadow = true;
+        scene.add(dirLight);
+
+        // グリッドと軸
+        // グリッドを少し透過させて、下向きの矢印が見えるようにする
+        const gridHelper = new THREE.GridHelper(20, 20, 0x888888, 0xdddddd);
+        gridHelper.material.opacity = 0.5;
+        gridHelper.material.transparent = true;
+        scene.add(gridHelper);
+        
+        const axisHelper = new THREE.AxesHelper(2); // x:赤, y:緑, z:青
+        scene.add(axisHelper);
+
+        // 荷電粒子
+        const geometry = new THREE.SphereGeometry(0.35, 32, 32);
+        const material = new THREE.MeshPhongMaterial({ color: 0xff4444 });
+        particle = new THREE.Mesh(geometry, material);
+        scene.add(particle);
+
+        // 矢印の生成 (MeshArrowクラスを使用)
+        arrowV = new MeshArrow(0x00cc00); // 緑: 速度
+        arrowB = new MeshArrow(0x0088ff); // 青: 磁場
+        arrowF = new MeshArrow(0xffaa00); // オレンジ: 力
+
+        // イベントリスナー
+        window.addEventListener('resize', onWindowResize);
+        setupUI();
+        
+        // 初回計算
+        updateVectors();
+        animate();
+    }
+
+    // --- UIイベント設定 ---
+    function setupUI() {
+        const ids = ['q', 'vx', 'vz', 'bx', 'bz'];
+        ids.forEach(id => {
+            const el = document.getElementById(id + '-slider');
+            el.addEventListener('input', (e) => {
+                // 成分スライダー操作時 -> 角度を再計算
+                updateFromComponents();
+            });
+        });
+
+        // 角度スライダー操作時 -> Bの成分を再計算
+        document.getElementById('angle-slider').addEventListener('input', (e) => {
+            updateFromAngle(parseFloat(e.target.value));
+        });
+    }
+
+    // タブ切り替え
+    window.switchTab = function(tabName) {
+        const tabs = document.querySelectorAll('.tab-btn');
+        const panels = document.querySelectorAll('.panel-content');
+        
+        tabs.forEach(t => t.classList.remove('active'));
+        panels.forEach(p => p.classList.remove('active'));
+
+        if (tabName === 'simulation') {
+            tabs[0].classList.add('active');
+            panels[0].classList.add('active');
+            isPracticeMode = false;
+            updateFromComponents(); // 復帰
+        } else {
+            tabs[1].classList.add('active');
+            panels[1].classList.add('active');
+            isPracticeMode = true;
+            // 問題未作成時は矢印を隠す
+            if (!document.getElementById('question-text').innerText.includes('=')) {
+                arrowV.setVisibility(false);
+                arrowB.setVisibility(false);
+                arrowF.setVisibility(false);
+            }
+        }
+    };
+
+    window.resetSim = function() {
+        document.getElementById('q-slider').value = 1;
+        document.getElementById('vx-slider').value = 3;
+        document.getElementById('vz-slider').value = 0;
+        document.getElementById('bx-slider').value = 0;
+        document.getElementById('bz-slider').value = 3;
+        // 角度スライダーは自動更新される
+        updateFromComponents();
+    };
+
+    // 成分スライダー -> ベクトル更新 & 角度逆算
+    function updateFromComponents() {
+        if (isPracticeMode) return;
+
+        q = parseFloat(document.getElementById('q-slider').value);
+        v.x = parseFloat(document.getElementById('vx-slider').value);
+        v.z = parseFloat(document.getElementById('vz-slider').value);
+        B.x = parseFloat(document.getElementById('bx-slider').value);
+        B.z = parseFloat(document.getElementById('bz-slider').value);
+
+        // 角度の逆算
+        if (v.length() > 0.01 && B.length() > 0.01) {
+            // vの角度
+            const angleV = Math.atan2(v.z, v.x);
+            // Bの角度
+            const angleB = Math.atan2(B.z, B.x);
+            
+            // 差分 (B - v)
+            let diffRad = angleB - angleV;
+            // 0~2PIに正規化
+            while (diffRad < 0) diffRad += 2 * Math.PI;
+            while (diffRad >= 2 * Math.PI) diffRad -= 2 * Math.PI;
+            
+            const diffDeg = Math.round(diffRad * 180 / Math.PI);
+            
+            // スライダー更新
+            document.getElementById('angle-slider').value = diffDeg;
+            document.getElementById('angle-val').textContent = diffDeg + "°";
+        }
+
+        updateVectors();
+    }
+
+    // 角度スライダー -> B成分更新
+    function updateFromAngle(angleDeg) {
+        if (isPracticeMode) return;
+
+        const angleRad = angleDeg * Math.PI / 180;
+        
+        // vの角度を基準にする
+        let baseAngle = 0;
+        if (v.length() > 0.01) {
+            baseAngle = Math.atan2(v.z, v.x);
+        }
+
+        // 現在のBの長さを維持 (0ならデフォルト3)
+        let bLen = Math.sqrt(B.x*B.x + B.z*B.z);
+        if (bLen < 0.01) bLen = 3;
+
+        // 新しいBの角度
+        const targetAngle = baseAngle + angleRad;
+        
+        // Bの成分更新
+        B.x = bLen * Math.cos(targetAngle);
+        B.z = bLen * Math.sin(targetAngle);
+        
+        // UIのスライダーも更新
+        document.getElementById('bx-slider').value = B.x.toFixed(2);
+        document.getElementById('bz-slider').value = B.z.toFixed(2);
+        document.getElementById('angle-val').textContent = angleDeg + "°";
+
+        updateVectors();
+    }
+
+    // --- メイン計算 & 描画更新 ---
+    function updateVectors() {
+        // UI数値表示
+        if (!isPracticeMode) {
+            document.getElementById('q-val').textContent = q;
+            document.getElementById('vx-val').textContent = v.x.toFixed(1);
+            document.getElementById('vz-val').textContent = v.z.toFixed(1);
+            document.getElementById('bx-val').textContent = B.x.toFixed(1);
+            document.getElementById('bz-val').textContent = B.z.toFixed(1);
+        }
+
+        // 外積計算 F = q(v × B)
+        const cross = new THREE.Vector3().crossVectors(v, B);
+        F.copy(cross).multiplyScalar(q);
+
+        // 矢印の更新 (MeshArrowクラスのupdateメソッドを呼び出す)
+        arrowV.update(v);
+        arrowB.update(B);
+        
+        // 力の矢印
+        if (isPracticeMode && !practiceAnswerVisible) {
+            arrowF.setVisibility(false);
+        } else {
+            arrowF.update(F);
+        }
+
+        // 粒子の色
+        if (q > 0) particle.material.color.set(0xff4444);
+        else if (q < 0) particle.material.color.set(0x4444ff);
+        else particle.material.color.set(0x888888);
+
+        // 数式表示
+        if (!isPracticeMode) {
+            renderMathFormula(document.getElementById('formula-display'));
+        }
+    }
+
+    // --- 数式解説レンダリング ---
+    function renderMathFormula(container) {
+        // なす角の計算
+        const vLen = v.length();
+        const bLen = B.length();
+        const dot = v.dot(B); // 内積
+        
+        let cosTheta = 0, thetaDeg = 0;
+        if (vLen > 0.01 && bLen > 0.01) {
+            cosTheta = dot / (vLen * bLen);
+            // 誤差補正
+            cosTheta = Math.min(Math.max(cosTheta, -1), 1);
+            thetaDeg = Math.acos(cosTheta) * 180 / Math.PI;
+        }
+
+        // 成分計算（y=0前提）
+        // Fy = q(vz*Bx - vx*Bz)
+        const term1 = v.z * B.x;
+        const term2 = v.x * B.z;
+        const Fy = q * (term1 - term2);
+        
+        // 表示用フォーマット
+        const f = (n) => Math.abs(n) < 0.001 ? "0" : n.toFixed(1);
+        const f2 = (n) => Math.abs(n) < 0.001 ? "0" : n.toFixed(2);
+        const num = (n) => n < 0 ? `(${f(n)})` : `${f(n)}`;
+
+        const latex = `
+            <div class="math-section-title">A. なす角 $\\theta$ の計算（内積より）</div>
+            $$ \\cos\\theta = \\frac{\\vec{v} \\cdot \\vec{B}}{|\\vec{v}||\\vec{B}|} = \\frac{${f2(dot)}}{${f2(vLen)} \\times ${f2(bLen)}} \\approx ${f2(cosTheta)} $$
+            $$ \\theta \\approx ${f(thetaDeg)}^\\circ $$
+
+            <div class="math-section-title">B. 外積の成分計算 (力 $F_y$)</div>
+            $$ F_y = q(v_z B_x - v_x B_z) $$
+            $$ = ${q} \\times \\{ ${num(v.z)} \\times ${num(B.x)} - ${num(v.x)} \\times ${num(B.z)} \\} $$
+            $$ = ${q} \\times (${f2(term1)} - ${f2(term2)}) = \\mathbf{${f2(Fy)}} $$
+
+            <div class="math-section-title">C. 大きさの確認</div>
+            $$ |\\vec{F}| = |q| v B \\sin\\theta $$
+            $$ = |${q}| \\cdot ${f2(vLen)} \\cdot ${f2(bLen)} \\cdot \\sin(${f(thetaDeg)}^\\circ) \\approx ${f2(Math.abs(Fy))} $$
+        `;
+
+        container.innerHTML = latex;
+        // KaTeX再描画
+        setTimeout(() => {
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(container, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false}
+                    ]
+                });
+            }
+        }, 0);
+    }
+
+    // --- 演習モード機能 ---
+    window.generateQuestion = function() {
+        const randInt = () => Math.floor(Math.random() * 9) - 4; // -4 ~ 4
+        const randQ = () => Math.random() > 0.5 ? 1 : -1;
+
+        q = randQ();
+        v.set(randInt(), 0, randInt());
+        B.set(randInt(), 0, randInt());
+        
+        // ゼロベクトル回避
+        if (v.lengthSq() < 0.1) v.x = 3;
+        if (B.lengthSq() < 0.1) B.z = 3;
+
+        practiceAnswerVisible = false;
+        document.getElementById('btn-answer').disabled = false;
+        document.getElementById('answer-section').style.display = 'none';
+
+        const qText = `
+            $$ q = ${q} $$
+            $$ \\vec{v} = (${v.x}, 0, ${v.z}) $$
+            $$ \\vec{B} = (${B.x}, 0, ${B.z}) $$
+        `;
+        document.getElementById('question-text').innerHTML = qText;
+        setTimeout(() => renderMathInElement(document.getElementById('question-text')), 0);
+
+        updateVectors();
+    };
+
+    window.showAnswer = function() {
+        practiceAnswerVisible = true;
+        document.getElementById('answer-section').style.display = 'block';
+        renderMathFormula(document.getElementById('answer-display'));
+        updateVectors();
+        document.getElementById('btn-answer').disabled = true;
+    };
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
+
+    // 開始
+    init();
+
+</script>
+</body>
+</html>
