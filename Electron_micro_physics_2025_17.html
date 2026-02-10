@@ -63,7 +63,7 @@
       <h1>ようこそ！</h1>
       <p>このコンテンツは、学生が体験しながら学べる電磁気学のインタラクティブ教材です。各スライダーやボタンを動かして、変化を観察してください。</p>
       <p>
-        ここでは、高校物理の「電磁気学（ミクロ）」の世界を、インタラクティブな体験を通して探求します。
+        先生、こんにちは！ここでは、高校物理の「電磁気学（ミクロ）」の世界を、インタラクティブな体験を通して探求します。
         数式の意味を考えたり、グラフのパラメータを動かしたりしながら、目に見えない電気と磁気の世界を直感的に理解していきましょう！
       </p>
     </section>
@@ -412,7 +412,7 @@
       <ul>
         <li>$E_g$: バンドギャップエネルギー（結合を切るのに必要なエネルギー）</li>
         <li>$k_B$: ボルツマン定数</li>
-        <li>$T$: 絶対温度</li>
+        <li>$T$: 絶対温度 [K]</li>
       </ul>
       <p>
         シミュレーションで温度スライダーを右（高温）に動かすと、指数関数的にキャリア（赤と青の粒）が増えていくのは、この物理法則を再現しているからです。
@@ -636,12 +636,49 @@
 
     <section id="electromagnetic-induction" class="content-section">
         <h1>電磁誘導</h1>
-        <p>コイルを貫く磁束（磁力線の本数）が変化すると、コイルに電圧が生じる現象です 。この電圧を<b>誘導起電力</b>、流れる電流を<b>誘導電流</b>といいます 。</p>
-        <h3>レンツの法則</h3>
-        <p>誘導電流は、磁束の変化を妨げる向きに流れます 。例えば、N極を近づけると、コイルは上側がN極になるように電流を流して反発します。</p>
-        <h3>ファラデーの電磁誘導の法則</h3>
-        <p>N回巻きのコイルに生じる誘導起電力の大きさ $V$ は、単位時間あたりの磁束の変化 $|\\Delta\Phi / \\Delta t|$ に比例します。</p>
-        <div>$$|V| = N \left| \frac{\\Delta\Phi}{\\Delta t} \right|$$</div>
+        <p>コイルを貫く磁束（磁力線の本数）が変化すると、コイルに電圧が生じる現象です。この電圧を<b>誘導起電力</b>、流れる電流を<b>誘導電流</b>といいます。</p>
+        
+        <h3>レンツの法則とファラデーの法則</h3>
+        <p><b>レンツの法則:</b> 誘導電流は、磁束の変化を妨げる向きに流れます。N極が近づくと、コイルはそれを拒むようにN極を作り出します。</p>
+        <p><b>ファラデーの電磁誘導の法則:</b> 誘導起電力 $V$ の大きさは、磁束 $\Phi$ の時間変化の速さに比例します。</p>
+        <div>$$V = -N \frac{\Delta\Phi}{\Delta t}$$</div>
+
+        <div class="interactive-area">
+            <h3>⚡️ インタラクティブ実験: コイルと磁石</h3>
+            <p>下のスライダーで<b>磁石を左右に動かして</b>ください。「動かしている間だけ」検流計（G）の針が振れ、電球が光ります。
+            <br>素早く動かすと、より大きな電流が流れます（ファラデーの法則）。近づけるときと遠ざけるときで針の振れ方が逆になること（レンツの法則）を確認しましょう。</p>
+
+            <label>磁石の位置: <span id="mag-pos-val">0</span> cm</label>
+            <input id="mag-pos-slider" type="range" min="-100" max="100" step="1" value="-80">
+            
+            <div style="margin-top: 10px; display: flex; gap: 10px;">
+               <div style="flex: 1; text-align: center; font-weight: bold; color: #444;">
+                  コイル中心の磁束 $\Phi$: <span id="flux-val">0.00</span>
+               </div>
+               <div style="flex: 1; text-align: center; font-weight: bold; color: #e11d48;">
+                  誘導電流 $I$: <span id="current-val">0.00</span>
+               </div>
+            </div>
+
+            <canvas id="inductionCanvas" width="600" height="320" style="background: #fdfdfd; border: 1px solid #ddd; border-radius: 4px; margin-top: 10px;"></canvas>
+            <div style="margin-top: 15px;">
+                <h4 style="margin: 0 0 5px 0; font-size: 1rem; color: #555;">📊 誘導電流の時間変化 (I-t グラフ)</h4>
+                <canvas id="inductionGraphCanvas" width="600" height="150" style="background: #fff; border: 1px solid #ddd; border-radius: 4px;"></canvas>
+            </div>
+	    <div class="button-group" style="margin-top: 10px;">
+                <button id="start-induction-btn">▶ 再開</button>
+                <button id="stop-induction-btn">⏸ 停止</button>
+                <button id="reset-induction-btn">🔄 リセット</button>
+            </div>
+            <div class="note small">
+                <b>観察のポイント:</b>
+                <ul>
+                    <li>磁石のN極（赤）をコイルに近づけると、コイルの右側にN極が発生して反発します。</li>
+                    <li>磁石のN極をコイルから遠ざけると、コイルの右側にS極が発生して引き止めようとします。</li>
+                    <li>スライダーを止める（速度ゼロ）と、どんなにコイルの近くに磁石があっても電流はゼロになります。</li>
+                </ul>
+            </div>
+        </div>
     </section>
 
   </main>
@@ -733,6 +770,30 @@
     bindRange('I-slider-loop','I-loop-value', drawCurrentLoop);
     bindRange('ampere-I-slider','ampere-I-value', drawAmpereLawFrame);
     bindRange('ampere-r-slider','ampere-r-value', drawAmpereLawFrame);
+
+    // Induction
+    const indSlider = $('mag-pos-slider');
+    if (indSlider) {
+        indSlider.addEventListener('input', () => {
+             $('mag-pos-val').textContent = indSlider.value;
+             // updateInductionPhysics は loopInduction で毎フレーム呼ばれるので
+             // ここでは値を更新するだけでOK。
+             // ただし、initInductionが走っていないと動かないので確認
+             if (!inductionState.animationId && $('electromagnetic-induction').classList.contains('active')) {
+                 initInduction();
+             }
+        });
+    }
+    // Induction (既存のスライダー設定の下に追加)
+    const btnStart = $('start-induction-btn');
+    const btnStop = $('stop-induction-btn');
+    const btnReset = $('reset-induction-btn');
+    
+    if (btnStart && btnStop && btnReset) {
+        btnStart.addEventListener('click', startInductionBtn);
+        btnStop.addEventListener('click', stopInductionBtn);
+        btnReset.addEventListener('click', resetInductionBtn);
+    }
 
     // ▼▼▼ 箔検電器のバインド ▼▼▼
     bindRange('rod-charge-slider', 'rod-charge-value', updateElectroscope);
@@ -900,7 +961,8 @@
   function showContent(id){
     stopForce(); 
     stopCapacitorAnimation(); 
-    stopElectronDrift(); 
+    stopElectronDrift();
+    if (inductionState.animationId) { cancelAnimationFrame(inductionState.animationId); inductionState.animationId = null; }
     
     document.querySelectorAll('.content-section').forEach(s=>s.classList.remove('active')); 
     const el=$(id)||$('intro'); 
@@ -921,6 +983,8 @@
         resetElectronDrift(); 
     } else if (id === 'static-induction') {
         updateElectroscope();
+    } else if (id === 'electromagnetic-induction') {
+        initInduction();
     }
   }
 
@@ -2726,6 +2790,419 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.lineTo(x2-head*Math.cos(ang+Math.PI/6),y2-head*Math.sin(ang+Math.PI/6));
     ctx.closePath();
     ctx.fill();
+  }
+
+  // ==========================================
+  // 追加機能: 電磁誘導シミュレーション
+  // ==========================================
+  
+  let inductionState = {
+      magnetX: -80,    // スライダーの値 (-100 to 100)
+      prevMagnetX: -80,// 速度計算用
+      velocity: 0,     // 磁石の速度
+      flux: 0,         // コイルを貫く磁束
+      current: 0,      // 誘導電流
+      coilX: 0,        // コイルの中心X座標 (Canvas座標系ではない、論理座標)
+      animationId: null,
+      lampOpacity: 0,
+      graphData: [] // ★追加: グラフ描画用の履歴データ
+  };
+
+  function initInduction() {
+      // 既存ループがあれば停止
+      if (inductionState.animationId) cancelAnimationFrame(inductionState.animationId);
+      
+      const slider = $('mag-pos-slider');
+      if (slider) {
+          // イベントリスナーは initDOM で登録済み、あるいはここで再登録してもよいですが
+          // initDOM内での登録を推奨します。ここでは初期値をセット。
+          inductionState.magnetX = parseFloat(slider.value);
+          inductionState.prevMagnetX = inductionState.magnetX;
+      }
+      
+      loopInduction();
+  }
+
+  function loopInduction() {
+      updateInductionPhysics();
+      drawInduction();
+      drawInductionGraph(); // ★追加: グラフ描画関数の呼び出し
+      
+      // ページが表示されている間だけループ
+      if ($('electromagnetic-induction') && $('electromagnetic-induction').classList.contains('active')) {
+          inductionState.animationId = requestAnimationFrame(loopInduction);
+      }
+  }
+
+  function updateInductionPhysics() {
+      const slider = $('mag-pos-slider');
+      if (!slider) return;
+
+      const targetX = parseFloat(slider.value);
+      
+      // 1. 速度の計算 (スライダーの変化分)
+      // 平滑化係数を使って少し滑らかに
+      const rawV = targetX - inductionState.prevMagnetX;
+      inductionState.velocity = rawV * 0.8 + inductionState.velocity * 0.1; // 簡易ローパスフィルタ
+      
+      inductionState.magnetX = targetX;
+      inductionState.prevMagnetX = targetX;
+
+      // 2. 磁束の計算 (近似モデル)
+      // 磁石がコイル(0)に近いほど磁束は強い。ガウス分布的に近似。
+      // N極(右側)が正の磁束とする。
+      const dist = inductionState.magnetX - inductionState.coilX; // 負なら左側
+      // 距離による減衰 (分母に距離の2乗的な項)
+      // magnetXが負(左)のとき、N極が向いているので正の磁束が入る
+      const sign = 1; 
+      // 距離が0のとき最大。
+      // シンプルに: Phi = 100 / (dist^2 + 200) * (distの符号? いや、磁石の向きは一定)
+      // 今回、磁石は右がN極固定とします。
+      // 左(-x)から近づくと、コイルには右向きの磁力線が増える。
+      const B_max = 100;
+      // 磁束の強さは距離の関数
+      // 磁石中心から少し右にN極、左にS極があるとして計算するとよりリアルだが、簡易的にガウス分布
+      // 右がN極なので、中心より右では右向き磁場、左では左向き磁場...
+      // いや、棒磁石内部〜外部の磁力線を考えると、軸上では常にN極から出てS極へ戻るが、
+      // ここでは「コイル位置における外部磁場のx成分」を考えます。
+      // 棒磁石(右N)が左(-x)にあるとき、コイル位置にはN極からの磁力線が届く(右向き正)。
+      // 棒磁石が右(+x)にあるとき、コイル位置にはS極へ入る磁力線がある(右向き正)。
+      // つまり、軸上では常に「右向き」の磁場成分が支配的（磁石内部を通る線も含めて）。
+      // 距離によって強さが変わるだけと近似します。
+      const widthParam = 40;
+      const fluxRaw = B_max * Math.exp( - (dist * dist) / (2 * widthParam * widthParam) );
+      
+      inductionState.flux = fluxRaw;
+
+      // 3. 誘導電流 (レンツの法則: I proportional to -dPhi/dt)
+      // dPhi/dt = dPhi/dx * dx/dt = dPhi/dx * v
+      // d(exp(-x^2))/dx = -2x * exp(...)
+      const dFlux_dx = fluxRaw * ( - dist / (widthParam * widthParam) );
+      
+      // V = - N * dPhi/dt
+      // I = V / R
+      const inducedI = -1.0 * (dFlux_dx * inductionState.velocity) * 1; // ゲイン調整
+
+      // 表示用に平滑化
+      inductionState.current = inductionState.current * 0.8 + inducedI * 0.2;
+      
+      // ランプの明るさ (電流の絶対値)
+      inductionState.lampOpacity = Math.min(Math.abs(inductionState.current) / 10, 1.0);
+
+      // 数値表示更新
+      const fluxEl = $('flux-val');
+      const currEl = $('current-val');
+      if (fluxEl) fluxEl.textContent = inductionState.flux.toFixed(1);
+      if (currEl) currEl.textContent = inductionState.current.toFixed(1);
+      
+      // 停止したら電流を減衰させる (スライダーを離したとき用)
+      if (Math.abs(rawV) < 0.01) {
+           inductionState.velocity *= 0.5; // 減速
+      }
+
+      // グラフ用データの記録
+      inductionState.graphData.push(inductionState.current);
+
+      // 履歴は最大300フレーム分（約5秒分）保持
+      if (inductionState.graphData.length > 300) {
+            inductionState.graphData.shift();
+      }
+  }
+
+  function drawInduction() {
+      const c = $('inductionCanvas');
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const w = c.width;
+      const h = c.height;
+      const cx = w / 2;
+      const cy = h / 2;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // --- 座標変換係数 ---
+      // magnetX: -100 ~ 100 -> Canvas上のx座標
+      const scaleX = 2.0; 
+      const magScreenX = cx + inductionState.magnetX * scaleX;
+      
+      // --- 1. 配線と検流計 (背景) ---
+      ctx.strokeStyle = '#555';
+      ctx.lineWidth = 3;
+      // コイルから上へ
+      ctx.beginPath();
+      ctx.moveTo(cx - 30, cy - 40); // コイル左上
+      ctx.lineTo(cx - 30, cy - 100);
+      ctx.lineTo(cx + 30, cy - 100);
+      ctx.lineTo(cx + 30, cy - 40); // コイル右上
+      ctx.stroke();
+
+      // 検流計 (G)
+      const meterY = cy - 100;
+      ctx.fillStyle = '#eee';
+      ctx.beginPath(); ctx.arc(cx, meterY, 25, 0, Math.PI*2); ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#000';
+      ctx.font = 'bold 14px Arial'; ctx.textAlign = 'center'; ctx.textBaseline='middle';
+      ctx.fillText('G', cx, meterY - 10);
+      
+      // 針
+      const maxDeflect = Math.PI / 3;
+      let angle = (inductionState.current / 20) * maxDeflect; 
+      if (angle > maxDeflect) angle = maxDeflect;
+      if (angle < -maxDeflect) angle = -maxDeflect;
+      
+      ctx.save();
+      ctx.translate(cx, meterY + 10);
+      ctx.rotate(angle);
+      ctx.strokeStyle = '#e11d48'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, -20); ctx.stroke();
+      ctx.restore();
+
+      // --- 2. 電球 (Lamp) ---
+      // 配線の途中につける
+      const lampX = cx; 
+      const lampY = cy - 70;
+      ctx.save();
+      ctx.shadowBlur = 20 * inductionState.lampOpacity;
+      ctx.shadowColor = `rgba(255, 220, 50, ${inductionState.lampOpacity})`;
+      ctx.fillStyle = `rgba(255, 255, 100, ${0.2 + inductionState.lampOpacity * 0.8})`;
+      ctx.beginPath(); ctx.arc(lampX, lampY, 8, 0, Math.PI*2); ctx.fill();
+      ctx.restore();
+      
+      // --- 3. 磁石 (Magnet) ---
+      // N極(赤)を右、S極(青)を左
+      const magW = 80;
+      const magH = 30;
+      const magY = cy;
+      
+      // 磁力線 (簡易)
+      ctx.save();
+      ctx.globalAlpha = 0.3;
+      ctx.strokeStyle = '#0b84ff';
+      ctx.lineWidth = 2;
+      // 磁石から出る線
+      for(let i=0; i<3; i++) {
+         const offset = (i-1)*15;
+         ctx.beginPath();
+         ctx.moveTo(magScreenX + magW/2, magY + offset);
+         // 右へ広がって戻るベジェ
+         ctx.bezierCurveTo(magScreenX + 200, magY + offset*3, magScreenX - 200, magY + offset*3, magScreenX - magW/2, magY + offset);
+         ctx.stroke();
+      }
+      ctx.restore();
+
+      // 本体
+      ctx.fillStyle = '#3b82f6'; // S (Blue)
+      ctx.fillRect(magScreenX - magW/2, magY - magH/2, magW/2, magH);
+      ctx.fillStyle = '#ef4444'; // N (Red)
+      ctx.fillRect(magScreenX, magY - magH/2, magW/2, magH);
+      
+      ctx.fillStyle = 'white'; ctx.font = 'bold 14px Arial';
+      ctx.fillText('S', magScreenX - magW/4, magY);
+      ctx.fillText('N', magScreenX + magW/4, magY);
+
+
+      // --- 4. コイル (Coil) ---
+      // ソレノイドコイルを表現 (磁石の手前にあるか奥にあるかで描画順を変えるべきだが、
+      // 簡易的に「磁石が中を通る」ように見せるため、上半分と下半分で分けるなどの工夫が必要。
+      // ここではシンプルに、磁石の上に描画します（透視図的）。
+      
+      const coilRadius = 40;
+      const coilLen = 60;
+      const turns = 8;
+      
+      ctx.strokeStyle = '#b45309'; // 銅色
+      ctx.lineWidth = 4;
+      
+      // コイルの「奥側」を描画するなら磁石より先に描くべきだが、
+      // 磁石が貫通する様子を見せるには、磁石より「手前」の線を後に描く。
+      // 今回は簡易化のため、コイル全体を半透明で上に重ねます。
+      
+      ctx.save();
+      // 誘導電流による磁場 (レンツの法則) の表示
+      if (Math.abs(inductionState.current) > 1.0) {
+          const arrowDir = inductionState.current > 0 ? 1 : -1; 
+          // current > 0 のとき、レンツの法則により「右向きの磁場」を妨げる＝左向きの磁場を作る
+          // つまり左がN、右がSになるような電流。
+          // ...物理の整合性チェック:
+          // 右Nの磁石が左(-x)から近づく(v>0) → 右向き磁束増加 → 妨げるため左向き磁場発生(右S/左N)
+          // プログラム上の current は inducedI = - (dFlux/dx * v).
+          // dFlux/dx は負(近づくにつれ増えるがdistは負から0へ...あ、dist=magXなので、
+          // magXが増えるとdist(-80 -> -70)は増える。fluxは増える。dFlux/dx > 0.
+          // v > 0. なので inducedI < 0.
+          // I < 0 のとき、右側にS極ができる（反発）。
+          
+          // コイルの中心に生じる磁極の文字を表示
+          ctx.font = 'bold 40px sans-serif';
+          ctx.globalAlpha = Math.min(Math.abs(inductionState.current)/20, 0.8);
+          
+          if (inductionState.current < 0) {
+             // 磁石(N)が近づいてきた(v>0) => I<0 => 反発したい => 左面S, 右面N？
+             // いや、右から来る磁石のNと対面する左側面（-x側）をNにしたい。
+             // 今回、磁石は左(-x)にある。コイルは原点。
+             // 左から磁石(右N)が来る。コイル左端はNになりたい。コイル右端はS。
+             // I<0 で「反発（近づくのを拒む）」を表示。
+             ctx.fillStyle = '#ef4444'; // N color
+             ctx.fillText('N', cx - 60, cy); 
+             ctx.fillStyle = '#3b82f6'; // S color
+             ctx.fillText('S', cx + 60, cy);
+          } else {
+             // 磁石(N)が遠ざかる(v<0) => I>0 => 引き止めたい => 左面S, 右面N。
+             ctx.fillStyle = '#3b82f6'; 
+             ctx.fillText('S', cx - 60, cy);
+             ctx.fillStyle = '#ef4444';
+             ctx.fillText('N', cx + 60, cy);
+          }
+      }
+      ctx.restore();
+
+      // コイルの線
+      ctx.beginPath();
+      for(let i=0; i<turns; i++) {
+          const x = cx - coilLen/2 + (i * coilLen/turns);
+          // 螺旋を描く
+          // 手前: y + radius, 奥: y - radius
+          // 楕円を描画
+          ctx.moveTo(x, cy - coilRadius);
+          // 楕円: ctx.ellipse(x, y, radiusX, radiusY, rotation, startAngle, endAngle)
+          // ひと巻き分
+          ctx.ellipse(x + coilLen/(turns*2), cy, coilLen/(turns*2), coilRadius, 0, 0, Math.PI*2);
+      }
+      ctx.stroke();
+      
+      // 電流の向き矢印
+      if (Math.abs(inductionState.current) > 2) {
+          ctx.fillStyle = '#ffff00';
+          ctx.strokeStyle = 'black';
+          ctx.lineWidth = 1;
+          const arrowX = cx; 
+          const arrowY = cy + coilRadius; // 手前の線
+          // I > 0 なら 右へ？ I < 0 なら左へ？
+          // 定義次第ですが、視覚的にわかりやすく、動きと逆（レンツ）感が出ればOK
+          const dir = inductionState.current > 0 ? 1 : -1;
+          drawArrow(ctx, arrowX - 10*dir, arrowY, arrowX + 10*dir, arrowY, {color: '#ffdd00', head: 6, lineWidth: 3});
+      }
+  }
+
+  function drawInductionGraph() {
+      const c = $('inductionGraphCanvas');
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const w = c.width;
+      const h = c.height;
+      
+      ctx.clearRect(0, 0, w, h);
+      
+      // 1. グリッドと軸の描画
+      ctx.strokeStyle = '#eee';
+      ctx.lineWidth = 1;
+      
+      // 横線 (ゼロ点と目盛り)
+      const centerY = h / 2;
+      ctx.beginPath();
+      // Y=0 (中心線)
+      ctx.moveTo(0, centerY); ctx.lineTo(w, centerY);
+      // 上下の補助線
+      ctx.moveTo(0, centerY - 40); ctx.lineTo(w, centerY - 40);
+      ctx.moveTo(0, centerY + 40); ctx.lineTo(w, centerY + 40);
+      ctx.stroke();
+
+      // 軸ラベル
+      ctx.fillStyle = '#999';
+      ctx.font = '10px Arial';
+      ctx.textAlign = 'right';
+      ctx.fillText('0', 20, centerY - 2);
+      ctx.fillText('+I', 20, centerY - 42);
+      ctx.fillText('-I', 20, centerY + 38);
+      ctx.textAlign = 'left';
+      ctx.fillText('Time →', w - 40, h - 5);
+
+      // 2. 波形の描画
+      const data = inductionState.graphData;
+      if (data.length < 2) return;
+
+      ctx.beginPath();
+      ctx.strokeStyle = '#0b84ff'; // 鮮やかな青
+      ctx.lineWidth = 2;
+      
+      // データのプロット (右端が現在、左が過去)
+      // X軸: 1データあたり2ピクセル幅とすると、300データで600px埋まる
+      const stepX = w / 300; 
+      
+      // 描画開始位置の調整（データが少ないうちは右から描くか左から描くか）
+      // ここでは「常に右端が最新」になるように描画します（オシロスコープ風）
+      
+      for (let i = 0; i < data.length; i++) {
+          const val = data[i];
+          // Y軸のスケール調整 (電流値 10 で 40px 振れるくらいに)
+          const y = centerY - (val * 4.0); 
+          
+          // X座標: (300 - length + i) * stepX
+          // これでデータが満タンになるまでは右側に溜まっていく
+          const x = (300 - data.length + i) * stepX;
+          
+          if (i === 0) {
+              ctx.moveTo(x, y);
+          } else {
+              ctx.lineTo(x, y);
+          }
+      }
+      ctx.stroke();
+      
+      // 最新のポイントに点を打つ
+      const lastVal = data[data.length - 1];
+      const lastY = centerY - (lastVal * 4.0);
+      const lastX = w; // 右端
+      
+      ctx.fillStyle = '#e11d48'; // 赤い点
+      ctx.beginPath();
+      ctx.arc(lastX - 2, lastY, 3, 0, Math.PI * 2);
+      ctx.fill();
+  }
+
+  // ▼▼▼ 追加: 電磁誘導コントロール関数 ▼▼▼
+  function startInductionBtn() {
+      // 既に動いている場合は何もしない
+      if (inductionState.animationId) return;
+      
+      // ループ開始
+      loopInduction();
+  }
+
+  function stopInductionBtn() {
+      if (inductionState.animationId) {
+          cancelAnimationFrame(inductionState.animationId);
+          inductionState.animationId = null;
+      }
+  }
+
+  function resetInductionBtn() {
+      // まず停止
+      stopInductionBtn();
+      
+      // 1. 内部状態のリセット (初期位置 -80 に戻す)
+      inductionState.magnetX = -80;
+      inductionState.prevMagnetX = -80;
+      inductionState.velocity = 0;
+      inductionState.flux = 0;
+      inductionState.current = 0;
+      inductionState.graphData = []; // グラフ履歴をクリア
+      
+      // 2. DOM要素 (スライダーと数値) のリセット
+      const slider = $('mag-pos-slider');
+      if (slider) {
+          slider.value = -80;
+          const valDisp = $('mag-pos-val');
+          if (valDisp) valDisp.textContent = "-80";
+      }
+      const fluxEl = $('flux-val');
+      const currEl = $('current-val');
+      if (fluxEl) fluxEl.textContent = "0.00";
+      if (currEl) currEl.textContent = "0.00";
+      
+      // 3. 停止状態での再描画 (初期状態を表示)
+      drawInduction();
+      drawInductionGraph();
   }
 
   // ------------------
